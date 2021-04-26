@@ -1,0 +1,11 @@
+mpmath==1.2.1
+numpy==1.20.2
+onnx==1.9.0
+onnxruntime==1.7.0
+packaging==20.9
+protobuf==3.15.8
+pyparsing==2.4.7
+six==1.15.0
+sympy==1.8
+torch==1.8.1
+typing-extensions==3.7.4.3
