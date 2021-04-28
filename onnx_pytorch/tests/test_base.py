@@ -1,4 +1,4 @@
-from tempfile import TemporaryDirectory, TemporaryFile
+from tempfile import TemporaryDirectory
 
 import os
 import importlib.util
@@ -17,7 +17,7 @@ from onnx_pytorch import code_gen
 torch.set_printoptions(6)
 
 
-class TestCases:
+class TestBase:
 
   def _run(self, inputs_np):
     model = onnx.ModelProto()
@@ -37,8 +37,8 @@ class TestCases:
       pt_outputs = mod.test_run_model(
           [torch.from_numpy(v) for _, v in inputs_np])
       assert np.allclose(ort_outputs, [o.detach().numpy() for o in pt_outputs],
-                         atol=1e-5,
-                         rtol=1e-5)
+                         atol=1e-4,
+                         rtol=1e-4)
 
   def test_conv_flatten_relu(self):
     reset_model()
