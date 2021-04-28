@@ -7,22 +7,18 @@ class CodeGenTemplate:
 
   @classmethod
   def imports(cls):
-    return '''import numpy as np
-import onnx
-import onnx.numpy_helper
-import torch
-import torch.nn as nn
-'''
-
-  @classmethod
-  def model(cls, model_init, model_forward):
-    return f'''{cls.autogen_head()}
-import glob
+    return '''import glob
 import os
 
 import numpy as np
 import torch
 import torch.nn as nn
+'''
+
+  @classmethod
+  def model(cls, model_init, model_forward, test_run_model):
+    return f'''{cls.autogen_head()}
+{cls.imports()}
 
 
 class Model(nn.Module):
@@ -40,6 +36,5 @@ class Model(nn.Module):
     {model_forward}
 
 
-model = Model()
-print(model)
+{test_run_model}
 '''

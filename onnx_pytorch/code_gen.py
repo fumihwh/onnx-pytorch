@@ -6,45 +6,19 @@ import shutil
 
 import numpy as np
 import onnx
+from onnx.mapping import TENSOR_TYPE_TO_NP_TYPE
 from onnx.numpy_helper import to_array
 from onnxruntime.tools.symbolic_shape_infer import SymbolicShapeInference
-import torch
-import torch.nn as nn
 
 from onnx_pytorch.code_gen_template import CodeGenTemplate
 from onnx_pytorch.op_code_generators import *
 
-torch.set_printoptions(6)
-
-nn_dict = {
-    nn_name.lower(): getattr(nn, nn_name)
-    for nn_name in dir(nn)
-    if nn_name[0].isupper()
-}
-
-nn_name_dict = {
-    nn_name.lower(): nn_name for nn_name in dir(nn) if nn_name[0].isupper()
-}
-
 
 class ModelCodeGenerator:
 
-  def __init__(self, onnx_model_path=None, output_dir=None, overwrite=False):
-    self.onnx_model_path = onnx_model_path
-    assert os.path.exists(
-        onnx_model_path), f"ONNX model {onnx_model_path} does not exist."
-    assert os.path.isfile(onnx_model_path), f"{onnx_model_path} is not a file."
-
+  def __init__(self, onnx_model=None, output_dir=None):
+    self.onnx_model = onnx_model
     self.output_dir = output_dir
-    assert os.path.exists(
-        output_dir
-    ) and overwrite is not True, f"{output_dir} is not empty and overwrite is not True."
-    assert os.path.isdir(output_dir), f"{output_dir} is not directory."
-    if overwrite:
-      shutil.rmtree(output_dir, ignore_errors=True)
-      os.makedirs(output_dir)
-
-    self.onnx_model = None
 
     self.init_parts = []
     self.forward_parts = []
@@ -76,12 +50,34 @@ class ModelCodeGenerator:
     return CodeGenTemplate.model(model_init='''
     '''.join(self.init_parts),
                                  model_forward='''
-    '''.join(self.forward_parts))
+    '''.join(self.forward_parts),
+                                 test_run_model=self.gen_test_run_model_code())
+
+  def gen_test_run_model_code(self):
+    numpy_input_str = []
+    for i in self.onnx_model.graph.input:
+      dtype = TENSOR_TYPE_TO_NP_TYPE[i.type.tensor_type.elem_type]
+      shape = []
+      for d in i.type.tensor_type.shape.dim:
+        if d.dim_param != "":
+          shape.append(1)
+        else:
+          shape.append(d.dim_value)
+      numpy_input_str.append(
+          f"torch.from_numpy(np.random.randn(*{shape.__repr__()}).astype(np.{dtype.name}))"
+      )
+    test_run_model = [
+      f'''@torch.no_grad()
+def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''', "model = Model()", "model.eval()", "print(model)"
+    ]
+    test_run_model.extend(
+        ["rs = model(*inputs)", "print(rs)", "return rs"])
+    return '''
+  '''.join(test_run_model)
 
   def preprocess_onnx_model(self):
-    model = onnx.load(self.onnx_model_path)
-    model.graph.ClearField("value_info")
-    for n in model.graph.node:
+    self.onnx_model.graph.ClearField("value_info")
+    for n in self.onnx_model.graph.node:
       inputs, outputs = [], []
       for ls, f in ((inputs, n.input), (outputs, n.output)):
         for i in f:
@@ -97,14 +93,16 @@ class ModelCodeGenerator:
       n.ClearField("output")
       n.output.extend(outputs)
 
-    for f in (model.graph.input, model.graph.output, model.graph.initializer):
+    for f in (self.onnx_model.graph.input, self.onnx_model.graph.output,
+              self.onnx_model.graph.initializer):
       for i in f:
         if i.name.isnumeric():
           i.name = f"__t_{i.name}"
         else:
           i.name = re.sub("[:/.]", "_", i.name)
 
-    model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True, 0)
+    model = SymbolicShapeInference.infer_shapes(self.onnx_model, 2**31 - 1,
+                                                True, True, 0)
     onnx.save(model, os.path.join(self.output_dir, "tmp_processed.onnx"))
     self.onnx_model = model
 
@@ -140,11 +138,23 @@ class ModelCodeGenerator:
               to_array(v))
 
 
-def gen(onnx_model_path, output_dir, overwrite=False):
-  model_code_gen = ModelCodeGenerator(onnx_model_path=onnx_model_path,
-                                      output_dir=output_dir,
-                                      overwrite=overwrite)
-  model_code_gen.run()
+def gen(onnx_model, output_dir, overwrite=False):
+  kwargs = {"output_dir": output_dir}
+  if type(onnx_model) == onnx.ModelProto:
+    kwargs["onnx_model"] = onnx_model
+  else:
+    assert os.path.exists(
+        onnx_model), f"ONNX model {onnx_model} does not exist."
+    assert os.path.isfile(onnx_model), f"{onnx_model} is not a file."
+    assert os.path.exists(
+        output_dir
+    ) and overwrite is not True, f"{output_dir} is not empty and overwrite is not True."
+    assert os.path.isdir(output_dir), f"{output_dir} is not directory."
+    kwargs["onnx_model"] = onnx.load(onnx_model)
+  if overwrite:
+    shutil.rmtree(output_dir, ignore_errors=True)
+    os.makedirs(output_dir)
+  ModelCodeGenerator(**kwargs).run()
 
 
 def main():
@@ -168,12 +178,9 @@ def main():
                       help="Should overwrite the output dir.")
   args = parser.parse_args()
 
-  # model_code_gen = ModelCodeGenerator(
-  #     onnx_model_path="test/ort_train_resnet18.onnx", output_dir="./")
-  model_code_gen = ModelCodeGenerator(onnx_model_path=args.onnx_model_path,
-                                      output_dir=args.output_dir,
-                                      overwrite=args.overwrite)
-  model_code_gen.run()
+  gen(onnx_model=args.onnx_model_path,
+      output_dir=args.output_dir,
+      overwrite=args.overwrite)
 
 
 if __name__ == '__main__':
