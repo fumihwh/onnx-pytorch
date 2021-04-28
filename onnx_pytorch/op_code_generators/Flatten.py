@@ -17,8 +17,7 @@ class FlattenOpCodeGenerator(OpCodeGenerator):
     params_str = self.gen_params_str(start_dim=attr_value_dict["axis"])
     nn_name = self.onnx_op
     init_str, forward_str = [], []
-    init_str.append(
-        f"self.{node.name} = nn.{nn_name}(**{{{params_str}}})")
+    init_str.append(f"self.{node.name} = nn.{nn_name}(**{{{params_str}}})")
     forward_str.append(
         f"{', '.join(outputs_str)} = self.{node.name}({', '.join(inputs_str)})")
 

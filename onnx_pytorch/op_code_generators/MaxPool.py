@@ -29,8 +29,14 @@ class MaxPoolOpCodeGenerator(OpCodeGenerator):
     init_str, forward_str = [], []
     init_str.append(f"self.{node.name} = nn.{nn_name}(**{{{params_str}}})")
     if "pads" in attr_value_dict:
+      padding = []
+      for i in range(d):
+        padding.extend([
+            attr_value_dict['pads'][i],
+            attr_value_dict['pads'][i + d],
+        ])
       forward_str.append(
-          f"{inputs_str[0]} = torch.nn.functional.pad({inputs_str[0]}, {attr_value_dict['pads'].__repr__()})"
+          f"{inputs_str[0]} = torch.nn.functional.pad({inputs_str[0]}, {padding.__repr__()})"
       )
     forward_str.append(f"{outputs_str[0]} = self.{node.name}({inputs_str[0]})")
 

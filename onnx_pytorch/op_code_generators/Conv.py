@@ -37,8 +37,7 @@ class ConvOpCodeGenerator(OpCodeGenerator):
 
     nn_name = f"Conv{d}d"
     init_str, forward_str = [], []
-    init_str.append(
-        f"self.{node.name} = nn.{nn_name}(**{{{params_str}}})")
+    init_str.append(f"self.{node.name} = nn.{nn_name}(**{{{params_str}}})")
     init_str.append(
         f"self.{node.name}.weight.data = self.__variables[\"{node.input[1]}\"]")
     if len(node.input) > 2:
