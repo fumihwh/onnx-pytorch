@@ -40,8 +40,9 @@ class ModelCodeGenerator:
     self.forward_parts.append(f"return {', '.join(return_list)}")
 
   def add_forward_input(self, inputs_value_infos):
-    return_list = [f"self.{i.name}" for i in inputs_value_infos]
-    if len(inputs_value_infos) == 1:
+    initializer_names = {i.name for i in self.onnx_model.graph.initializer}
+    return_list = [f"self.{i.name}" for i in inputs_value_infos if i.name not in initializer_names]
+    if len(return_list) == 1:
       self.forward_parts.append(f"{return_list[0]}, = inputs")
     else:
       self.forward_parts.append(f"{', '.join(return_list)} = inputs")
@@ -55,7 +56,10 @@ class ModelCodeGenerator:
 
   def gen_test_run_model_code(self):
     numpy_input_str = []
+    initializer_names = {i.name for i in self.onnx_model.graph.initializer}
     for i in self.onnx_model.graph.input:
+      if i.name in initializer_names:
+        continue
       dtype = TENSOR_TYPE_TO_NP_TYPE[i.type.tensor_type.elem_type]
       shape = []
       for d in i.type.tensor_type.shape.dim:
@@ -64,14 +68,14 @@ class ModelCodeGenerator:
         else:
           shape.append(d.dim_value)
       numpy_input_str.append(
-          f"torch.from_numpy(np.random.randn(*{shape.__repr__()}).astype(np.{dtype.name}))"
+          f"torch.from_numpy(np.random.randn(*{[s if s > 1 else 1 for s in shape].__repr__()}).astype(np.{dtype.name}))"
       )
     test_run_model = [
-      f'''@torch.no_grad()
-def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''', "model = Model()", "model.eval()", "print(model)"
+        f'''@torch.no_grad()
+def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
+        "model = Model()", "model.eval()", "print(model)"
     ]
-    test_run_model.extend(
-        ["rs = model(*inputs)", "print(rs)", "return rs"])
+    test_run_model.extend(["rs = model(*inputs)", "print(rs)", "return rs"])
     return '''
   '''.join(test_run_model)
 
@@ -94,7 +98,7 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''', "model = Model()"
       n.output.extend(outputs)
 
     for f in (self.onnx_model.graph.input, self.onnx_model.graph.output,
-              self.onnx_model.graph.initializer):
+              self.onnx_model.graph.initializer, self.onnx_model.graph.node):
       for i in f:
         if i.name.isnumeric():
           i.name = f"__t_{i.name}"
