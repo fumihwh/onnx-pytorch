@@ -20,7 +20,7 @@ def LabelEncoder(X, **kwargs):
                                _inputs, [f"_t_LabelEncoder_{idx}"],
                                name=f"LabelEncoder_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -37,7 +37,7 @@ def Split(input, **kwargs):
                                _inputs, [f"_t_Split_{idx}"],
                                name=f"Split_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -54,7 +54,7 @@ def Pad(data, **kwargs):
                                _inputs, [f"_t_Pad_{idx}"],
                                name=f"Pad_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -71,7 +71,7 @@ def LpPool(X, **kwargs):
                                _inputs, [f"_t_LpPool_{idx}"],
                                name=f"LpPool_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -88,6 +88,6 @@ def GlobalLpPool(X, **kwargs):
                                _inputs, [f"_t_GlobalLpPool_{idx}"],
                                name=f"GlobalLpPool_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node

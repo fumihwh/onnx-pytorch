@@ -20,7 +20,7 @@ def Floor(X, **kwargs):
                                _inputs, [f"_t_Floor_{idx}"],
                                name=f"Floor_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -37,7 +37,7 @@ def Tile(input, repeats, **kwargs):
                                _inputs, [f"_t_Tile_{idx}"],
                                name=f"Tile_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -54,7 +54,7 @@ def Sub(A, B, **kwargs):
                                _inputs, [f"_t_Sub_{idx}"],
                                name=f"Sub_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -71,7 +71,7 @@ def Sqrt(X, **kwargs):
                                _inputs, [f"_t_Sqrt_{idx}"],
                                name=f"Sqrt_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -88,7 +88,7 @@ def Max(data_0, **kwargs):
                                _inputs, [f"_t_Max_{idx}"],
                                name=f"Max_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -105,7 +105,7 @@ def Tanh(input, **kwargs):
                                _inputs, [f"_t_Tanh_{idx}"],
                                name=f"Tanh_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -122,7 +122,7 @@ def Selu(X, **kwargs):
                                _inputs, [f"_t_Selu_{idx}"],
                                name=f"Selu_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -139,7 +139,7 @@ def Sum(data_0, **kwargs):
                                _inputs, [f"_t_Sum_{idx}"],
                                name=f"Sum_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -156,7 +156,7 @@ def Relu(X, **kwargs):
                                _inputs, [f"_t_Relu_{idx}"],
                                name=f"Relu_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -173,7 +173,7 @@ def Reciprocal(X, **kwargs):
                                _inputs, [f"_t_Reciprocal_{idx}"],
                                name=f"Reciprocal_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -190,7 +190,7 @@ def Mul(A, B, **kwargs):
                                _inputs, [f"_t_Mul_{idx}"],
                                name=f"Mul_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -207,7 +207,7 @@ def Sigmoid(X, **kwargs):
                                _inputs, [f"_t_Sigmoid_{idx}"],
                                name=f"Sigmoid_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -224,7 +224,7 @@ def Neg(X, **kwargs):
                                _inputs, [f"_t_Neg_{idx}"],
                                name=f"Neg_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -241,7 +241,7 @@ def Mean(data_0, **kwargs):
                                _inputs, [f"_t_Mean_{idx}"],
                                name=f"Mean_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -258,7 +258,7 @@ def Log(input, **kwargs):
                                _inputs, [f"_t_Log_{idx}"],
                                name=f"Log_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -275,7 +275,7 @@ def LeakyRelu(X, **kwargs):
                                _inputs, [f"_t_LeakyRelu_{idx}"],
                                name=f"LeakyRelu_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -292,7 +292,7 @@ def BatchNormalization(X, scale, B, mean, var, **kwargs):
                                _inputs, [f"_t_BatchNormalization_{idx}"],
                                name=f"BatchNormalization_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -309,7 +309,7 @@ def Cast(input, **kwargs):
                                _inputs, [f"_t_Cast_{idx}"],
                                name=f"Cast_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -326,7 +326,7 @@ def InstanceNormalization(input, scale, B, **kwargs):
                                _inputs, [f"_t_InstanceNormalization_{idx}"],
                                name=f"InstanceNormalization_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -343,7 +343,7 @@ def Clip(input, **kwargs):
                                _inputs, [f"_t_Clip_{idx}"],
                                name=f"Clip_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -360,7 +360,7 @@ def PRelu(X, slope, **kwargs):
                                _inputs, [f"_t_PRelu_{idx}"],
                                name=f"PRelu_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -377,7 +377,7 @@ def HardSigmoid(X, **kwargs):
                                _inputs, [f"_t_HardSigmoid_{idx}"],
                                name=f"HardSigmoid_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -394,7 +394,7 @@ def Elu(X, **kwargs):
                                _inputs, [f"_t_Elu_{idx}"],
                                name=f"Elu_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -411,7 +411,7 @@ def Exp(input, **kwargs):
                                _inputs, [f"_t_Exp_{idx}"],
                                name=f"Exp_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -428,7 +428,7 @@ def Add(A, B, **kwargs):
                                _inputs, [f"_t_Add_{idx}"],
                                name=f"Add_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -445,7 +445,7 @@ def Min(data_0, **kwargs):
                                _inputs, [f"_t_Min_{idx}"],
                                name=f"Min_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -462,7 +462,7 @@ def Div(A, B, **kwargs):
                                _inputs, [f"_t_Div_{idx}"],
                                name=f"Div_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -479,7 +479,7 @@ def Dropout(data, **kwargs):
                                _inputs, [f"_t_Dropout_{idx}"],
                                name=f"Dropout_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -496,7 +496,7 @@ def Ceil(X, **kwargs):
                                _inputs, [f"_t_Ceil_{idx}"],
                                name=f"Ceil_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -513,7 +513,7 @@ def Abs(X, **kwargs):
                                _inputs, [f"_t_Abs_{idx}"],
                                name=f"Abs_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -530,6 +530,6 @@ def Gemm(A, B, C, **kwargs):
                                _inputs, [f"_t_Gemm_{idx}"],
                                name=f"Gemm_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node

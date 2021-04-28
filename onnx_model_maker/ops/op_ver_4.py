@@ -20,6 +20,6 @@ def Concat(inputs, **kwargs):
                                _inputs, [f"_t_Concat_{idx}"],
                                name=f"Concat_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node

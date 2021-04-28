@@ -20,7 +20,7 @@ def RoiAlign(X, rois, batch_indices, **kwargs):
                                _inputs, [f"_t_RoiAlign_{idx}"],
                                name=f"RoiAlign_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -37,7 +37,7 @@ def ReverseSequence(input, sequence_lens, **kwargs):
                                _inputs, [f"_t_ReverseSequence_{idx}"],
                                name=f"ReverseSequence_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -54,7 +54,7 @@ def NonMaxSuppression(boxes, scores, max_output_boxes_per_class=None, iou_thresh
                                _inputs, [f"_t_NonMaxSuppression_{idx}"],
                                name=f"NonMaxSuppression_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -71,7 +71,7 @@ def IsInf(X, **kwargs):
                                _inputs, [f"_t_IsInf_{idx}"],
                                name=f"IsInf_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -88,7 +88,7 @@ def QuantizeLinear(x, y_scale, y_zero_point=None, **kwargs):
                                _inputs, [f"_t_QuantizeLinear_{idx}"],
                                name=f"QuantizeLinear_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -105,7 +105,7 @@ def QLinearConv(x, x_scale, x_zero_point, w, w_scale, w_zero_point, y_scale, y_z
                                _inputs, [f"_t_QLinearConv_{idx}"],
                                name=f"QLinearConv_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -122,7 +122,7 @@ def ConvInteger(x, w, x_zero_point=None, w_zero_point=None, **kwargs):
                                _inputs, [f"_t_ConvInteger_{idx}"],
                                name=f"ConvInteger_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -139,7 +139,7 @@ def QLinearMatMul(a, a_scale, a_zero_point, b, b_scale, b_zero_point, y_scale, y
                                _inputs, [f"_t_QLinearMatMul_{idx}"],
                                name=f"QLinearMatMul_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -156,7 +156,7 @@ def MatMulInteger(A, B, a_zero_point=None, b_zero_point=None, **kwargs):
                                _inputs, [f"_t_MatMulInteger_{idx}"],
                                name=f"MatMulInteger_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -173,7 +173,7 @@ def StringNormalizer(X, **kwargs):
                                _inputs, [f"_t_StringNormalizer_{idx}"],
                                name=f"StringNormalizer_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -190,7 +190,7 @@ def Mod(A, B, **kwargs):
                                _inputs, [f"_t_Mod_{idx}"],
                                name=f"Mod_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -207,7 +207,7 @@ def DequantizeLinear(x, x_scale, x_zero_point=None, **kwargs):
                                _inputs, [f"_t_DequantizeLinear_{idx}"],
                                name=f"DequantizeLinear_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -224,7 +224,7 @@ def ThresholdedRelu(X, **kwargs):
                                _inputs, [f"_t_ThresholdedRelu_{idx}"],
                                name=f"ThresholdedRelu_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -241,7 +241,7 @@ def Upsample(X, scales, **kwargs):
                                _inputs, [f"_t_Upsample_{idx}"],
                                name=f"Upsample_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -258,7 +258,7 @@ def Slice(data, starts, ends, axes=None, steps=None, **kwargs):
                                _inputs, [f"_t_Slice_{idx}"],
                                name=f"Slice_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -275,7 +275,7 @@ def TopK(X, K, **kwargs):
                                _inputs, [f"_t_TopK_{idx}"],
                                name=f"TopK_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -292,7 +292,7 @@ def Resize(X, scales, **kwargs):
                                _inputs, [f"_t_Resize_{idx}"],
                                name=f"Resize_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -309,7 +309,7 @@ def MaxPool(X, **kwargs):
                                _inputs, [f"_t_MaxPool_{idx}"],
                                name=f"MaxPool_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -326,7 +326,7 @@ def Dropout(data, **kwargs):
                                _inputs, [f"_t_Dropout_{idx}"],
                                name=f"Dropout_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -343,6 +343,6 @@ def AveragePool(X, **kwargs):
                                _inputs, [f"_t_AveragePool_{idx}"],
                                name=f"AveragePool_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node

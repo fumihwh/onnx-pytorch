@@ -20,6 +20,6 @@ def GRU(X, W, R, B=None, sequence_lens=None, initial_h=None, **kwargs):
                                _inputs, [f"_t_GRU_{idx}"],
                                name=f"GRU_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node

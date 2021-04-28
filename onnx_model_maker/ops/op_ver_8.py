@@ -20,7 +20,7 @@ def Scan(sequence_lens, initial_state_and_scan_inputs, **kwargs):
                                _inputs, [f"_t_Scan_{idx}"],
                                name=f"Scan_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -37,7 +37,7 @@ def Expand(input, shape, **kwargs):
                                _inputs, [f"_t_Expand_{idx}"],
                                name=f"Expand_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -54,7 +54,7 @@ def Max(data_0, **kwargs):
                                _inputs, [f"_t_Max_{idx}"],
                                name=f"Max_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -71,7 +71,7 @@ def Sum(data_0, **kwargs):
                                _inputs, [f"_t_Sum_{idx}"],
                                name=f"Sum_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -88,7 +88,7 @@ def Mean(data_0, **kwargs):
                                _inputs, [f"_t_Mean_{idx}"],
                                name=f"Mean_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -105,7 +105,7 @@ def MaxPool(X, **kwargs):
                                _inputs, [f"_t_MaxPool_{idx}"],
                                name=f"MaxPool_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -122,6 +122,6 @@ def Min(data_0, **kwargs):
                                _inputs, [f"_t_Min_{idx}"],
                                name=f"Min_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node

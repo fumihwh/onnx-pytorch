@@ -20,7 +20,7 @@ def LessOrEqual(A, B, **kwargs):
                                _inputs, [f"_t_LessOrEqual_{idx}"],
                                name=f"LessOrEqual_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -37,7 +37,7 @@ def Celu(X, **kwargs):
                                _inputs, [f"_t_Celu_{idx}"],
                                name=f"Celu_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -54,7 +54,7 @@ def GatherND(data, indices, **kwargs):
                                _inputs, [f"_t_GatherND_{idx}"],
                                name=f"GatherND_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -71,7 +71,7 @@ def Einsum(Inputs, **kwargs):
                                _inputs, [f"_t_Einsum_{idx}"],
                                name=f"Einsum_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -88,7 +88,7 @@ def GreaterOrEqual(A, B, **kwargs):
                                _inputs, [f"_t_GreaterOrEqual_{idx}"],
                                name=f"GreaterOrEqual_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -105,7 +105,7 @@ def Max(data_0, **kwargs):
                                _inputs, [f"_t_Max_{idx}"],
                                name=f"Max_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -122,7 +122,7 @@ def NegativeLogLikelihoodLoss(input, target, weight=None, **kwargs):
                                _inputs, [f"_t_NegativeLogLikelihoodLoss_{idx}"],
                                name=f"NegativeLogLikelihoodLoss_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -139,7 +139,7 @@ def ReduceMin(data, **kwargs):
                                _inputs, [f"_t_ReduceMin_{idx}"],
                                name=f"ReduceMin_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -156,7 +156,7 @@ def ReduceMax(data, **kwargs):
                                _inputs, [f"_t_ReduceMax_{idx}"],
                                name=f"ReduceMax_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -173,7 +173,7 @@ def ArgMax(data, **kwargs):
                                _inputs, [f"_t_ArgMax_{idx}"],
                                name=f"ArgMax_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -190,7 +190,7 @@ def SoftmaxCrossEntropyLoss(scores, labels, weights=None, **kwargs):
                                _inputs, [f"_t_SoftmaxCrossEntropyLoss_{idx}"],
                                name=f"SoftmaxCrossEntropyLoss_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -207,7 +207,7 @@ def Clip(input, min=None, max=None, **kwargs):
                                _inputs, [f"_t_Clip_{idx}"],
                                name=f"Clip_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -224,7 +224,7 @@ def ArgMin(data, **kwargs):
                                _inputs, [f"_t_ArgMin_{idx}"],
                                name=f"ArgMin_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -241,7 +241,7 @@ def Constant(**kwargs):
                                _inputs, [f"_t_Constant_{idx}"],
                                name=f"Constant_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -258,7 +258,7 @@ def Pow(X, Y, **kwargs):
                                _inputs, [f"_t_Pow_{idx}"],
                                name=f"Pow_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -275,7 +275,7 @@ def MaxPool(X, **kwargs):
                                _inputs, [f"_t_MaxPool_{idx}"],
                                name=f"MaxPool_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -292,7 +292,7 @@ def Min(data_0, **kwargs):
                                _inputs, [f"_t_Min_{idx}"],
                                name=f"Min_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 
@@ -309,6 +309,6 @@ def Dropout(data, ratio=None, training_mode=None, **kwargs):
                                _inputs, [f"_t_Dropout_{idx}"],
                                name=f"Dropout_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node

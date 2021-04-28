@@ -20,6 +20,6 @@ def Reshape(data, shape, **kwargs):
                                _inputs, [f"_t_Reshape_{idx}"],
                                name=f"Reshape_{idx}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node

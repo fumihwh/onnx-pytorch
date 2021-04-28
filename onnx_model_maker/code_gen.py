@@ -111,7 +111,7 @@ def {onnx_op}({', '.join(inputs_args)}**kwargs):
                                _inputs, [f"{TENSOR_PREFIX}{onnx_op}_{{idx}}"],
                                name=f"{onnx_op}_{{idx}}",
                                **kwargs)
-  onnx.checker.check_node(node)
+  onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
   return node
 '''
