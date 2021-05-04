@@ -41,7 +41,10 @@ class ModelCodeGenerator:
 
   def add_forward_input(self, inputs_value_infos):
     initializer_names = {i.name for i in self.onnx_model.graph.initializer}
-    return_list = [f"self.{i.name}" for i in inputs_value_infos if i.name not in initializer_names]
+    return_list = [
+        f"self.{i.name}" for i in inputs_value_infos
+        if i.name not in initializer_names
+    ]
     if len(return_list) == 1:
       self.forward_parts.append(f"{return_list[0]}, = inputs")
     else:
