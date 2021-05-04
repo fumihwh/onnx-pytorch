@@ -2,6 +2,7 @@ import logging
 
 import onnx
 import onnx.numpy_helper
+from onnx.numpy_helper import to_array
 import torch
 
 import glob
@@ -67,6 +68,25 @@ class OpCodeGenerator:
       v_str = v if type(v) == str else v.__repr__()
       params.append(f"'{k}': {v_str}")
     return ', '.join(params).__repr__()[1:-1]
+
+
+class ReduceOpCodeGenerator(OpCodeGenerator):
+
+  def __init__(self,
+               onnx_ver=onnx.defs.onnx_opset_version(),
+               torch_ver=torch.__version__):
+    super(ReduceOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
+
+  def _get_dim(self, attr_value_dict, d, node, initializers):
+    if "axes" in attr_value_dict:
+      dim = attr_value_dict["axes"]
+    else:
+      dim = list(range(d))
+      if len(node.input) > 1:
+        dim = initializers.get(node.input[1], None)
+        assert dim is not None, "Currently ReduceOpCodeGenerator only support all of [axes] is in initializers."
+        dim = list(to_array(dim))
+    return dim
 
 
 __op_gen_dict = {}

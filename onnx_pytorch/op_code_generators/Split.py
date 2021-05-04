@@ -16,7 +16,10 @@ class SplitOpCodeGenerator(OpCodeGenerator):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(node, initializers)
     init_str, forward_str = [], []
-    split = attr_value_dict.get("split", None)
+    if self.onnx_ver > 11 and len(node.input) > 1:
+      split = to_array(initializers[node.input[1]]).tolist()
+    else:
+      split = attr_value_dict.get("split", None)
     axis = attr_value_dict["axis"]
 
     params_str = self.gen_params_str(split_size_or_sections=split,

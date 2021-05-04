@@ -16,25 +16,9 @@ class SliceOpCodeGenerator(OpCodeGenerator):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(node, initializers)
     init_str, forward_str = [], []
-    # starts = initializers.get(node.input[1], None)
-    # ends = initializers.get(node.input[2], None)
-    starts = attr_value_dict["starts"]
-    ends = attr_value_dict["ends"]
     d = len(value_infos[node.input[0]].type.tensor_type.shape.dim)
-    axes = list(range(d))
-    steps = [1] * len(axes)
-    if len(node.input) > 3:
-      axes = initializers.get(node.input[3], None)
-    if len(node.input) > 4:
-      steps = initializers.get(node.input[4], None)
-    assert starts is not None or ends is not None or axes is not None or steps is not None, "Currently SliceOpCodeGenerator only support all of [starts, ends, axes, steps] is in initializers."
-    # starts = to_array(starts)
-    # ends = to_array(ends)
-    if len(node.input) > 3:
-      axes = to_array(axes)
-    if len(node.input) > 4:
-      steps = to_array(steps)
-
+    starts, ends, axes, steps = self._get_starts_ends_axes_steps(
+        attr_value_dict, d, node, initializers)
     slice_str = []
     for i in range(d):
       if i in axes:
@@ -52,3 +36,26 @@ class SliceOpCodeGenerator(OpCodeGenerator):
     forward_str.append(
         f"{outputs_str[0]} = {inputs_str[0]}[{', '.join(slice_str)}]")
     return {"init": init_str, "forward": forward_str}
+
+  def _get_starts_ends_axes_steps(self, attr_value_dict, d, node, initializers):
+    axes = list(range(d))
+    steps = [1] * len(axes)
+    if self.onnx_ver > 1 and len(node.input) > 1:
+      starts = initializers.get(node.input[1], None)
+      ends = initializers.get(node.input[2], None)
+      starts = to_array(starts)
+      ends = to_array(ends)
+      if len(node.input) > 3:
+        axes = initializers.get(node.input[3], None)
+      if len(node.input) > 4:
+        steps = initializers.get(node.input[4], None)
+      assert starts is not None or ends is not None or axes is not None or steps is not None, "Currently SliceOpCodeGenerator only support all of [starts, ends, axes, steps] is in initializers."
+      if len(node.input) > 3:
+        axes = to_array(axes)
+      if len(node.input) > 4:
+        steps = to_array(steps)
+    else:
+      starts = attr_value_dict["starts"]
+      ends = attr_value_dict["ends"]
+      axes = attr_value_dict.get("axes", axes)
+    return starts, ends, axes, steps
