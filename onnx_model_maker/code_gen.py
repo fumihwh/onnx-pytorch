@@ -32,6 +32,8 @@ def _add_input(target, inputs):
     inputs.append(t.name)
   elif type(target) == str:
     inputs.append(target)
+  elif type(target) == list and all([type(i) == str for i in target]):
+    inputs.extend(target)
   elif type(target) == onnx.NodeProto:
     inputs.append(target.output[0])
 '''
@@ -99,6 +101,13 @@ def _gen_op_maker(schema):
   if len(schema.inputs) != 0:
     inputs_args.append("")
 
+  outputs_str = f'[f"{TENSOR_PREFIX}{onnx_op}_{{idx}}"]'
+  if schema.name == "Split":
+    if schema.since_version == 13:
+      outputs_str = f'[f"{TENSOR_PREFIX}{onnx_op}_{{idx}}_{{i}}" for i in range(len(split))]'
+    else:
+      outputs_str = f'[f"{TENSOR_PREFIX}{onnx_op}_{{idx}}_{{i}}" for i in range(len(kwargs["split"]))]'
+
   return f'''@onnx_mm_export("v{schema.since_version}.{onnx_op}")
 def {onnx_op}({', '.join(inputs_args)}**kwargs):
   _inputs = []
@@ -108,7 +117,7 @@ def {onnx_op}({', '.join(inputs_args)}**kwargs):
   idx = omm.op_counter[\"{onnx_op}\"]
   omm.op_counter[\"{onnx_op}\"] += 1
   node = onnx.helper.make_node(\"{onnx_op}\",
-                               _inputs, [f"{TENSOR_PREFIX}{onnx_op}_{{idx}}"],
+                               _inputs, {outputs_str},
                                name=f"{onnx_op}_{{idx}}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)

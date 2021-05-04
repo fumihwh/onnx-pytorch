@@ -34,7 +34,7 @@ def Split(input, **kwargs):
   idx = omm.op_counter["Split"]
   omm.op_counter["Split"] += 1
   node = onnx.helper.make_node("Split",
-                               _inputs, [f"_t_Split_{idx}"],
+                               _inputs, [f"_t_Split_{idx}_{i}" for i in range(len(kwargs["split"]))],
                                name=f"Split_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
