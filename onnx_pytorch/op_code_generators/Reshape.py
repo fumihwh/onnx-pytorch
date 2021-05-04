@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import onnx
 import torch
 
@@ -13,8 +15,11 @@ class ReshapeOpCodeGenerator(OpCodeGenerator):
 
   def gen(self, node, value_infos, initializers):
     inputs_str, outputs_str = self.gen_input_output_string(node, initializers)
-    inputs_str[1] = f"tuple({inputs_str[1]}.detach().numpy())"
     init_str, forward_str = [], []
+    suffix = uuid4().hex[:4]
     forward_str.append(
-        f"{outputs_str[0]} = torch.reshape({', '.join(inputs_str)})")
+        f"shape_{suffix} = [s if s != 0 else {inputs_str[0]}.shape[0] for s in {inputs_str[1]}.detach().numpy()]"
+    )
+    forward_str.append(
+        f"{outputs_str[0]} = torch.reshape({inputs_str[0]}, shape_{suffix})")
     return {"init": init_str, "forward": forward_str}

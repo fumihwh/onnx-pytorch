@@ -88,10 +88,8 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
       inputs, outputs = [], []
       for ls, f in ((inputs, n.input), (outputs, n.output)):
         for i in f:
-          if i.isnumeric():
-            ls.append(f"__t_{i}")
-          else:
-            ls.append(re.sub("[:/.]", "_", i))
+          new_i = re.sub("[:/.]", "_", i)
+          ls.append(f"__t_{new_i}")
           if i != ls[-1]:
             logging.warning(f"Tensor name {i} is changed to {ls[-1]}.")
 
@@ -101,12 +99,13 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
       n.output.extend(outputs)
 
     for f in (self.onnx_model.graph.input, self.onnx_model.graph.output,
-              self.onnx_model.graph.initializer, self.onnx_model.graph.node):
+              self.onnx_model.graph.initializer):
       for i in f:
-        if i.name.isnumeric():
+        i.name = re.sub("[:/.]", "_", i.name)
           i.name = f"__t_{i.name}"
-        else:
+    for i in  self.onnx_model.graph.node:
           i.name = re.sub("[:/.]", "_", i.name)
+      i.name = f"__n_{i.name}"
 
     model = SymbolicShapeInference.infer_shapes(self.onnx_model, 2**31 - 1,
                                                 True, True, 0)

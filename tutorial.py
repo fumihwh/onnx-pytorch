@@ -1,28 +1,6 @@
-# onnx-pytorch
-
-Generating pytorch code from ONNX.
-Currently support `onnx==1.9.0` and `torch==1.8.1`.
-
-## Usage
-```
-from onnx_pytorch import code_gen
-code_gen.gen("/path/to/onnx_model", "/path/to/output_dir")
-```
-A `model.py` file and `variables` folder will be created under `output_dir`.
-
-## Tutorial
-- Download resnet18 onnx model
- 
-```wget https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet18-v2-7.onnx```
-
-- Use onnx-pytorch to generate pytorch code and variables.
-```
 from onnx_pytorch import code_gen
 code_gen.gen("resnet18-v2-7.onnx", "./")
-```
 
-- Test result
-```
 import numpy as np
 import onnx
 import onnxruntime
@@ -50,4 +28,3 @@ print(
                 ort_outputs[0],
                 atol=1e-5,
                 rtol=1e-5))
-```
