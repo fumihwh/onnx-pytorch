@@ -15,7 +15,7 @@ class GlobalAveragePoolOpCodeGenerator(OpCodeGenerator):
     inputs_str, outputs_str = self.gen_input_output_string(node, initializers)
     d = len(value_infos[node.input[0]].type.tensor_type.shape.dim) - 2
     params_str = self.gen_params_str(
-        kernel_size=f"self.{node.input[0]}.shape[{d}:]")
+        kernel_size=f"self.{node.input[0]}.shape[-{d}:]")
 
     nn_name = f"functional.avg_pool{d}d"
     init_str, forward_str = [], []
