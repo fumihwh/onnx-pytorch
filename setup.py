@@ -4,7 +4,7 @@ version_str = open("version.txt", "r").read().strip()
 
 setup(name="onnx-pytorch",
       version=version_str,
-      description="Convert onnx to pytorch code.",
+      description="Convert ONNX to PyTorch code.",
       long_description=open("README.md").read(),
       long_description_content_type="text/markdown",
       author="fumihwh",
