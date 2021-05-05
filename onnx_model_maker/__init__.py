@@ -23,9 +23,12 @@ class OnnxModelMaker:
     self.ctx.ir_version = IR_VERSION
     self.ctx.opset_imports = {'': opset_ver}
 
-  def reset_model(self):
-    self.model = make_model(onnx.GraphProto(),
-                            opset_imports=[self.opset_import])
+  def reset_model(self, opset_ver=None):
+    if opset_ver is not None:
+      opset_imports = [make_opsetid("", opset_ver)]
+    else:
+      opset_imports = [self.opset_import]
+    self.model = make_model(onnx.GraphProto(), opset_imports=opset_imports)
     self.op_counter = collections.Counter()
 
   def set_model(self, model):
