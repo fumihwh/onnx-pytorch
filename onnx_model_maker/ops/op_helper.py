@@ -15,7 +15,12 @@ def _add_input(target, inputs):
     inputs.append(t.name)
   elif type(target) == str:
     inputs.append(target)
-  elif type(target) == list and all([type(i) == str for i in target]):
-    inputs.extend(target)
+  elif type(target) == list:
+    _add_list(target, inputs)
   elif type(target) == onnx.NodeProto:
     inputs.append(target.output[0])
+
+
+def _add_list(target, inputs):
+  for t in target:
+    _add_input(t, inputs)
