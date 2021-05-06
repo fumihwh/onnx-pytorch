@@ -7,5 +7,8 @@ cache: pip
 python:
   - "3.9"
 
+before_script:
+  - chmod +x ./.travis/build.sh
+
 script:
   - ./.travis/build.sh
