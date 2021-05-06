@@ -12,9 +12,10 @@ class SplitOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(SplitOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers):
+  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
     attr_value_dict = self.get_attr_value_dict(node)
-    inputs_str, outputs_str = self.gen_input_output_string(node, initializers)
+    inputs_str, outputs_str = self.gen_input_output_string(
+        node, initializers, rename_helper)
     init_str, forward_str = [], []
     if self.onnx_ver > 11 and len(node.input) > 1:
       split = to_array(initializers[node.input[1]]).tolist()
@@ -22,8 +23,8 @@ class SplitOpCodeGenerator(OpCodeGenerator):
       split = attr_value_dict.get("split", None)
     axis = attr_value_dict["axis"]
 
-    params_str = self.gen_params_str(split_size_or_sections=split,
-                                     dim=axis)
+    params_str = self.gen_params_str(split_size_or_sections=split, dim=axis)
     forward_str.append(
-        f"{', '.join(outputs_str)} = torch.split({inputs_str[0]}, **{{{params_str}}})")
+        f"{', '.join(outputs_str)} = torch.split({inputs_str[0]}, **{{{params_str}}})"
+    )
     return {"init": init_str, "forward": forward_str}

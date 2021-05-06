@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import shutil
+from collections import Counter
 
 import numpy as np
 import onnx
@@ -14,12 +15,63 @@ from onnx_pytorch.code_gen_template import CodeGenTemplate
 from onnx_pytorch.op_code_generators import *
 
 
+class RenameHelper:
+
+  def __init__(self, simplify_names=False):
+    self.simplify_names = simplify_names
+
+    self.tensor_name_mapping = {}
+    self.tensor_name_counter = Counter()
+    self.node_name_mapping = {}
+    self.node_name_counter = Counter()
+
+    self.tensor_counter = 0
+    self.node_counter = Counter()
+
+    self.init_name_set = set()
+    self.sim_tensor_name_set = set()
+
+  def get_tensor_name(self, tensor_name):
+    if self.simplify_names:
+      return self.get_simplify_tensor_name(tensor_name)
+    return tensor_name
+
+  def get_node_name(self, node_name, op_type):
+    if self.simplify_names:
+      return self.get_simplify_node_name(node_name, op_type)
+    return f"n_{node_name}"
+
+  def get_simplify_node_name(self, node_name, op_type):
+    idx = self.node_counter[op_type]
+    self.node_counter[op_type] += 1
+    self.node_name_mapping[node_name] = f"n_{op_type}_{idx}"
+    return self.node_name_mapping[node_name]
+
+  def get_simplify_tensor_name(self, tensor_name):
+    if tensor_name in self.tensor_name_mapping:
+      return self.tensor_name_mapping[tensor_name]
+    suffix = self.tensor_counter
+    self.tensor_counter += 1
+    sim_tensor_name = f"t_{suffix}"
+    # Only entry when use_random
+    while sim_tensor_name in self.sim_tensor_name_set:
+      sim_tensor_name = f"t_{suffix}"
+    self.sim_tensor_name_set.add(sim_tensor_name)
+    self.tensor_name_mapping[tensor_name] = sim_tensor_name
+    return self.tensor_name_mapping[tensor_name]
+
+
 class ModelCodeGenerator:
 
-  def __init__(self, onnx_model=None, output_dir=None):
+  def __init__(self,
+               onnx_model=None,
+               output_dir=None,
+               simplify_names=False,
+               tensor_inplace=False):
     self.onnx_model = onnx_model
     self.output_dir = output_dir
-
+    self.rename_helper = RenameHelper(simplify_names)
+    self.tensor_inplace = tensor_inplace
     self.init_parts = []
     self.forward_parts = []
 
@@ -36,13 +88,17 @@ class ModelCodeGenerator:
       self.forward_parts.append(m)
 
   def add_forward_return(self, outputs_value_infos):
-    return_list = [f"self.{o.name}" for o in outputs_value_infos]
+    return_list = [
+        f"{self.rename_helper.get_tensor_name(o.name)}"
+        for o in outputs_value_infos
+    ]
     self.forward_parts.append(f"return {', '.join(return_list)}")
 
   def add_forward_input(self, inputs_value_infos):
     initializer_names = {i.name for i in self.onnx_model.graph.initializer}
     return_list = [
-        f"self.{i.name}" for i in inputs_value_infos
+        f"{self.rename_helper.get_tensor_name(i.name)}"
+        for i in inputs_value_infos
         if i.name not in initializer_names
     ]
     if len(return_list) == 1:
@@ -89,24 +145,34 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
       for ls, f in ((inputs, n.input), (outputs, n.output)):
         for i in f:
           new_i = re.sub("[:/.]", "_", i)
-          ls.append(f"__t_{new_i}")
-          if i != ls[-1]:
+          ls.append(f"t_{new_i}")
+          if i != ls[-1] and not self.rename_helper.simplify_names:
             logging.warning(f"Tensor name {i} is changed to {ls[-1]}.")
+          self.rename_helper.tensor_name_counter[ls[-1]] += 1
 
       n.ClearField("input")
       n.input.extend(inputs)
       n.ClearField("output")
       n.output.extend(outputs)
 
+      old_name = n.name
+      n.name = re.sub("[:/.]", "_", n.name)
+      n.name = f"n_{n.name}"
+      if old_name != n.name and not self.rename_helper.simplify_names:
+        logging.warning(f"Node name {old_name} is changed to {n.name}.")
+      self.rename_helper.node_name_counter[n.name] += 1
+
     for f in (self.onnx_model.graph.input, self.onnx_model.graph.output,
               self.onnx_model.graph.initializer):
       for i in f:
+        old_name = i.name
         i.name = re.sub("[:/.]", "_", i.name)
-          i.name = f"__t_{i.name}"
-    for i in  self.onnx_model.graph.node:
-          i.name = re.sub("[:/.]", "_", i.name)
-      i.name = f"__n_{i.name}"
+        i.name = f"t_{i.name}"
+        if old_name != i.name and not self.rename_helper.simplify_names:
+          logging.warning(f"Tensor name {i.name} is changed to {i.name}.")
+        self.rename_helper.tensor_name_counter[i.name] += 1
 
+    # TODO how to deal with custom op?
     model = SymbolicShapeInference.infer_shapes(self.onnx_model, 2**31 - 1,
                                                 True, True, 0)
     onnx.save(model, os.path.join(self.output_dir, "tmp_processed.onnx"))
@@ -122,12 +188,16 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
     value_infos.update(output_value_infos)
     value_infos.update({i.name: i for i in self.onnx_model.graph.value_info})
 
+    for i in self.onnx_model.graph.initializer:
+      self.rename_helper.get_tensor_name(i.name)
+
     self.add_forward_input(self.onnx_model.graph.input)
     for n in self.onnx_model.graph.node:
       op_code_gen = get_op_code_generator(n.op_type)
       assert op_code_gen, "OpCodeGenerator is unimplemented for {}.".format(
           n.op_type)
-      gened = op_code_gen.gen(n, value_infos, initializers)
+      gened = op_code_gen.gen(n, value_infos, initializers, self.rename_helper,
+                              self.tensor_inplace)
       self.add_init_part(gened["init"])
       self.add_forward_part(gened["forward"])
     self.add_forward_return(self.onnx_model.graph.output)
@@ -140,12 +210,22 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
                   ignore_errors=True)
     os.makedirs(os.path.join(self.output_dir, "variables"))
     for k, v in initializers.items():
-      np.save(os.path.join(self.output_dir, "variables", f"{k}.npy"),
-              to_array(v))
+      np.save(
+          os.path.join(self.output_dir, "variables",
+                       f"{self.rename_helper.get_tensor_name(k)}.npy"),
+          to_array(v))
 
 
-def gen(onnx_model, output_dir, overwrite=False):
-  kwargs = {"output_dir": output_dir}
+def gen(onnx_model,
+        output_dir,
+        overwrite=False,
+        tensor_inplace=False,
+        simplify_names=False):
+  kwargs = {
+      "output_dir": output_dir,
+      "simplify_names": simplify_names,
+      "tensor_inplace": tensor_inplace
+  }
   if type(onnx_model) == onnx.ModelProto:
     kwargs["onnx_model"] = onnx_model
   else:
@@ -171,22 +251,30 @@ def main():
                       type=str,
                       required=not debug,
                       help="The ONNX model path.")
-
   parser.add_argument("--output_dir",
                       default=None,
                       type=str,
                       required=not debug,
                       help="The output dir")
-
   parser.add_argument("--overwrite",
                       default=False,
                       type=bool,
                       help="Should overwrite the output dir.")
+  parser.add_argument("--tensor_inplace",
+                      default=False,
+                      type=bool,
+                      help="Try best to inplace tensor.")
+  parser.add_argument("--simplify_names",
+                      default=False,
+                      type=int,
+                      help="Use indexing shorten name instead of original name.")
   args = parser.parse_args()
 
   gen(onnx_model=args.onnx_model_path,
       output_dir=args.output_dir,
-      overwrite=args.overwrite)
+      overwrite=args.overwrite,
+      tensor_inplace=args.tensor_inplace,
+      simplify_names=args.simplify_names)
 
 
 if __name__ == '__main__':

@@ -36,7 +36,7 @@ class OpCodeGenerator:
           logging.warning(
               f"Cannot get default value for {a} of {self.onnx_op}.")
 
-  def gen(self, node, value_infos, initializers):
+  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
     raise Exception
 
   def get_attr_value_dict(self, node):
@@ -50,16 +50,40 @@ class OpCodeGenerator:
   def gen_input_output_string(self,
                               node,
                               initializers,
+                              rename_helper,
+                              tensor_inplace=False,
                               input_num=None,
                               output_num=None):
     inputs_str, outputs_str = [], []
     input_num, output_num = input_num or len(node.input), output_num or len(
         node.output)
-    for n, f, ls in ((input_num, node.input, inputs_str),
-                     (output_num, node.output, outputs_str)):
-      for i in range(n):
-        ls.append("self.{}".format(f[i]) if f[i] not in
-                  initializers else "self.__variables[\"{}\"]".format(f[i]))
+    for idx, (num, f, ls) in enumerate(
+        ((input_num, node.input, inputs_str), (output_num, node.output,
+                                               outputs_str))):
+      for i in range(num):
+        # tensor_inplace condition:
+        # idx == 1: output
+        # i == 0: first output tensor (Currently only support first tensor inplace)
+        # node.input[0] not in initializers: Could not inplace initializer
+        # rename_helper.tensor_name_counter[f[i]] == 2: output tensor 0 should only be counted twice
+        # rename_helper.tensor_name_counter[node.input[0]] == 2: input tensor 0 should only be counted twice
+        if idx == 1 \
+            and i == 0 \
+            and tensor_inplace \
+            and node.input[0] not in initializers \
+            and rename_helper.tensor_name_counter[f[i]] == 2 \
+            and rename_helper.tensor_name_counter[node.input[0]] == 2:
+          tensor_name = node.input[0]
+          rename_helper.tensor_name_mapping[
+              f[i]] = rename_helper.get_tensor_name(tensor_name)
+        else:
+          tensor_name = f[i]
+        formatter = "{}"
+        if tensor_name in initializers:
+          formatter = "self.__vars[\"{}\"]"
+        s = formatter.format(rename_helper.get_tensor_name(tensor_name))
+        ls.append(s)
+
     return inputs_str, outputs_str
 
   def gen_params_str(self, **kwargs):

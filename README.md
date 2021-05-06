@@ -1,7 +1,26 @@
 # onnx-pytorch
 
+
+[![Build Status](https://travis-ci.com/fumihwh/onnx-pytorch.svg?branch=main)](https://travis-ci.com/fumihwh/onnx-pytorch)
+
+
 Generates PyTorch code from ONNX.
 Currently supports `onnx==1.9.0` and `torch==1.8.1`.
+
+## Installation
+
+- From PyPI
+```
+pip install onnx-pytorch
+```
+
+- From source
+```
+git clone https://github.com/fumihwh/onnx-pytorch.git
+pip install -r requirements.txt
+pip install -e .
+```
+
 
 ## Usage
 ```python

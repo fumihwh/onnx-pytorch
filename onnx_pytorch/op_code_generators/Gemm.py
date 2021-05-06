@@ -11,9 +11,10 @@ class GemmOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(GemmOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers):
+  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
     attr_value_dict = self.get_attr_value_dict(node)
-    inputs_str, outputs_str = self.gen_input_output_string(node, initializers)
+    inputs_str, outputs_str = self.gen_input_output_string(
+        node, initializers, rename_helper, tensor_inplace)
 
     if attr_value_dict["transA"] == 1:
       inputs_str[0] = f"torch.transpose({inputs_str[0]}, 0, 1)"

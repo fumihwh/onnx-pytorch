@@ -11,9 +11,10 @@ class MaxPoolOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(MaxPoolOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers):
+  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
     attr_value_dict = self.get_attr_value_dict(node)
-    inputs_str, outputs_str = self.gen_input_output_string(node, initializers)
+    inputs_str, outputs_str = self.gen_input_output_string(
+        node, initializers, rename_helper, tensor_inplace)
 
     d = len(value_infos[node.input[0]].type.tensor_type.shape.dim) - 2
     assert (d in (1, 2, 3))
@@ -26,8 +27,9 @@ class MaxPoolOpCodeGenerator(OpCodeGenerator):
         return_indices=(len(node.output) == 2))
 
     nn_name = f"MaxPool{d}d"
+    node_name = rename_helper.get_node_name(node.name, node.op_type)
     init_str, forward_str = [], []
-    init_str.append(f"self.{node.name} = nn.{nn_name}(**{{{params_str}}})")
+    init_str.append(f"self.{node_name} = nn.{nn_name}(**{{{params_str}}})")
     if "pads" in attr_value_dict:
       padding = []
       for i in range(d):
@@ -36,6 +38,6 @@ class MaxPoolOpCodeGenerator(OpCodeGenerator):
       forward_str.append(
           f"{inputs_str[0]} = torch.nn.functional.pad({inputs_str[0]}, {padding.__repr__()}, value=float('-inf'))"
       )
-    forward_str.append(f"{outputs_str[0]} = self.{node.name}({inputs_str[0]})")
+    forward_str.append(f"{outputs_str[0]} = self.{node_name}({inputs_str[0]})")
 
     return {"init": init_str, "forward": forward_str}

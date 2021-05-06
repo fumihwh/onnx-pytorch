@@ -100,6 +100,15 @@ class TestBase:
         ))
     self._run(list(zip(inputs, nps)))
 
+  def test_cast(self):
+    reset_model()
+    nps = [
+        np.random.randn(1, 10).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(Cast(inputs, to=6))
+    self._run(list(zip(inputs, nps)))
+
   def test_concat(self):
     reset_model()
     nps = [
@@ -210,6 +219,13 @@ class TestBase:
     nps = [np.random.randn(4,).astype(np.float32)]
     inputs = Input(*nps)
     Output(Reshape(inputs[0], np.array((2, 2)).astype(np.int64)))
+    self._run(list(zip(inputs, nps)))
+
+  def test_shape(self):
+    reset_model()
+    nps = [np.random.randn(1, 2, 3, 4).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Shape(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
   def test_sigmoid(self):
