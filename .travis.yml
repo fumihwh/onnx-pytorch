@@ -1,0 +1,12 @@
+os:
+  - linux
+#  - osx
+dist: xenial
+sudo: required
+language: python
+cache: pip
+python:
+  - "3.6"
+
+script:
+  - ./.travis/build.sh
