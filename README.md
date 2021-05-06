@@ -3,6 +3,21 @@
 Generating pytorch code from ONNX.
 Currently support `onnx==1.9.0` and `torch==1.8.1`.
 
+## Installation
+
+- From PyPI
+```
+pip install onnx-pytorch
+```
+
+- From source
+```
+git clone https://github.com/fumihwh/onnx-pytorch.git
+pip install -r requirements.txt
+pip install -e .
+```
+
+
 ## Usage
 ```
 from onnx_pytorch import code_gen

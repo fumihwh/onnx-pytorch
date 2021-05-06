@@ -11,8 +11,10 @@ class SqrtOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(SqrtOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers):
-    inputs_str, outputs_str = self.gen_input_output_string(node, initializers)
+  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+    inputs_str, outputs_str = self.gen_input_output_string(
+        node, initializers, rename_helper, tensor_inplace)
     init_str, forward_str = [], []
-    forward_str.append(f"{outputs_str[0]} = torch.sqrt({', '.join(inputs_str)})")
+    forward_str.append(
+        f"{outputs_str[0]} = torch.sqrt({', '.join(inputs_str)})")
     return {"init": init_str, "forward": forward_str}

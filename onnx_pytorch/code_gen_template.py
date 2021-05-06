@@ -24,7 +24,7 @@ import torch.nn as nn
 class Model(nn.Module):
   def __init__(self):
     super(Model, self).__init__()
-    self.__variables = {{
+    self.__vars = {{
         os.path.basename(b)[:-4]: torch.from_numpy(np.load(b))
         for b in glob.glob(
             os.path.join(os.path.dirname(__file__), "variables", "*.npy"))
