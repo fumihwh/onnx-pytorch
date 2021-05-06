@@ -1,5 +1,9 @@
 # onnx-pytorch
 
+
+[![Build Status](https://travis-ci.com/fumihwh/onnx-pytorch.svg?branch=main)](https://travis-ci.com/fumihwh/onnx-pytorch)
+
+
 Generating pytorch code from ONNX.
 Currently support `onnx==1.9.0` and `torch==1.8.1`.
 
