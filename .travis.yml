@@ -6,7 +6,7 @@ sudo: required
 language: python
 cache: pip
 python:
-  - "3.6"
+  - "3.9"
 
 script:
   - ./.travis/build.sh
