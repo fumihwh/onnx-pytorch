@@ -29,7 +29,10 @@ class TestBase:
     model.graph.ClearField("value_info")
     model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True, 1)
     with TemporaryDirectory() as tmpdir:
-      code_gen.gen(model, output_dir=tmpdir)
+      code_gen.gen(model,
+                   output_dir=tmpdir,
+                   tensor_inplace=True,
+                   simplify_names=True)
       spec = importlib.util.spec_from_file_location(
           "model", os.path.join(tmpdir, "model.py"))
       mod = importlib.util.module_from_spec(spec)
@@ -44,7 +47,7 @@ class TestBase:
         assert np.allclose(l, r, atol=1e-4, rtol=1e-4, equal_nan=True)
 
   def test_conv_flatten_relu(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 3, 224, 224).astype(np.float32)]
     inputs = Input(*nps)
     conv_node = Conv(inputs[0],
@@ -56,7 +59,7 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_conv_batchnorm_maxpool_flatten_add_relu(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 3, 224, 224).astype(np.float32)]
     inputs = Input(*nps)
     conv_node = Conv(inputs[0],
@@ -79,15 +82,116 @@ class TestBase:
     Output(relu_node)
     self._run(list(zip(inputs, nps)))
 
+  def test_abs(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 10).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Abs(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_acos(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Acos(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_acosh(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Acosh(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
   def test_add(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Add(inputs[0], np.random.randn(1, 10).astype(np.float32)))
     self._run(list(zip(inputs, nps)))
 
+  def test_and(self):
+    reset_model(13)
+    nps = [
+        np.random.randint(low=0, high=1, size=(5,)).astype(np.bool),
+        np.random.randint(low=0, high=1, size=(5,)).astype(np.bool)
+    ]
+    inputs = Input(*nps)
+    Output(And(*inputs))
+    self._run(list(zip(inputs, nps)))
+
+  def test_argmax(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 10).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(ArgMax(inputs, axis=1))
+    self._run(list(zip(inputs, nps)))
+
+  def test_argmin(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 10).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(ArgMin(inputs, axis=1))
+    self._run(list(zip(inputs, nps)))
+
+  def test_asin(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Asin(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_asinh(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Asinh(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_atan(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Atan(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_atanh(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Atanh(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_avg_pool(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 5, 5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(AveragePool(inputs, kernel_shape=(3, 3), pads=(0, 0, 1, 1)))
+    self._run(list(zip(inputs, nps)))
+
+  def test_avg_pool_no_pad(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 6, 6).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(AveragePool(inputs, kernel_shape=(3, 3)))
+    self._run(list(zip(inputs, nps)))
+
+  def test_bitshift_left(self):
+    reset_model(13)
+    nps = [np.array([1, 2]).astype(np.uint8), np.array([1, 2]).astype(np.uint8)]
+    inputs = Input(*nps)
+    Output(BitShift(*inputs, direction="LEFT"))
+    self._run(list(zip(inputs, nps)))
+
+  def test_bitshift_right(self):
+    reset_model(13)
+    nps = [np.array([1, 4]).astype(np.uint8), np.array([1, 1]).astype(np.uint8)]
+    inputs = Input(*nps)
+    Output(BitShift(*inputs, direction="RIGHT"))
+    self._run(list(zip(inputs, nps)))
+
   def test_batch_normalization(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 32, 3, 3).astype(np.float32)]
     inputs = Input(*nps)
     Output(
@@ -100,8 +204,34 @@ class TestBase:
         ))
     self._run(list(zip(inputs, nps)))
 
+  def test_cast(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(1, 10).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(Cast(inputs, to=6))
+    self._run(list(zip(inputs, nps)))
+
+  def test_ceil(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 10).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Ceil(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_clip(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(1, 5).astype(np.float32),
+        np.asarray(0).astype(np.float32)
+    ]
+    inputs = Input(*nps)
+    Output(Clip(*inputs))
+    self._run(list(zip(inputs, nps)))
+
   def test_concat(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(1, 10).astype(np.float32),
         np.random.randn(2, 10).astype(np.float32)
@@ -111,7 +241,7 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_conv(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 3, 3, 3).astype(np.float32)]
     inputs = Input(*nps)
     Output(
@@ -123,14 +253,14 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_flatten(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 3, 3, 3).astype(np.float32)]
     inputs = Input(*nps)
     Output(Flatten(inputs))
     self._run(list(zip(inputs, nps)))
 
   def test_gemm(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(2, 3).astype(np.float32),
         np.random.randn(3, 4).astype(np.float32),
@@ -141,14 +271,14 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_global_average_pool(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(2, 3, 4).astype(np.float32)]
     inputs = Input(*nps)
     Output(GlobalAveragePool(*inputs))
     self._run(list(zip(inputs, nps)))
 
   def test_mat_mul(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(5, 2, 3).astype(np.float32),
         np.random.randn(5, 3, 2).astype(np.float32)
@@ -158,7 +288,7 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_max(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(1, 10).astype(np.float32),
         np.random.randn(2, 10).astype(np.float32)
@@ -168,14 +298,14 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_max_pool(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 1, 5, 5).astype(np.float32)]
     inputs = Input(*nps)
     Output(MaxPool(inputs, kernel_shape=(3, 3), pads=(0, 0, 1, 1)))
     self._run(list(zip(inputs, nps)))
 
   def test_mul(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(1, 2, 3).astype(np.float32),
         np.random.randn(1, 2, 3).astype(np.float32)
@@ -185,42 +315,49 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_reciprocal(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Reciprocal(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
   def test_reduce_sum(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 2, 3).astype(np.float32)]
     inputs = Input(*nps)
     Output(ReduceSum(inputs[0], np.array((1, 2)).astype(np.int64)))
     self._run(list(zip(inputs, nps)))
 
   def test_relu(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 5).astype(np.float32)]
     inputs = Input(*nps)
     Output(Relu(inputs))
     self._run(list(zip(inputs, nps)))
 
   def test_reshape(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(4,).astype(np.float32)]
     inputs = Input(*nps)
     Output(Reshape(inputs[0], np.array((2, 2)).astype(np.int64)))
     self._run(list(zip(inputs, nps)))
 
+  def test_shape(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2, 3, 4).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Shape(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
   def test_sigmoid(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Sigmoid(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
   def test_slice(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(5, 5).astype(np.float32)]
     inputs = Input(*nps)
     Output(
@@ -230,21 +367,21 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_softmax(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Softmax(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
   def test_split(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Split(inputs, split=np.array([2, 8]), axis=1))
     self._run(list(zip(inputs, nps)))
 
   def test_sqrt(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Sqrt(inputs[0]))
@@ -252,4 +389,5 @@ class TestBase:
 
 
 if __name__ == '__main__':
-  pytest.main(['-s', 'test_base.py'])
+  pytest.main(['-s', 'test_base.py::TestBase::test_clip'])
+  # pytest.main(['-s', 'test_base.py'])

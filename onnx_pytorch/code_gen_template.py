@@ -13,13 +13,13 @@ import os
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 '''
 
   @classmethod
   def model(cls, model_init, model_forward, test_run_model):
     return f'''{cls.autogen_head()}
 {cls.imports()}
-
 
 class Model(nn.Module):
   def __init__(self):

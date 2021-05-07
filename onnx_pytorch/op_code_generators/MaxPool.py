@@ -36,7 +36,7 @@ class MaxPoolOpCodeGenerator(OpCodeGenerator):
         padding.insert(0, attr_value_dict['pads'][i + d])
         padding.insert(0, attr_value_dict['pads'][i])
       forward_str.append(
-          f"{inputs_str[0]} = torch.nn.functional.pad({inputs_str[0]}, {padding.__repr__()}, value=float('-inf'))"
+          f"{inputs_str[0]} = F.pad({inputs_str[0]}, {padding.__repr__()}, value=float('-inf'))"
       )
     forward_str.append(f"{outputs_str[0]} = self.{node_name}({inputs_str[0]})")
 
