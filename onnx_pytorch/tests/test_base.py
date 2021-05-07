@@ -389,5 +389,4 @@ class TestBase:
 
 
 if __name__ == '__main__':
-  pytest.main(['-s', 'test_base.py::TestBase::test_clip'])
-  # pytest.main(['-s', 'test_base.py'])
+  pytest.main(['-s', 'test_base.py'])
