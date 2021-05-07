@@ -126,9 +126,13 @@ class ModelCodeGenerator:
           shape.append(1)
         else:
           shape.append(d.dim_value)
-      numpy_input_str.append(
-          f"torch.from_numpy(np.random.randn(*{[s if s > 1 else 1 for s in shape].__repr__()}).astype(np.{dtype.name}))"
-      )
+      if shape:
+        numpy_input_str.append(
+            f"torch.from_numpy(np.random.randn(*{[s if s > 1 else 1 for s in shape].__repr__()}).astype(np.{dtype.name}))"
+        )
+      else:
+        numpy_input_str.append(
+            f"torch.from_numpy(np.random.randn(1).astype(np.{dtype.name}))")
     test_run_model = [
         f'''@torch.no_grad()
 def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
@@ -264,10 +268,11 @@ def main():
                       default=False,
                       type=bool,
                       help="Try best to inplace tensor.")
-  parser.add_argument("--simplify_names",
-                      default=False,
-                      type=int,
-                      help="Use indexing shorten name instead of original name.")
+  parser.add_argument(
+      "--simplify_names",
+      default=False,
+      type=int,
+      help="Use indexing shorten name instead of original name.")
   args = parser.parse_args()
 
   gen(onnx_model=args.onnx_model_path,
