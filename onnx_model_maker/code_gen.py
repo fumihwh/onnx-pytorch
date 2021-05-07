@@ -172,7 +172,9 @@ def gen(output_dir=None, overwrite=False):
       f.write(NEW_LINE.join(c))
   with open(os.path.join(output_dir, "__init__.py"), "w") as f:
     f.write(INIT_PY)
-    f.write(NEW_LINE.join([abs_op_contents[key] for key in sorted(abs_op_contents.keys())]))
+    f.write(
+        NEW_LINE.join(
+            [abs_op_contents[key] for key in sorted(abs_op_contents.keys())]))
     all_str = ', '.join([f'"{key}"' for key in sorted(abs_op_contents.keys())])
     f.write(f'''{NEW_LINE}__all__ = [\"Input\", \"Output\", {all_str}]''')
   with open(os.path.join(output_dir, "op_helper.py"), "w") as f:
