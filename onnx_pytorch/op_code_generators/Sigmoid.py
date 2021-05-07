@@ -15,7 +15,5 @@ class SigmoidOpCodeGenerator(OpCodeGenerator):
     inputs_str, outputs_str = self.gen_input_output_string(
         node, initializers, rename_helper, tensor_inplace)
     init_str, forward_str = [], []
-    node_name = rename_helper.get_node_name(node.name, node.op_type)
-    init_str.append(f"self.{node_name} = nn.{self.onnx_op}()")
-    forward_str.append(f"{outputs_str[0]} = self.{node_name}({inputs_str[0]})")
+    forward_str.append(f"{outputs_str[0]} = F.sigmoid({inputs_str[0]})")
     return {"init": init_str, "forward": forward_str}
