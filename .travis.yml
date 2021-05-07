@@ -9,7 +9,6 @@ python:
   - "3.9"
 
 install:
-  - pip install numpy, onnx, onnxruntime, torch
   - pip install -e "$PWD"
 
 before_script:
