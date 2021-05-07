@@ -44,7 +44,7 @@ class TestBase:
         assert np.allclose(l, r, atol=1e-4, rtol=1e-4, equal_nan=True)
 
   def test_conv_flatten_relu(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 3, 224, 224).astype(np.float32)]
     inputs = Input(*nps)
     conv_node = Conv(inputs[0],
@@ -56,7 +56,7 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_conv_batchnorm_maxpool_flatten_add_relu(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 3, 224, 224).astype(np.float32)]
     inputs = Input(*nps)
     conv_node = Conv(inputs[0],
@@ -80,14 +80,14 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_add(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Add(inputs[0], np.random.randn(1, 10).astype(np.float32)))
     self._run(list(zip(inputs, nps)))
 
   def test_batch_normalization(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 32, 3, 3).astype(np.float32)]
     inputs = Input(*nps)
     Output(
@@ -101,7 +101,7 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_cast(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(1, 10).astype(np.float32),
     ]
@@ -110,7 +110,7 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_concat(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(1, 10).astype(np.float32),
         np.random.randn(2, 10).astype(np.float32)
@@ -120,7 +120,7 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_conv(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 3, 3, 3).astype(np.float32)]
     inputs = Input(*nps)
     Output(
@@ -132,14 +132,14 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_flatten(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 3, 3, 3).astype(np.float32)]
     inputs = Input(*nps)
     Output(Flatten(inputs))
     self._run(list(zip(inputs, nps)))
 
   def test_gemm(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(2, 3).astype(np.float32),
         np.random.randn(3, 4).astype(np.float32),
@@ -150,14 +150,14 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_global_average_pool(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(2, 3, 4).astype(np.float32)]
     inputs = Input(*nps)
     Output(GlobalAveragePool(*inputs))
     self._run(list(zip(inputs, nps)))
 
   def test_mat_mul(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(5, 2, 3).astype(np.float32),
         np.random.randn(5, 3, 2).astype(np.float32)
@@ -167,7 +167,7 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_max(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(1, 10).astype(np.float32),
         np.random.randn(2, 10).astype(np.float32)
@@ -177,14 +177,14 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_max_pool(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 1, 5, 5).astype(np.float32)]
     inputs = Input(*nps)
     Output(MaxPool(inputs, kernel_shape=(3, 3), pads=(0, 0, 1, 1)))
     self._run(list(zip(inputs, nps)))
 
   def test_mul(self):
-    reset_model()
+    reset_model(13)
     nps = [
         np.random.randn(1, 2, 3).astype(np.float32),
         np.random.randn(1, 2, 3).astype(np.float32)
@@ -194,49 +194,49 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_reciprocal(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Reciprocal(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
   def test_reduce_sum(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 2, 3).astype(np.float32)]
     inputs = Input(*nps)
     Output(ReduceSum(inputs[0], np.array((1, 2)).astype(np.int64)))
     self._run(list(zip(inputs, nps)))
 
   def test_relu(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 5).astype(np.float32)]
     inputs = Input(*nps)
     Output(Relu(inputs))
     self._run(list(zip(inputs, nps)))
 
   def test_reshape(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(4,).astype(np.float32)]
     inputs = Input(*nps)
     Output(Reshape(inputs[0], np.array((2, 2)).astype(np.int64)))
     self._run(list(zip(inputs, nps)))
 
   def test_shape(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 2, 3, 4).astype(np.float32)]
     inputs = Input(*nps)
     Output(Shape(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
   def test_sigmoid(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Sigmoid(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
   def test_slice(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(5, 5).astype(np.float32)]
     inputs = Input(*nps)
     Output(
@@ -246,21 +246,21 @@ class TestBase:
     self._run(list(zip(inputs, nps)))
 
   def test_softmax(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Softmax(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
   def test_split(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Split(inputs, split=np.array([2, 8]), axis=1))
     self._run(list(zip(inputs, nps)))
 
   def test_sqrt(self):
-    reset_model()
+    reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Sqrt(inputs[0]))
