@@ -29,7 +29,7 @@ class TestBase:
     model.graph.ClearField("value_info")
     model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True, 1)
     with TemporaryDirectory() as tmpdir:
-      code_gen.gen(model, output_dir=tmpdir)
+      code_gen.gen(model, output_dir=tmpdir, tensor_inplace=True, simplify_names=True)
       spec = importlib.util.spec_from_file_location(
           "model", os.path.join(tmpdir, "model.py"))
       mod = importlib.util.module_from_spec(spec)
