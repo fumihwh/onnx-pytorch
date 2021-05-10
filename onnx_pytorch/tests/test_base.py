@@ -6,6 +6,7 @@ import importlib.util
 import numpy as np
 import onnx
 import onnxruntime
+from onnx.helper import make_tensor
 from onnxruntime.tools.symbolic_shape_infer import SymbolicShapeInference
 import pytest
 import torch
@@ -240,6 +241,28 @@ class TestBase:
     Output(Concat(inputs, axis=0))
     self._run(list(zip(inputs, nps)))
 
+  def test_constant_add(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(1, 10).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    constant_value = np.random.randn(1, 10).astype(np.float32)
+    t = make_tensor("", 1, constant_value.shape, constant_value.flatten())
+    Output(Add(inputs, Constant(value=t)))
+    self._run(list(zip(inputs, nps)))
+
+  def test_constant_of_shape(self):
+    reset_model(13)
+    nps = [
+        np.array([2, 3]).astype(np.int64),
+    ]
+    inputs = Input(*nps)
+    constant_value = np.random.randn(1).astype(np.float32)
+    t = make_tensor("", 1, constant_value.shape, constant_value)
+    Output(ConstantOfShape(inputs, value=t))
+    self._run(list(zip(inputs, nps)))
+
   def test_conv(self):
     reset_model(13)
     nps = [np.random.randn(1, 3, 3, 3).astype(np.float32)]
@@ -252,11 +275,66 @@ class TestBase:
         ))
     self._run(list(zip(inputs, nps)))
 
+  def test_cos(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Cos(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_cosh(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Cosh(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
   def test_flatten(self):
     reset_model(13)
     nps = [np.random.randn(1, 3, 3, 3).astype(np.float32)]
     inputs = Input(*nps)
     Output(Flatten(inputs))
+    self._run(list(zip(inputs, nps)))
+
+  def test_gather(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(6, 8, 3).astype(np.float32),
+        np.random.randn(*[3, 2]).astype(np.int64),
+    ]
+    inputs = Input(*nps)
+    Output(Gather(*inputs, axis=0))
+    self._run(list(zip(inputs, nps)))
+
+  def test_gather_axis_1(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(6, 3, 3).astype(np.float32),
+        np.array([[0, 2], [0, 1], [2, 0]]).astype(np.int64),
+    ]
+    inputs = Input(*nps)
+    Output(Gather(*inputs, axis=1))
+    self._run(list(zip(inputs, nps)))
+
+  def test_gather_nd(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(6, 8, 3).astype(np.float32),
+        np.random.randn(*[3, 2]).astype(np.int64),
+    ]
+    inputs = Input(*nps)
+    Output(GatherND(*inputs, batch_dims=0))
+    self._run(list(zip(inputs, nps)))
+
+  @pytest.mark.skip(reason="Not implemented for batch_dims != 0")
+  def test_gather_nd_batch_dims_1(self):
+    reset_model(13)
+    nps = [
+        np.array([[[0, 1], [2, 3]], [[4, 5], [6, 7]]]),
+        np.array([[1], [0]]).astype(np.int64),
+    ]
+    inputs = Input(*nps)
+    Output(GatherND(*inputs, batch_dims=1))
     self._run(list(zip(inputs, nps)))
 
   def test_gemm(self):
