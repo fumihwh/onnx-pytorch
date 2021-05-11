@@ -404,6 +404,13 @@ class TestBase:
     Output(Reciprocal(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
+  def test_reduce_prod(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2, 3).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(ReduceProd(inputs[0], axes=np.array((1, 2)).astype(np.int64)))
+    self._run(list(zip(inputs, nps)))
+
   def test_reduce_sum(self):
     reset_model(13)
     nps = [np.random.randn(1, 2, 3).astype(np.float32)]
@@ -468,6 +475,41 @@ class TestBase:
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Sqrt(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_squeeze(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 10, 1, 1).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Squeeze(inputs[0], np.array(([2, 3]))))
+    self._run(list(zip(inputs, nps)))
+
+  def test_squeeze_no_axes(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 10, 1, 1).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Squeeze(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_transpose(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2, 3, 4).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Transpose(inputs[0], perm=[0, 2, 3, 1]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_transpose_no_perm(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2, 3, 4).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Transpose(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_unsqueeze(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Unsqueeze(inputs[0], np.array(([2, 3]))))
     self._run(list(zip(inputs, nps)))
 
 
