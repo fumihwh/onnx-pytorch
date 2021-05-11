@@ -5,21 +5,27 @@ from onnx.numpy_helper import to_array
 from onnx_pytorch.op_code_generators import OpCodeGenerator
 
 
-class ConstantOpCodeGenerator(OpCodeGenerator):
+class UnsqueezeOpCodeGenerator(OpCodeGenerator):
 
   def __init__(self,
                onnx_ver=onnx.defs.onnx_opset_version(),
                torch_ver=torch.__version__):
-    super(ConstantOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
+    super(UnsqueezeOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
   def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(
         node, initializers, rename_helper, tensor_inplace)
+    axes = attr_value_dict.get("axes", [])
+    if len(node.input) == 2:
+      assert node.input[
+          1] in initializers, "Currently UnsqueezeOpCodeGenerator only support all of [axes] is in initializers."
+      axes = to_array(initializers[node.input[1]])
     init_str, forward_str = [], []
-    if "value" in attr_value_dict:
-      initializers[node.output[0]] = attr_value_dict["value"]
-    else:
-      raise NotImplementedError
-    forward_str.append(f"{outputs_str[0]} = self.__vars['{outputs_str[0]}']")
+    curr_input = inputs_str[0]
+    for a in axes:
+      forward_str.append(
+          f"{outputs_str[0]} = torch.unsqueeze({curr_input}, {a})")
+      curr_input = outputs_str[0]
+
     return {"init": init_str, "forward": forward_str}

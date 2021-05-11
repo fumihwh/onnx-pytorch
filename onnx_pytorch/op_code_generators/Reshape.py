@@ -16,7 +16,7 @@ class ReshapeOpCodeGenerator(OpCodeGenerator):
         node, initializers, rename_helper, tensor_inplace)
     init_str, forward_str = [], []
     forward_str.append(
-        f"shape_{inputs_str[0]} = [s if s != 0 else {inputs_str[0]}.shape[0] for s in {inputs_str[1]}]"
+        f"shape_{inputs_str[0]} = [s if s != 0 else {inputs_str[0]}.shape[i] for i, s in enumerate({inputs_str[1]})]"
     )
     forward_str.append(
         f"{outputs_str[0]} = torch.reshape({inputs_str[0]}, shape_{inputs_str[0]})"

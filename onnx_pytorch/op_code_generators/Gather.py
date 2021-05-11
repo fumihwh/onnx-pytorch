@@ -18,15 +18,6 @@ class GatherOpCodeGenerator(OpCodeGenerator):
     init_str, forward_str = [], []
     axis = attr_value_dict.get("axis", 0)
     forward_str.append(
-        f'''shape_{inputs_str[0]}, shape_{inputs_str[1]} = list({inputs_str[0]}.shape), list({inputs_str[1]}.shape)
-    {inputs_str[1]} = {inputs_str[1]}.flatten()
-    for r in range(0, {axis}):
-      {inputs_str[1]} = {inputs_str[1]}.unsqueeze(0)
-    for r in range({axis}, len(shape_{inputs_str[0]}) - 1):
-      {inputs_str[1]} = {inputs_str[1]}.unsqueeze(-1)
-    {inputs_str[1]} = {inputs_str[1]}.expand(*(shape_{inputs_str[0]}[:{axis}] + [np.prod(shape_{inputs_str[1]})] + shape_{inputs_str[0]}[{axis} + 1:]))
-    {inputs_str[1]} = torch.where({inputs_str[1]} >= 0, {inputs_str[1]}, {inputs_str[1]} + shape_{inputs_str[0]}[{axis}])
-    {outputs_str[0]} = torch.gather({inputs_str[0]}, {axis}, {inputs_str[1]})
-    {outputs_str[0]} = torch.reshape({inputs_str[0]}, shape_{inputs_str[0]}[:{axis}] + shape_{inputs_str[1]} + shape_{inputs_str[0]}[{axis} + 1:])
-''')
+        f"{outputs_str[0]} = {inputs_str[0]}.__getitem__([slice(None) for _ in range({axis})] + [{inputs_str[1]}.to(torch.int64)])"
+    )
     return {"init": init_str, "forward": forward_str}

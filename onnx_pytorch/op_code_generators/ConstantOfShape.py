@@ -24,6 +24,6 @@ class ConstantOfShapeOpCodeGenerator(OpCodeGenerator):
       dtype = array.dtype
       val = array[0]
     forward_str.append(
-      f"{outputs_str[0]} = torch.Tensor().new_full(size={inputs_str[0]}.tolist(), fill_value={val}, dtype=torch.{dtype})"
+        f"{outputs_str[0]} = torch.Tensor().new_full(size={inputs_str[0]}.tolist(), fill_value={val}, dtype=torch.{dtype})"
     )
     return {"init": init_str, "forward": forward_str}
