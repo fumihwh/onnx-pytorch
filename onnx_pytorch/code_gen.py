@@ -177,8 +177,12 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
         self.rename_helper.tensor_name_counter[i.name] += 1
 
     # TODO how to deal with custom op?
-    model = SymbolicShapeInference.infer_shapes(self.onnx_model, 2**31 - 1,
-                                                True, True, 0)
+    model = self.onnx_model
+    try:
+      model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True,
+                                                  0)
+    except:
+      logging.warning("Shape infer by onnxruntime failed.")
     onnx.save(model, os.path.join(self.output_dir, "tmp_processed.onnx"))
     self.onnx_model = model
 

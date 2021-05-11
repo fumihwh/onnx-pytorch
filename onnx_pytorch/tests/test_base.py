@@ -1,3 +1,4 @@
+import logging
 from tempfile import TemporaryDirectory
 
 import os
@@ -28,7 +29,11 @@ class TestBase:
                                            sess_options)
     ort_outputs = session.run(None, {k: v for k, v in inputs_np})
     model.graph.ClearField("value_info")
-    model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True, 1)
+    try:
+      model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True,
+                                                  1)
+    except:
+      logging.warning("Shape infer by onnxruntime failed.")
     with TemporaryDirectory() as tmpdir:
       code_gen.gen(model,
                    output_dir=tmpdir,
