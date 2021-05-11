@@ -22,7 +22,7 @@ class SqueezeOpCodeGenerator(OpCodeGenerator):
       axes = to_array(initializers[node.input[1]])
     init_str, forward_str = [], []
     curr_input = inputs_str[0]
-    if axes:
+    if len(axes) != 0:
       for a in reversed(axes):
         forward_str.append(f"{outputs_str[0]} = torch.squeeze({curr_input}, {a})")
         curr_input = outputs_str[0]
