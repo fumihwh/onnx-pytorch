@@ -1,3 +1,4 @@
+import logging
 from tempfile import TemporaryDirectory
 
 import os
@@ -6,6 +7,7 @@ import importlib.util
 import numpy as np
 import onnx
 import onnxruntime
+from onnx.helper import make_tensor
 from onnxruntime.tools.symbolic_shape_infer import SymbolicShapeInference
 import pytest
 import torch
@@ -27,7 +29,11 @@ class TestBase:
                                            sess_options)
     ort_outputs = session.run(None, {k: v for k, v in inputs_np})
     model.graph.ClearField("value_info")
-    model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True, 1)
+    try:
+      model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True,
+                                                  1)
+    except:
+      logging.warning("Shape infer by onnxruntime failed.")
     with TemporaryDirectory() as tmpdir:
       code_gen.gen(model,
                    output_dir=tmpdir,
@@ -240,6 +246,28 @@ class TestBase:
     Output(Concat(inputs, axis=0))
     self._run(list(zip(inputs, nps)))
 
+  def test_constant_add(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(1, 10).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    constant_value = np.random.randn(1, 10).astype(np.float32)
+    t = make_tensor("", 1, constant_value.shape, constant_value.flatten())
+    Output(Add(inputs, Constant(value=t)))
+    self._run(list(zip(inputs, nps)))
+
+  def test_constant_of_shape(self):
+    reset_model(13)
+    nps = [
+        np.array([2, 3]).astype(np.int64),
+    ]
+    inputs = Input(*nps)
+    constant_value = np.random.randn(1).astype(np.float32)
+    t = make_tensor("", 1, constant_value.shape, constant_value)
+    Output(ConstantOfShape(inputs, value=t))
+    self._run(list(zip(inputs, nps)))
+
   def test_conv(self):
     reset_model(13)
     nps = [np.random.randn(1, 3, 3, 3).astype(np.float32)]
@@ -252,11 +280,66 @@ class TestBase:
         ))
     self._run(list(zip(inputs, nps)))
 
+  def test_cos(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Cos(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_cosh(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Cosh(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
   def test_flatten(self):
     reset_model(13)
     nps = [np.random.randn(1, 3, 3, 3).astype(np.float32)]
     inputs = Input(*nps)
     Output(Flatten(inputs))
+    self._run(list(zip(inputs, nps)))
+
+  def test_gather(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(6, 8, 3).astype(np.float32),
+        np.random.randn(*[3, 2]).astype(np.int64),
+    ]
+    inputs = Input(*nps)
+    Output(Gather(*inputs, axis=0))
+    self._run(list(zip(inputs, nps)))
+
+  def test_gather_axis_1(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(6, 3, 3).astype(np.float32),
+        np.array([[0, 2], [0, 1], [2, 0]]).astype(np.int64),
+    ]
+    inputs = Input(*nps)
+    Output(Gather(*inputs, axis=1))
+    self._run(list(zip(inputs, nps)))
+
+  def test_gather_nd(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(6, 8, 3).astype(np.float32),
+        np.random.randn(*[3, 2]).astype(np.int64),
+    ]
+    inputs = Input(*nps)
+    Output(GatherND(*inputs, batch_dims=0))
+    self._run(list(zip(inputs, nps)))
+
+  @pytest.mark.skip(reason="Not implemented for batch_dims != 0")
+  def test_gather_nd_batch_dims_1(self):
+    reset_model(13)
+    nps = [
+        np.array([[[0, 1], [2, 3]], [[4, 5], [6, 7]]]),
+        np.array([[1], [0]]).astype(np.int64),
+    ]
+    inputs = Input(*nps)
+    Output(GatherND(*inputs, batch_dims=1))
     self._run(list(zip(inputs, nps)))
 
   def test_gemm(self):
@@ -319,6 +402,13 @@ class TestBase:
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Reciprocal(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_reduce_prod(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2, 3).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(ReduceProd(inputs[0], axes=np.array((1, 2)).astype(np.int64)))
     self._run(list(zip(inputs, nps)))
 
   def test_reduce_sum(self):
@@ -387,7 +477,41 @@ class TestBase:
     Output(Sqrt(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
+  def test_squeeze(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 10, 1, 1).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Squeeze(inputs[0], np.array(([2, 3]))))
+    self._run(list(zip(inputs, nps)))
+
+  def test_squeeze_no_axes(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 10, 1, 1).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Squeeze(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_transpose(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2, 3, 4).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Transpose(inputs[0], perm=[0, 2, 3, 1]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_transpose_no_perm(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2, 3, 4).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Transpose(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_unsqueeze(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Unsqueeze(inputs[0], np.array(([2, 3]))))
+    self._run(list(zip(inputs, nps)))
+
 
 if __name__ == '__main__':
-  pytest.main(['-s', 'test_base.py::TestBase::test_clip'])
-  # pytest.main(['-s', 'test_base.py'])
+  pytest.main(['-s', 'test_base.py'])

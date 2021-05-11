@@ -70,6 +70,7 @@ class OpCodeGenerator:
         if idx == 1 \
             and i == 0 \
             and tensor_inplace \
+            and len(node.input) > 0 \
             and node.input[0] not in initializers \
             and rename_helper.tensor_name_counter[f[i]] == 2 \
             and rename_helper.tensor_name_counter[node.input[0]] == 2:
