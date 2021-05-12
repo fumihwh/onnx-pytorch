@@ -1,7 +1,7 @@
 # onnx-pytorch
 
 
-[![Build Status](https://travis-ci.com/fumihwh/onnx-pytorch.svg?branch=main)](https://travis-ci.com/fumihwh/onnx-pytorch)
+![Build Status](https://github.com/fumihwh/onnx-pytorch/actions/workflows/main.yml/badge.svg?branch=main)
 
 
 Generating pytorch code from ONNX.
