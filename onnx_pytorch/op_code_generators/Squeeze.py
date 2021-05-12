@@ -18,13 +18,15 @@ class SqueezeOpCodeGenerator(OpCodeGenerator):
         node, initializers, rename_helper, tensor_inplace)
     axes = attr_value_dict.get("axes", [])
     if len(node.input) == 2:
-      assert node.input[1] in initializers, "Currently SqueezeOpCodeGenerator only support all of [axes] is in initializers."
+      assert node.input[
+          1] in initializers, "Currently SqueezeOpCodeGenerator only support all of [axes] is in initializers."
       axes = to_array(initializers[node.input[1]])
     init_str, forward_str = [], []
     curr_input = inputs_str[0]
     if len(axes) != 0:
       for a in reversed(axes):
-        forward_str.append(f"{outputs_str[0]} = torch.squeeze({curr_input}, {a})")
+        forward_str.append(
+            f"{outputs_str[0]} = torch.squeeze({curr_input}, {a})")
         curr_input = outputs_str[0]
     else:
       forward_str.append(f"{outputs_str[0]} = torch.squeeze({curr_input})")

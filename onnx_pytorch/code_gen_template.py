@@ -24,12 +24,13 @@ import torch.nn.functional as F
 class Model(nn.Module):
   def __init__(self):
     super(Model, self).__init__()
-    self.__vars = {{
-        os.path.basename(b)[:-4]: torch.from_numpy(np.load(b))
-        for b in glob.glob(
-            os.path.join(os.path.dirname(__file__), "variables", "*.npy"))
-        if os.path.isfile(b)
-    }}
+    self.__vars = nn.ParameterDict()
+    for b in glob.glob(
+        os.path.join(os.path.dirname(__file__), "variables", "*.npy")):
+      v = torch.from_numpy(np.load(b))
+      requires_grad = v.dtype.is_floating_point or v.dtype.is_complex
+      self.__vars[os.path.basename(b)[:-4]] = nn.Parameter(
+          torch.from_numpy(np.load(b)), requires_grad=requires_grad)
     {model_init}
 
   def forward(self, *inputs):
