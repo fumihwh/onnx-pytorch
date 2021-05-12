@@ -1,7 +1,9 @@
-os:
-  - linux
-#  - osx
-dist: xenial
+jobs:
+  include:
+    - os: linux
+      dist: xenial
+    - os: osx
+
 language: python
 cache: pip
 python:
