@@ -18,6 +18,6 @@ class CastOpCodeGenerator(OpCodeGenerator):
         node, initializers, rename_helper, tensor_inplace)
     init_str, forward_str = [], []
     forward_str.append(
-        f"{outputs_str[0]} = {inputs_str[0]}.to(dtype=torch.{str(TENSOR_TYPE_TO_NP_TYPE[attr_value_dict['to']])}, copy=True)"
+        f"{outputs_str[0]} = {inputs_str[0]}.to(device={inputs_str[0]}.device, dtype=torch.{str(TENSOR_TYPE_TO_NP_TYPE[attr_value_dict['to']])}, copy=True)"
     )
     return {"init": init_str, "forward": forward_str}
