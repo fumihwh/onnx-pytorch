@@ -35,6 +35,7 @@ class TestBase:
     except:
       logging.warning("Shape infer by onnxruntime failed.")
     with TemporaryDirectory() as tmpdir:
+      tmpdir = "/Users/wenhao/Projects/onnx-pytorch/onnx_pytorch/tests/tmp"
       code_gen.gen(model,
                    output_dir=tmpdir,
                    tensor_inplace=True,
@@ -280,6 +281,55 @@ class TestBase:
         ))
     self._run(list(zip(inputs, nps)))
 
+  def test_conv_transpose(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 3, 3, 3).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ConvTranspose(
+            inputs[0],
+            np.random.randn(3, 32, 3, 3).astype(np.float32),
+            np.random.randn(32).astype(np.float32),
+        ))
+    self._run(list(zip(inputs, nps)))
+
+  def test_conv_transpose_pads(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 3, 3).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ConvTranspose(inputs[0],
+                      np.random.randn(1, 2, 3, 3).astype(np.float32),
+                      strides=[3, 2],
+                      pads=[1, 2, 1, 2]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_conv_transpose_dilations(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 3, 3).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ConvTranspose(
+            inputs[0],
+            np.random.randn(1, 1, 2, 2).astype(np.float32),
+            dilations=[2, 2],
+        ))
+    self._run(list(zip(inputs, nps)))
+
+  def test_conv_transpose_attributes(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 3, 3).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ConvTranspose(
+            inputs[0],
+            np.random.randn(1, 2, 3, 3).astype(np.float32),
+            strides=[3, 2],
+            output_shape=[10, 8],
+            output_padding=[1, 1],
+        ))
+    self._run(list(zip(inputs, nps)))
+
   def test_cos(self):
     reset_model(13)
     nps = [np.random.randn(5).astype(np.float32)]
@@ -397,6 +447,39 @@ class TestBase:
     Output(Mul(*inputs))
     self._run(list(zip(inputs, nps)))
 
+  def test_pad(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(1, 2, 3).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(Pad(*inputs, np.array([0, 0, 1, 0, 0, 2])))
+    self._run(list(zip(inputs, nps)))
+
+  def test_pad_5D(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(1, 2, 3, 4, 5).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(
+        Pad(*inputs, np.array([0, 0, 1, 2, 3, 0, 0, 2, 3, 4]),
+            np.array([1.0]).astype(np.float32)))
+    self._run(list(zip(inputs, nps)))
+
+  def test_pad_reflect(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(1, 2, 3, 4).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(
+        Pad(*inputs,
+            np.array([0, 0, 1, 2, 0, 0, 2, 3]),
+            np.array([1.0]).astype(np.float32),
+            mode="reflect"))
+    self._run(list(zip(inputs, nps)))
+
   def test_reciprocal(self):
     reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
@@ -430,6 +513,23 @@ class TestBase:
     nps = [np.random.randn(4,).astype(np.float32)]
     inputs = Input(*nps)
     Output(Reshape(inputs[0], np.array((2, 2)).astype(np.int64)))
+    self._run(list(zip(inputs, nps)))
+
+  @pytest.mark.skip(reason="[WIP]Result check failed.")
+  def test_resize_scales_nearest(self):
+    reset_model(13)
+    nps = [
+        np.array([[[
+            [1, 2, 3, 4],
+            [5, 6, 7, 8],
+        ]]], dtype=np.float32),
+        np.empty((), dtype=np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(
+        Resize(*inputs,
+               np.array([1.0, 1.0, 0.6, 0.6], dtype=np.float32),
+               mode="nearest",))
     self._run(list(zip(inputs, nps)))
 
   def test_shape(self):
@@ -514,4 +614,5 @@ class TestBase:
 
 
 if __name__ == '__main__':
-  pytest.main(['-s', 'test_base.py'])
+  # pytest.main(['-s', 'test_base.py'])
+  pytest.main(['-s', 'test_base.py::TestBase::test_resize_scales_nearest'])
