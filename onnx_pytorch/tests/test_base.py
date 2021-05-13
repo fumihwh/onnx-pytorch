@@ -35,7 +35,6 @@ class TestBase:
     except:
       logging.warning("Shape infer by onnxruntime failed.")
     with TemporaryDirectory() as tmpdir:
-      tmpdir = "/Users/wenhao/Projects/onnx-pytorch/onnx_pytorch/tests/tmp"
       code_gen.gen(model,
                    output_dir=tmpdir,
                    tensor_inplace=True,
@@ -614,5 +613,4 @@ class TestBase:
 
 
 if __name__ == '__main__':
-  # pytest.main(['-s', 'test_base.py'])
-  pytest.main(['-s', 'test_base.py::TestBase::test_resize_scales_nearest'])
+  pytest.main(['-s', 'test_base.py'])
