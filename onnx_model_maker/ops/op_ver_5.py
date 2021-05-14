@@ -17,7 +17,7 @@ def Reshape(data, shape, **kwargs):
   idx = omm.op_counter["Reshape"]
   omm.op_counter["Reshape"] += 1
   node = onnx.helper.make_node("Reshape",
-                               _inputs, [f"_t_Reshape_{idx}"],
+                               _inputs, [f'_t_Reshape_{idx}_reshaped'],
                                name=f"Reshape_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)

@@ -17,7 +17,7 @@ def GRU(X, W, R, B=None, sequence_lens=None, initial_h=None, **kwargs):
   idx = omm.op_counter["GRU"]
   omm.op_counter["GRU"] += 1
   node = onnx.helper.make_node("GRU",
-                               _inputs, [f"_t_GRU_{idx}"],
+                               _inputs, [f'_t_GRU_{idx}_Y', f'_t_GRU_{idx}_Y_h'],
                                name=f"GRU_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)

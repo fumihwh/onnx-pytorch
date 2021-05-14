@@ -22,9 +22,6 @@ for m in modules:
 def Input(*args):
   inputs = []
   for i, a in enumerate(args):
-    if a.size == 0:
-      inputs.append("")
-      continue
     t = onnx.numpy_helper.from_array(a)
     vi = onnx.helper.make_tensor_value_info(f"_t_Input_{i}",
                                             t.data_type, t.dims)
