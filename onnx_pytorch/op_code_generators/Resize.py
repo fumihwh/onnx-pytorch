@@ -28,17 +28,10 @@ class ResizeOpCodeGenerator(OpCodeGenerator):
       align_corners = True
     mode = attr_value_dict['mode'].decode()
     d = len(value_infos[node.input[0]].type.tensor_type.shape.dim) - 2
+    assert d < 3, "Currently temporal, spatial and volumetric sampling are supported."
     if mode == "linear":
-      if d == 1:
-        pass
-      elif d == 2:
-        mode = "bilinear"
-      elif d == 3:
-        mode = "bicubic"
-      elif d == 4:
-        mode = "trilinear"
-      else:
-        raise NotImplementedError
+      modes = ["linear", "bilinear", "trilinear"]
+      mode = [modes][d]
     params_str = self.gen_params_str(
         size=sizes,
         scale_factor=scales,
