@@ -527,7 +527,7 @@ class TestBase:
     Output(
         Resize(
             *inputs,
-               np.array([1.0, 1.0, 0.6, 0.6], dtype=np.float32),
+            np.array([1.0, 1.0, 0.6, 0.6], dtype=np.float32),
             mode="nearest",
         ))
     self._run(list(zip(inputs, nps)))
