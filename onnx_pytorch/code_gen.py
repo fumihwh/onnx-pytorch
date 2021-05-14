@@ -67,11 +67,13 @@ class ModelCodeGenerator:
                onnx_model=None,
                output_dir=None,
                simplify_names=False,
-               tensor_inplace=False):
+               tensor_inplace=False,
+               continue_on_error=False):
     self.onnx_model = onnx_model
     self.output_dir = output_dir
     self.rename_helper = RenameHelper(simplify_names)
     self.tensor_inplace = tensor_inplace
+    self.continue_on_error = continue_on_error
     self.init_parts = []
     self.forward_parts = []
 
@@ -202,8 +204,14 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
     self.add_forward_input(self.onnx_model.graph.input)
     for n in self.onnx_model.graph.node:
       op_code_gen = get_op_code_generator(n.op_type)
-      assert op_code_gen, "OpCodeGenerator is unimplemented for {}.".format(
-          n.op_type)
+      if op_code_gen is None:
+        if self.continue_on_error:
+          self.add_forward_part(n.__repr__())
+          logging.warning(f"OpCodeGenerator is unimplemented for {n.op_type}. "
+                          "Please modify this part by manual later.")
+        else:
+          raise NotImplementedError(
+              f"OpCodeGenerator is unimplemented for {n.op_type}.")
       gened = op_code_gen.gen(n, value_infos, initializers, self.rename_helper,
                               self.tensor_inplace)
       self.add_init_part(gened["init"])
@@ -228,11 +236,13 @@ def gen(onnx_model,
         output_dir,
         overwrite=False,
         tensor_inplace=False,
-        simplify_names=False):
+        simplify_names=False,
+        continue_on_error=False):
   kwargs = {
       "output_dir": output_dir,
       "simplify_names": simplify_names,
-      "tensor_inplace": tensor_inplace
+      "tensor_inplace": tensor_inplace,
+      "continue_on_error": continue_on_error,
   }
   if type(onnx_model) == onnx.ModelProto:
     kwargs["onnx_model"] = onnx_model
@@ -272,6 +282,10 @@ def main():
                       default=False,
                       type=bool,
                       help="Try best to inplace tensor.")
+  parser.add_argument("--continue_on_error",
+                      default=False,
+                      type=bool,
+                      help="Continue on error.")
   parser.add_argument(
       "--simplify_names",
       default=False,
@@ -283,7 +297,8 @@ def main():
       output_dir=args.output_dir,
       overwrite=args.overwrite,
       tensor_inplace=args.tensor_inplace,
-      simplify_names=args.simplify_names)
+      simplify_names=args.simplify_names,
+      continue_on_error=args.continue_on_error)
 
 
 if __name__ == '__main__':

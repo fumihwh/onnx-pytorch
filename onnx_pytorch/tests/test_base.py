@@ -27,7 +27,7 @@ class TestBase:
     sess_options = onnxruntime.SessionOptions()
     session = onnxruntime.InferenceSession(model.SerializeToString(),
                                            sess_options)
-    ort_outputs = session.run(None, {k: v for k, v in inputs_np})
+    ort_outputs = session.run(None, {k: v for k, v in inputs_np if k != ""})
     model.graph.ClearField("value_info")
     try:
       model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True,
@@ -44,7 +44,7 @@ class TestBase:
       mod = importlib.util.module_from_spec(spec)
       spec.loader.exec_module(mod)
       pt_outputs = mod.test_run_model(
-          [torch.from_numpy(v) for _, v in inputs_np])
+          [torch.from_numpy(v) for k, v in inputs_np if k != ""])
       if type(pt_outputs) == torch.Tensor:
         pt_outputs = [pt_outputs.detach().numpy()]
       elif type(pt_outputs) in (list, tuple):
@@ -280,6 +280,55 @@ class TestBase:
         ))
     self._run(list(zip(inputs, nps)))
 
+  def test_conv_transpose(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 3, 3, 3).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ConvTranspose(
+            inputs[0],
+            np.random.randn(3, 32, 3, 3).astype(np.float32),
+            np.random.randn(32).astype(np.float32),
+        ))
+    self._run(list(zip(inputs, nps)))
+
+  def test_conv_transpose_pads(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 3, 3).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ConvTranspose(inputs[0],
+                      np.random.randn(1, 2, 3, 3).astype(np.float32),
+                      strides=[3, 2],
+                      pads=[1, 2, 1, 2]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_conv_transpose_dilations(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 3, 3).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ConvTranspose(
+            inputs[0],
+            np.random.randn(1, 1, 2, 2).astype(np.float32),
+            dilations=[2, 2],
+        ))
+    self._run(list(zip(inputs, nps)))
+
+  def test_conv_transpose_attributes(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 3, 3).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ConvTranspose(
+            inputs[0],
+            np.random.randn(1, 2, 3, 3).astype(np.float32),
+            strides=[3, 2],
+            output_shape=[10, 8],
+            output_padding=[1, 1],
+        ))
+    self._run(list(zip(inputs, nps)))
+
   def test_cos(self):
     reset_model(13)
     nps = [np.random.randn(5).astype(np.float32)]
@@ -397,6 +446,39 @@ class TestBase:
     Output(Mul(*inputs))
     self._run(list(zip(inputs, nps)))
 
+  def test_pad(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(1, 2, 3).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(Pad(*inputs, np.array([0, 0, 1, 0, 0, 2])))
+    self._run(list(zip(inputs, nps)))
+
+  def test_pad_5D(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(1, 2, 3, 4, 5).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(
+        Pad(*inputs, np.array([0, 0, 1, 2, 3, 0, 0, 2, 3, 4]),
+            np.array([1.0]).astype(np.float32)))
+    self._run(list(zip(inputs, nps)))
+
+  def test_pad_reflect(self):
+    reset_model(13)
+    nps = [
+        np.random.randn(1, 2, 3, 4).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(
+        Pad(*inputs,
+            np.array([0, 0, 1, 2, 0, 0, 2, 3]),
+            np.array([1.0]).astype(np.float32),
+            mode="reflect"))
+    self._run(list(zip(inputs, nps)))
+
   def test_reciprocal(self):
     reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
@@ -430,6 +512,94 @@ class TestBase:
     nps = [np.random.randn(4,).astype(np.float32)]
     inputs = Input(*nps)
     Output(Reshape(inputs[0], np.array((2, 2)).astype(np.int64)))
+    self._run(list(zip(inputs, nps)))
+
+  def test_resize_scales_nearest(self):
+    reset_model(13)
+    nps = [
+        np.array([[[
+            [1, 2, 3, 4],
+            [5, 6, 7, 8],
+        ]]], dtype=np.float32),
+        np.array([], dtype=np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(
+        Resize(
+            *inputs,
+            np.array([1.0, 1.0, 0.6, 0.6], dtype=np.float32),
+            mode="nearest",
+        ))
+    self._run(list(zip(inputs, nps)))
+
+  def test_resize_downsample_sizes_linear_pytorch_half_pixel(self):
+    reset_model(13)
+    nps = [
+        np.array([[[
+            [1, 2, 3, 4],
+            [5, 6, 7, 8],
+            [9, 10, 11, 12],
+            [13, 14, 15, 16],
+        ]]],
+                 dtype=np.float32),
+        np.array([], dtype=np.float32),
+        np.array([], dtype=np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(
+        Resize(*inputs,
+               np.array([1, 1, 3, 1], dtype=np.int64),
+               mode='linear',
+               coordinate_transformation_mode='pytorch_half_pixel'))
+    self._run(list(zip(inputs, nps)))
+
+  def test_resize_pt_nearest(self):
+    reset_model(13)
+    nps = [
+        np.array([[[[1., 2., 0.], [3., 4., 0.], [0., 0., 0.]]]],
+                 dtype=np.float32),
+        np.array([], dtype=np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(
+        Resize(
+            *inputs,
+            np.array([1.0, 1.0, 2.0, 2.0], dtype=np.float32),
+            mode="nearest",
+        ))
+    self._run(list(zip(inputs, nps)))
+
+  def test_resize_pt_bilinear(self):
+    reset_model(13)
+    nps = [
+        np.array([[[[1., 2., 0.], [3., 4., 0.], [0., 0., 0.]]]],
+                 dtype=np.float32),
+        np.array([], dtype=np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(
+        Resize(
+            *inputs,
+            np.array([1.0, 1.0, 2.0, 2.0], dtype=np.float32),
+            mode="linear",
+        ))
+    self._run(list(zip(inputs, nps)))
+
+  def test_resize_pt_bilinear_align_corners(self):
+    reset_model(13)
+    nps = [
+        np.array([[[[1., 2., 0.], [3., 4., 0.], [0., 0., 0.]]]],
+                 dtype=np.float32),
+        np.array([], dtype=np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(
+        Resize(
+            *inputs,
+            np.array([1.0, 1.0, 2.0, 2.0], dtype=np.float32),
+            mode="linear",
+            coordinate_transformation_mode="align_corners",
+        ))
     self._run(list(zip(inputs, nps)))
 
   def test_shape(self):
