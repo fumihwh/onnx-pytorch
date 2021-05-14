@@ -212,10 +212,17 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
         else:
           raise NotImplementedError(
               f"OpCodeGenerator is unimplemented for {n.op_type}.")
-      gened = op_code_gen.gen(n, value_infos, initializers, self.rename_helper,
-                              self.tensor_inplace)
-      self.add_init_part(gened["init"])
-      self.add_forward_part(gened["forward"])
+      try:
+        gened = op_code_gen.gen(n, value_infos, initializers,
+                                self.rename_helper, self.tensor_inplace)
+        self.add_init_part(gened["init"])
+        self.add_forward_part(gened["forward"])
+      except BaseException as e:
+        if self.continue_on_error:
+          logging.warning(e)
+          self.add_forward_part(n.__repr__())
+        else:
+          raise e
     self.add_forward_return(self.onnx_model.graph.output)
 
     gened_code = self.gen_model_code()
