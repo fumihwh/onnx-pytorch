@@ -661,6 +661,20 @@ class TestBase:
     Output(Squeeze(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
+  def test_topk(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2, 3, 4).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(TopK(inputs[0], np.asarray([3])))
+    self._run(list(zip(inputs, nps)))
+
+  def test_topk_attrs(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 5, 1).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(TopK(inputs[0], np.asarray([3]), axis=2, largest=0, sorted=1))
+    self._run(list(zip(inputs, nps)))
+
   def test_transpose(self):
     reset_model(13)
     nps = [np.random.randn(1, 2, 3, 4).astype(np.float32)]
