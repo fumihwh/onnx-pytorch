@@ -26,15 +26,29 @@ class ResizeOpCodeGenerator(OpCodeGenerator):
     if attr_value_dict["coordinate_transformation_mode"].decode(
     ) == "align_corners":
       align_corners = True
+    mode = attr_value_dict['mode'].decode()
+    d = len(value_infos[node.input[0]].type.tensor_type.shape.dim) - 2
+    if mode == "linear":
+      if d == 1:
+        pass
+      elif d == 2:
+        mode = "bilinear"
+      elif d == 3:
+        mode = "bicubic"
+      elif d == 4:
+        mode = "trilinear"
+      else:
+        raise NotImplementedError
     params_str = self.gen_params_str(
         size=sizes,
         scale_factor=scales,
-        mode=f"'{attr_value_dict['mode'].decode()}'",
+        mode=f"'{mode}'",
         align_corners=align_corners,
+        recompute_scale_factor=scales is not None,
     )
     init_str, forward_str = [], []
-    nn_name = "Upsample"
-    node_name = rename_helper.get_node_name(node.name, node.op_type)
-    init_str.append(f"self.{node_name} = nn.{nn_name}(**{{{params_str}}})")
-    forward_str.append(f"{outputs_str[0]} = self.{node_name}({inputs_str[0]})")
+
+    forward_str.append(
+        f"{outputs_str[0]} = F.interpolate({inputs_str[0]}, **{{{params_str}}})"
+    )
     return {"init": init_str, "forward": forward_str}
