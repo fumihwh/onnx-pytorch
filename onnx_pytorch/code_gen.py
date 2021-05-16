@@ -13,6 +13,7 @@ from onnxruntime.tools.symbolic_shape_infer import SymbolicShapeInference
 
 from onnx_pytorch.code_gen_template import CodeGenTemplate
 from onnx_pytorch.op_code_generators import *
+from onnx_pytorch.utils.embedding_config_helper import load_embedding_config
 
 
 class RenameHelper:
@@ -68,12 +69,14 @@ class ModelCodeGenerator:
                output_dir=None,
                simplify_names=False,
                tensor_inplace=False,
-               continue_on_error=False):
+               continue_on_error=False,
+               embedding_conf=None):
     self.onnx_model = onnx_model
     self.output_dir = output_dir
     self.rename_helper = RenameHelper(simplify_names)
     self.tensor_inplace = tensor_inplace
     self.continue_on_error = continue_on_error
+    self.embedding_conf = embedding_conf
     self.init_parts = []
     self.forward_parts = []
 
@@ -212,6 +215,8 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
               f"OpCodeGenerator is unimplemented for {n.op_type}.")
       op_code_gen.rename_helper = self.rename_helper
       op_code_gen.tensor_inplace = self.tensor_inplace
+      if op_code_gen.onnx_op == "Gather" and op_code_gen.embedding_conf is None:
+        op_code_gen.embedding_conf = self.embedding_conf
       try:
         gened = op_code_gen.gen(n, value_infos, initializers)
         self.add_init_part(gened["init"])
@@ -238,12 +243,15 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
           to_array(v))
 
 
-def gen(onnx_model,
-        output_dir,
-        overwrite=False,
-        tensor_inplace=False,
-        simplify_names=False,
-        continue_on_error=False):
+def gen(
+    onnx_model,
+    output_dir,
+    overwrite=False,
+    tensor_inplace=False,
+    simplify_names=False,
+    continue_on_error=False,
+    embedding_conf_file=None,
+):
   kwargs = {
       "output_dir": output_dir,
       "simplify_names": simplify_names,
@@ -264,6 +272,11 @@ def gen(onnx_model,
   if overwrite:
     shutil.rmtree(output_dir, ignore_errors=True)
     os.makedirs(output_dir)
+  if embedding_conf_file is not None:
+    assert os.path.exists(
+        embedding_conf_file
+    ), f"Embedding config file {embedding_conf_file} does not exist."
+    kwargs["embedding_conf"] = load_embedding_config(embedding_conf_file)
   ModelCodeGenerator(**kwargs).run()
 
 
@@ -292,6 +305,9 @@ def main():
                       default=False,
                       type=bool,
                       help="Continue on error.")
+  parser.add_argument("--embedding_conf_file",
+                      type=str,
+                      help="Embedding config file path.")
   parser.add_argument(
       "--simplify_names",
       default=False,
@@ -304,7 +320,8 @@ def main():
       overwrite=args.overwrite,
       tensor_inplace=args.tensor_inplace,
       simplify_names=args.simplify_names,
-      continue_on_error=args.continue_on_error)
+      continue_on_error=args.continue_on_error,
+      embedding_conf_file=args.embedding_conf_file)
 
 
 if __name__ == '__main__':
