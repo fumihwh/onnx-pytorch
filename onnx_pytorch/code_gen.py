@@ -151,7 +151,7 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
       for ls, f in ((inputs, n.input), (outputs, n.output)):
         for i in f:
           new_i = re.sub("[:/.]", "_", i)
-          ls.append(f"t_{new_i}")
+          ls.append(new_i)
           if i != ls[-1] and not self.rename_helper.simplify_names:
             logging.warning(f"Tensor name {i} is changed to {ls[-1]}.")
           self.rename_helper.tensor_name_counter[ls[-1]] += 1
@@ -163,7 +163,6 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
 
       old_name = n.name
       n.name = re.sub("[:/.]", "_", n.name)
-      n.name = f"n_{n.name}"
       if old_name != n.name and not self.rename_helper.simplify_names:
         logging.warning(f"Node name {old_name} is changed to {n.name}.")
       self.rename_helper.node_name_counter[n.name] += 1
@@ -173,7 +172,6 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
       for i in f:
         old_name = i.name
         i.name = re.sub("[:/.]", "_", i.name)
-        i.name = f"t_{i.name}"
         if old_name != i.name and not self.rename_helper.simplify_names:
           logging.warning(f"Tensor name {i.name} is changed to {i.name}.")
         self.rename_helper.tensor_name_counter[i.name] += 1
