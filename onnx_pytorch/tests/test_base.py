@@ -76,7 +76,7 @@ class TestBase:
         np.ones(32,).astype(np.float32),
         np.zeros(32,).astype(np.float32),
         np.random.randn(32).astype(np.float32),
-        np.random.randn(32).astype(np.float32),
+        np.abs(np.random.randn(32).astype(np.float32)),
     )
     max_pool_node = MaxPool(bn_node,
                             kernel_shape=(3, 3),
@@ -200,14 +200,14 @@ class TestBase:
     reset_model(13)
     nps = [np.random.randn(1, 32, 3, 3).astype(np.float32)]
     inputs = Input(*nps)
-    Output(
-        BatchNormalization(
-            inputs[0],
-            np.ones(32,).astype(np.float32),
-            np.zeros(32,).astype(np.float32),
-            np.random.randn(32).astype(np.float32),
-            np.random.randn(32).astype(np.float32),
-        ))
+    Output(BatchNormalization(
+        inputs[0],
+        np.ones(32,).astype(np.float32),
+        np.zeros(32,).astype(np.float32),
+        np.random.randn(32).astype(np.float32),
+        np.abs(np.random.randn(32).astype(np.float32)),
+    ),
+           output_num=1)
     self._run(list(zip(inputs, nps)))
 
   def test_cast(self):
@@ -433,7 +433,8 @@ class TestBase:
     reset_model(13)
     nps = [np.random.randn(1, 1, 5, 5).astype(np.float32)]
     inputs = Input(*nps)
-    Output(MaxPool(inputs, kernel_shape=(3, 3), pads=(0, 0, 1, 1)))
+    Output(MaxPool(inputs, kernel_shape=(3, 3), pads=(0, 0, 1, 1)),
+           output_num=1)
     self._run(list(zip(inputs, nps)))
 
   def test_mul(self):
