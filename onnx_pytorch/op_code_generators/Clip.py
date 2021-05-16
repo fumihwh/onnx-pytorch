@@ -11,10 +11,10 @@ class ClipOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(ClipOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(
-        node, initializers, rename_helper, tensor_inplace)
+        node, initializers, self.rename_helper, self.tensor_inplace)
     min = attr_value_dict.get("min", "float(\"-inf\")")
     max = attr_value_dict.get("max", "float(\"inf\")")
     if len(inputs_str) == 1:

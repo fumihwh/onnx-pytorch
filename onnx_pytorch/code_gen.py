@@ -212,9 +212,10 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
         else:
           raise NotImplementedError(
               f"OpCodeGenerator is unimplemented for {n.op_type}.")
+      op_code_gen.rename_helper = self.rename_helper
+      op_code_gen.tensor_inplace = self.tensor_inplace
       try:
-        gened = op_code_gen.gen(n, value_infos, initializers,
-                                self.rename_helper, self.tensor_inplace)
+        gened = op_code_gen.gen(n, value_infos, initializers)
         self.add_init_part(gened["init"])
         self.add_forward_part(gened["forward"])
       except BaseException as e:

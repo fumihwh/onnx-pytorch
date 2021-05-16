@@ -11,13 +11,13 @@ class FlattenOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(FlattenOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(
-        node, initializers, rename_helper, tensor_inplace)
+        node, initializers, self.rename_helper, self.tensor_inplace)
     params_str = self.gen_params_str(start_dim=attr_value_dict["axis"])
     nn_name = self.onnx_op
-    node_name = rename_helper.get_node_name(node.name, node.op_type)
+    node_name = self.rename_helper.get_node_name(node.name, node.op_type)
     init_str, forward_str = [], []
     init_str.append(f"self.{node_name} = nn.{nn_name}(**{{{params_str}}})")
     forward_str.append(

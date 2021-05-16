@@ -26,6 +26,11 @@ class OpCodeGenerator:
     self.onnx_op = self.__class__.__name__.replace("OpCodeGenerator", "")
     self.schema = onnx.defs.get_schema(self.onnx_op,
                                        max_inclusive_version=onnx_ver)
+
+    # Should inherit from ModelCodeGenerator
+    self.rename_helper = None
+    self.tensor_inplace = None
+
     if self.schema is not None:
       self.attr_default = {}
       for a, i in self.schema.attributes.items():
@@ -36,7 +41,7 @@ class OpCodeGenerator:
           logging.warning(
               f"Cannot get default value for {a} of {self.onnx_op}.")
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     raise Exception
 
   def get_attr_value_dict(self, node):

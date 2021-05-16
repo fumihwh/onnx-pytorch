@@ -12,10 +12,10 @@ class SliceOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(SliceOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(
-        node, initializers, rename_helper)
+        node, initializers, self.rename_helper)
     init_str, forward_str = [], []
     d = len(value_infos[node.input[0]].type.tensor_type.shape.dim)
     starts, ends, axes, steps = self._get_starts_ends_axes_steps(
