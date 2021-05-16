@@ -77,8 +77,4 @@ def main():
 
 
 if __name__ == '__main__':
-  # main()
-  gen_embedding_config(
-      onnx_model_path="/Users/wenhao/Projects/DeepCTR/dcn_criteo.onnx",
-      embedding_conf_file="/Users/wenhao/Projects/DeepCTR/embedding_config.yaml"
-  )
+  main()
