@@ -15,6 +15,7 @@ import torch
 from onnx_model_maker import *
 from onnx_model_maker.ops import *
 from onnx_pytorch import code_gen
+from onnx_pytorch.op_code_generators import clear_op_code_generator
 
 torch.set_printoptions(8)
 
@@ -35,10 +36,10 @@ class TestBase:
     except:
       logging.warning("Shape infer by onnxruntime failed.")
     with TemporaryDirectory() as tmpdir:
-      code_gen.gen(model,
-                   output_dir=tmpdir,
-                   tensor_inplace=True,
-                   simplify_names=True)
+      clear_op_code_generator()
+      model_code_generator = code_gen.get_model_code_generator(
+          model, output_dir=tmpdir, tensor_inplace=True, simplify_names=True)
+      model_code_generator.run()
       spec = importlib.util.spec_from_file_location(
           "model", os.path.join(tmpdir, "model.py"))
       mod = importlib.util.module_from_spec(spec)

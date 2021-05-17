@@ -54,9 +54,6 @@ class RenameHelper:
     suffix = self.tensor_counter
     self.tensor_counter += 1
     sim_tensor_name = f"t_{suffix}"
-    # Only entry when use_random
-    while sim_tensor_name in self.sim_tensor_name_set:
-      sim_tensor_name = f"t_{suffix}"
     self.sim_tensor_name_set.add(sim_tensor_name)
     self.tensor_name_mapping[tensor_name] = sim_tensor_name
     return self.tensor_name_mapping[tensor_name]
@@ -189,6 +186,15 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
     onnx.save(model, os.path.join(self.output_dir, "tmp_processed.onnx"))
     self.onnx_model = model
 
+  def add_attr_to_op_code_generator(self, op_code_gen):
+    for k, v in {
+        "rename_helper": self.rename_helper,
+        "tensor_inplace": self.tensor_inplace,
+        "embedding_conf": self.embedding_conf
+    }.items():
+      if hasattr(op_code_gen, k):
+        setattr(op_code_gen, k, v)
+
   def run(self):
     self.preprocess_onnx_model()
     initializers = {i.name: i for i in self.onnx_model.graph.initializer}
@@ -205,6 +211,7 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
     self.add_forward_input(self.onnx_model.graph.input)
     for n in self.onnx_model.graph.node:
       op_code_gen = get_op_code_generator(n.op_type)
+      self.add_attr_to_op_code_generator(op_code_gen)
       if op_code_gen is None:
         if self.continue_on_error:
           self.add_forward_part(n.__repr__())
@@ -213,10 +220,6 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
         else:
           raise NotImplementedError(
               f"OpCodeGenerator is unimplemented for {n.op_type}.")
-      op_code_gen.rename_helper = self.rename_helper
-      op_code_gen.tensor_inplace = self.tensor_inplace
-      if op_code_gen.onnx_op == "Gather" and op_code_gen.embedding_conf is None:
-        op_code_gen.embedding_conf = self.embedding_conf
       try:
         gened = op_code_gen.gen(n, value_infos, initializers)
         self.add_init_part(gened["init"])
@@ -252,6 +255,23 @@ def gen(
     continue_on_error=False,
     embedding_conf_file=None,
 ):
+  model_code_generator = get_model_code_generator(onnx_model, output_dir,
+                                                  overwrite, tensor_inplace,
+                                                  simplify_names,
+                                                  continue_on_error,
+                                                  embedding_conf_file)
+  model_code_generator.run()
+
+
+def get_model_code_generator(
+    onnx_model,
+    output_dir,
+    overwrite=False,
+    tensor_inplace=False,
+    simplify_names=False,
+    continue_on_error=False,
+    embedding_conf_file=None,
+):
   kwargs = {
       "output_dir": output_dir,
       "simplify_names": simplify_names,
@@ -277,7 +297,7 @@ def gen(
         embedding_conf_file
     ), f"Embedding config file {embedding_conf_file} does not exist."
     kwargs["embedding_conf"] = load_embedding_config(embedding_conf_file)
-  ModelCodeGenerator(**kwargs).run()
+  return ModelCodeGenerator(**kwargs)
 
 
 def main():

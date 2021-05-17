@@ -131,3 +131,7 @@ def get_op_code_generator(op, **kwargs):
     return None
   __op_gen_dict[op_code_gen_name] = getattr(mod, op_code_gen_name)(**kwargs)
   return __op_gen_dict[op_code_gen_name]
+
+
+def clear_op_code_generator():
+  __op_gen_dict = {}
