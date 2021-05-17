@@ -33,7 +33,21 @@ class GatherOpCodeGenerator(OpCodeGenerator):
           f"{outputs_str[0]} = self.{node_name}({inputs_str[1]})")
     else:
       axis = attr_value_dict.get("axis", 0)
+
+      # Simple solution
+      # forward_str.append(
+      #     f"{outputs_str[0]} = {inputs_str[0]}.__getitem__([slice(None) for _ in range({axis})] + [{inputs_str[1]}.to(device={inputs_str[0]}.device, dtype=torch.int64)])"
+      # )
       forward_str.append(
-          f"{outputs_str[0]} = {inputs_str[0]}.__getitem__([slice(None) for _ in range({axis})] + [{inputs_str[1]}.to(torch.int64)])"
-      )
+          f'''shape_l, shape_r = list({inputs_str[0]}.shape), list({inputs_str[1]}.shape)
+    {inputs_str[1]} = {inputs_str[1]}.flatten().to(torch.int64)
+    for r in range(0, {axis}):
+      {inputs_str[1]} = {inputs_str[1]}.unsqueeze(0)
+    for r in range({axis}, len(shape_l) - 1):
+      {inputs_str[1]} = {inputs_str[1]}.unsqueeze(-1)
+    {inputs_str[1]} = {inputs_str[1]}.expand(*(shape_l[:{axis}] + [np.prod(shape_r)] + shape_l[{axis} + 1:]))
+    {inputs_str[1]} = torch.where({inputs_str[1]} >= 0, {inputs_str[1]}, {inputs_str[1]} + shape_l[{axis}])
+    {outputs_str[0]} = torch.gather({inputs_str[0]}, {axis}, {inputs_str[1]})
+    {outputs_str[0]} = torch.reshape({outputs_str[0]}, shape_l[:{axis}] + shape_r + shape_l[{axis} + 1:])
+''')
     return {"init": init_str, "forward": forward_str}
