@@ -438,6 +438,14 @@ class TestBase:
            output_num=1)
     self._run(list(zip(inputs, nps)))
 
+  def test_max_pool_pads(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 4, 4).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(MaxPool(inputs, kernel_shape=(3, 3), pads=(1, 1, 1, 1)),
+           output_num=1)
+    self._run(list(zip(inputs, nps)))
+
   def test_mul(self):
     reset_model(13)
     nps = [
