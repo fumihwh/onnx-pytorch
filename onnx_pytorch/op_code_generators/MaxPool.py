@@ -38,6 +38,6 @@ class MaxPoolOpCodeGenerator(OpCodeGenerator):
       forward_str.append(
           f"{inputs_str[0]} = F.pad({inputs_str[0]}, {padding.__repr__()}, value=float('-inf'))"
       )
-    forward_str.append(f"{outputs_str[0]} = self.{node_name}({inputs_str[0]})")
-
+    forward_str.append(
+        f"{', '.join(outputs_str)} = self.{node_name}({inputs_str[0]})")
     return {"init": init_str, "forward": forward_str}
