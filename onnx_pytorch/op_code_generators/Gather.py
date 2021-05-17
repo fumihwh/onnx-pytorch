@@ -40,14 +40,14 @@ class GatherOpCodeGenerator(OpCodeGenerator):
       # )
       forward_str.append(
           f'''shape_l, shape_r = list({inputs_str[0]}.shape), list({inputs_str[1]}.shape)
-    {inputs_str[1]} = {inputs_str[1]}.flatten().to(torch.int64)
+    indices = {inputs_str[1]}.flatten().to(device={inputs_str[1]}.device, dtype=torch.int64)
     for r in range(0, {axis}):
-      {inputs_str[1]} = {inputs_str[1]}.unsqueeze(0)
+      indices = indices.unsqueeze(0)
     for r in range({axis}, len(shape_l) - 1):
-      {inputs_str[1]} = {inputs_str[1]}.unsqueeze(-1)
-    {inputs_str[1]} = {inputs_str[1]}.expand(*(shape_l[:{axis}] + [np.prod(shape_r)] + shape_l[{axis} + 1:]))
-    {inputs_str[1]} = torch.where({inputs_str[1]} >= 0, {inputs_str[1]}, {inputs_str[1]} + shape_l[{axis}])
-    {outputs_str[0]} = torch.gather({inputs_str[0]}, {axis}, {inputs_str[1]})
+      indices = indices.unsqueeze(-1)
+    indices = indices.expand(*(shape_l[:{axis}] + [np.prod(shape_r)] + shape_l[{axis} + 1:]))
+    indices = torch.where(indices >= 0, indices, indices + shape_l[{axis}])
+    {outputs_str[0]} = torch.gather({inputs_str[0]}, {axis}, indices)
     {outputs_str[0]} = torch.reshape({outputs_str[0]}, shape_l[:{axis}] + shape_r + shape_l[{axis} + 1:])
 ''')
     return {"init": init_str, "forward": forward_str}
