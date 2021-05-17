@@ -45,8 +45,7 @@ class MaxPoolOpCodeGenerator(OpCodeGenerator):
         padding.insert(0, attr_value_dict['pads'][i])
       if pt_padding is None:
         logging.warning(
-            "MaxPool with asymmetric padding will get incorrect indices."
-        )
+            "MaxPool with asymmetric padding will get incorrect indices.")
         forward_str.append(
             f"{inputs_str[0]} = F.pad({inputs_str[0]}, {padding.__repr__()}, value=float('-inf'))"
         )
