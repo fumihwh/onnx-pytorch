@@ -76,6 +76,7 @@ class ModelCodeGenerator:
     self.embedding_conf = embedding_conf
     self.init_parts = []
     self.forward_parts = []
+    self.method_parts = {}
 
   def add_init_part(self, m):
     if type(m) in (list, tuple, set):
@@ -113,6 +114,8 @@ class ModelCodeGenerator:
     '''.join(self.init_parts),
                                  model_forward='''
     '''.join(self.forward_parts),
+                                 model_method='''
+    '''.join(self.method_parts.values()),
                                  test_run_model=self.gen_test_run_model_code())
 
   def gen_test_run_model_code(self):
@@ -220,16 +223,20 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
         else:
           raise NotImplementedError(
               f"OpCodeGenerator is unimplemented for {n.op_type}.")
-      try:
-        gened = op_code_gen.gen(n, value_infos, initializers)
-        self.add_init_part(gened["init"])
-        self.add_forward_part(gened["forward"])
-      except BaseException as e:
-        if self.continue_on_error:
-          logging.warning(e)
-          self.add_forward_part(n.__repr__())
-        else:
-          raise e
+      else:
+        try:
+          if hasattr(op_code_gen,
+                     "gen_method") and n.op_type not in self.method_parts:
+            self.method_parts[n.op_type] = op_code_gen.gen_method()
+          gened = op_code_gen.gen(n, value_infos, initializers)
+          self.add_init_part(gened["init"])
+          self.add_forward_part(gened["forward"])
+        except BaseException as e:
+          if self.continue_on_error:
+            logging.warning(e)
+            self.add_forward_part(n.__repr__())
+          else:
+            raise e
     self.add_forward_return(self.onnx_model.graph.output)
 
     gened_code = self.gen_model_code()

@@ -39,15 +39,22 @@ class GatherOpCodeGenerator(OpCodeGenerator):
       #     f"{outputs_str[0]} = {inputs_str[0]}.__getitem__([slice(None) for _ in range({axis})] + [{inputs_str[1]}.to(device={inputs_str[0]}.device, dtype=torch.int64)])"
       # )
       forward_str.append(
-          f'''shape_l, shape_r = list({inputs_str[0]}.shape), list({inputs_str[1]}.shape)
-    indices = {inputs_str[1]}.flatten().to(device={inputs_str[1]}.device, dtype=torch.int64)
-    for r in range(0, {axis}):
-      indices = indices.unsqueeze(0)
-    for r in range({axis}, len(shape_l) - 1):
-      indices = indices.unsqueeze(-1)
-    indices = indices.expand(*(shape_l[:{axis}] + [np.prod(shape_r)] + shape_l[{axis} + 1:]))
-    indices = torch.where(indices >= 0, indices, indices + shape_l[{axis}])
-    {outputs_str[0]} = torch.gather({inputs_str[0]}, {axis}, indices)
-    {outputs_str[0]} = torch.reshape({outputs_str[0]}, shape_l[:{axis}] + shape_r + shape_l[{axis} + 1:])
-''')
+          f'''{outputs_str[0]} = self.gather({inputs_str[0]}, {axis}, {inputs_str[1]})'''
+      )
     return {"init": init_str, "forward": forward_str}
+
+  @staticmethod
+  def gen_method():
+    return '''def gather(self, input, dim, indices, **kwargs):
+    shape_l, shape_r = list(input.shape), list(indices.shape)
+    indices = indices.flatten().to(device=indices.device, dtype=torch.int64)
+    for r in range(0, dim):
+      indices = indices.unsqueeze(0)
+    for r in range(dim, len(shape_l) - 1):
+      indices = indices.unsqueeze(-1)
+    indices = indices.expand(*(shape_l[:dim] + [np.prod(shape_r)] + shape_l[dim + 1:]))
+    indices = torch.where(indices >= 0, indices, indices + shape_l[dim])
+    output = torch.gather(input, dim, indices)
+    output = torch.reshape(output, shape_l[:dim] + shape_r + shape_l[dim + 1:])
+    return output
+'''

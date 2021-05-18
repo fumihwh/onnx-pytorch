@@ -17,7 +17,7 @@ import torch.nn.functional as F
 '''
 
   @classmethod
-  def model(cls, model_init, model_forward, test_run_model):
+  def model(cls, model_init, model_forward, model_method, test_run_model):
     return f'''{cls.autogen_head()}
 {cls.imports()}
 
@@ -36,6 +36,6 @@ class Model(nn.Module):
   def forward(self, *inputs):
     {model_forward}
 
-
+  {model_method}
 {test_run_model}
 '''
