@@ -21,5 +21,5 @@ class ConstantOpCodeGenerator(OpCodeGenerator):
       initializers[node.output[0]] = attr_value_dict["value"]
     else:
       raise NotImplementedError
-    forward_str.append(f"{outputs_str[0]} = self.__vars['{outputs_str[0]}']")
+    forward_str.append(f"{outputs_str[0]} = self._vars['{outputs_str[0]}']")
     return {"init": init_str, "forward": forward_str}

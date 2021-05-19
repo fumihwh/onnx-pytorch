@@ -86,7 +86,7 @@ class OpCodeGenerator:
           tensor_name = f[i]
         formatter = "{}"
         if tensor_name in initializers:
-          formatter = "self.__vars[\"{}\"]"
+          formatter = "self._vars[\"{}\"]"
         s = formatter.format(rename_helper.get_tensor_name(tensor_name))
         ls.append(s)
 
