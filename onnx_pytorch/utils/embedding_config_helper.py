@@ -16,7 +16,9 @@ class EmbeddingParam:
                max_norm=None,
                norm_type=2.0,
                scale_grad_by_freq=False,
-               sparse=False):
+               sparse=False,
+               embeddings_initializer=None,
+               embeddings_regularizer=None):
     self.name = name
     self.num_embeddings = num_embeddings
     self.embedding_dim = embedding_dim
@@ -25,6 +27,8 @@ class EmbeddingParam:
     self.norm_type = norm_type
     self.scale_grad_by_freq = scale_grad_by_freq
     self.sparse = sparse
+    self.initializer = embeddings_initializer
+    self.regularizer = embeddings_regularizer
 
 
 def gen_embedding_config(onnx_model_path, embedding_conf_file):

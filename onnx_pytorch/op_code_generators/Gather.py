@@ -18,19 +18,27 @@ class GatherOpCodeGenerator(OpCodeGenerator):
         node, initializers, self.rename_helper, self.tensor_inplace)
     init_str, forward_str = [], []
     if self.embedding_conf is not None and node.name in self.embedding_conf:
+      conf = self.embedding_conf[node.name]
       node_name = self.rename_helper.get_node_name(node.name, node.op_type)
-      params_str = self.gen_params_str(
-          num_embeddings=self.embedding_conf[node.name].num_embeddings,
-          embedding_dim=self.embedding_conf[node.name].embedding_dim)
-      weights = onnx.numpy_helper.to_array(initializers[node.input[0]])
-      if weights.shape[0] == self.embedding_conf[node.name].num_embeddings:
-        init_str.append(
-            f"self.{node_name} = nn.Embedding.from_pretrained({inputs_str[0]}, freeze=False)"
-        )
-      else:
-        init_str.append(f"self.{node_name} = nn.Embedding(**{{{params_str}}})")
+      params_str = self.gen_params_str(num_embeddings=conf.num_embeddings,
+                                       embedding_dim=conf.embedding_dim)
+      init_str.append(f"self.{node_name} = nn.Embedding(**{{{params_str}}})")
       forward_str.append(
-          f"{outputs_str[0]} = self.{node_name}({inputs_str[1]})")
+          f"{outputs_str[0]} = self.{node_name}({inputs_str[1]}.int())")
+      if conf.initializer is not None:
+        class_name = conf.initializer["class_name"]
+        init_conf = conf.initializer["config"]
+        if class_name == "RandomNormal":
+          init_str.append(
+              f"nn.init.normal_(self.{node_name}.weight, mean={init_conf['mean']}, std=math.sqrt({init_conf['stddev']}))"
+          )
+        elif class_name == "Zeros":
+          init_str.append(f"nn.init.constant_(self.{node_name}.weight, 0.0)")
+      if conf.regularizer is not None:
+        reg_conf = conf.regularizer["config"]
+        init_str.append(
+            f"self._regularizer_params.append((self.{node_name}.weight, {reg_conf.get('l1', 0.0)}, {reg_conf.get('l2', 0.0)}))"
+        )
     else:
       axis = attr_value_dict.get("axis", 0)
 
