@@ -31,8 +31,7 @@ class Model(nn.Module):
         os.path.join(os.path.dirname(__file__), "variables", "*.npy")):
       v = torch.from_numpy(np.load(b))
       requires_grad = v.dtype.is_floating_point or v.dtype.is_complex
-      self._vars[os.path.basename(b)[:-4]] = nn.Parameter(
-          torch.from_numpy(np.load(b)), requires_grad=requires_grad)
+      self._vars[os.path.basename(b)[:-4]] = nn.Parameter(v, requires_grad=requires_grad)
     {model_init}
 
   def forward(self, *inputs):

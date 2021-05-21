@@ -15,5 +15,5 @@ class AddOpCodeGenerator(OpCodeGenerator):
     inputs_str, outputs_str = self.gen_input_output_string(
         node, initializers, self.rename_helper, self.tensor_inplace)
     init_str, forward_str = [], []
-    forward_str.append(f"{outputs_str[0]} = {' + '.join(inputs_str)}")
+    forward_str.append(f"{outputs_str[0]} = torch.add({', '.join(inputs_str)})")
     return {"init": init_str, "forward": forward_str}

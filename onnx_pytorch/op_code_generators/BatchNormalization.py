@@ -18,7 +18,11 @@ class BatchNormalizationOpCodeGenerator(OpCodeGenerator):
         node, initializers, self.rename_helper, self.tensor_inplace)
 
     d = len(value_infos[node.input[0]].type.tensor_type.shape.dim) - 2
-    assert (d in (1, 2, 3))
+
+    view = False
+    if d == 0:
+      d = 1
+      view = True
 
     nn_name = f"BatchNorm{d}d"
     node_name = self.rename_helper.get_node_name(node.name, node.op_type)
@@ -34,5 +38,10 @@ class BatchNormalizationOpCodeGenerator(OpCodeGenerator):
     init_str.append(f"self.{node_name}.bias.data = {inputs_str[2]}")
     init_str.append(f"self.{node_name}.running_mean.data = {inputs_str[3]}")
     init_str.append(f"self.{node_name}.running_var.data = {inputs_str[4]}")
-    forward_str.append(f"{outputs_str[0]} = self.{node_name}({inputs_str[0]})")
+    curr_input = inputs_str[0]
+    if view:
+      forward_str.append(f"{curr_input} = torch.unsqueeze({curr_input}, -1)")
+    forward_str.append(f"{outputs_str[0]} = self.{node_name}({curr_input})")
+    if view:
+      forward_str.append(f"{outputs_str[0]} = torch.squeeze({outputs_str[0]}, -1)")
     return {"init": init_str, "forward": forward_str}

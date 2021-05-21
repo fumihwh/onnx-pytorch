@@ -99,6 +99,19 @@ class OpCodeGenerator:
       params.append(f"'{k}': {v_str}")
     return ', '.join(params).__repr__()[1:-1]
 
+  def check_in_init(self, targets, initializers):
+    lacks = []
+    rs = [None] * len(targets)
+    for i, (t, n) in enumerate(targets):
+      init = initializers.get(n, None)
+      if init is None:
+        lacks.append(n)
+      rs[i] = init
+    if lacks:
+      raise Exception(
+          f"Currently {self.__class__} only support all of {lacks.__repr__()} is in initializers."
+      )
+    return rs
 
 class ReduceOpCodeGenerator(OpCodeGenerator):
 
