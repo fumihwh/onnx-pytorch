@@ -1,5 +1,6 @@
 import onnx
 import torch
+from onnx.mapping import TENSOR_TYPE_TO_NP_TYPE
 
 from onnx_pytorch.op_code_generators import OpCodeGenerator
 
@@ -23,8 +24,16 @@ class GatherOpCodeGenerator(OpCodeGenerator):
       params_str = self.gen_params_str(num_embeddings=conf.num_embeddings,
                                        embedding_dim=conf.embedding_dim)
       init_str.append(f"self.{node_name} = nn.Embedding(**{{{params_str}}})")
+      dtype = "int"
+      if node.input[1] in value_infos:
+        np_type = TENSOR_TYPE_TO_NP_TYPE[value_infos[
+            node.input[1]].type.tensor_type.elem_type]
+        if np_type.name == "int32":
+          pass
+        elif np_type.name == "int64":
+          dtype = "long"
       forward_str.append(
-          f"{outputs_str[0]} = self.{node_name}({inputs_str[1]}.int())")
+          f"{outputs_str[0]} = self.{node_name}({inputs_str[1]}.{dtype}())")
       if conf.initializer is not None:
         class_name = conf.initializer["class_name"]
         init_conf = conf.initializer["config"]
@@ -60,7 +69,7 @@ class GatherOpCodeGenerator(OpCodeGenerator):
       indices = indices.unsqueeze(0)
     for r in range(dim, len(shape_l) - 1):
       indices = indices.unsqueeze(-1)
-    indices = indices.expand(*(shape_l[:dim] + [np.prod(shape_r)] + shape_l[dim + 1:]))
+    indices = indices.expand(*(shape_l[:dim] + [int(np.prod(shape_r))] + shape_l[dim + 1:]))
     indices = torch.where(indices >= 0, indices, indices + shape_l[dim])
     output = torch.gather(input, dim, indices)
     output = torch.reshape(output, shape_l[:dim] + shape_r + shape_l[dim + 1:])

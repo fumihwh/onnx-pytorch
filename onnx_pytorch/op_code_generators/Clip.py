@@ -18,9 +18,9 @@ class ClipOpCodeGenerator(OpCodeGenerator):
     min = attr_value_dict.get("min", "float(\"-inf\")")
     max = attr_value_dict.get("max", "float(\"inf\")")
     if len(inputs_str) == 1:
-      inputs_str.append(min)
+      inputs_str.append(str(min))
     if len(inputs_str) < 3:
-      inputs_str.append(max)
+      inputs_str.append(str(max))
     init_str, forward_str = [], []
     forward_str.append(
         f"{outputs_str[0]} = torch.clip({', '.join(inputs_str)})")

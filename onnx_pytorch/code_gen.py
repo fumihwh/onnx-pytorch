@@ -35,10 +35,13 @@ class RenameHelper:
   def get_tensor_name(self, tensor_name):
     if self.simplify_names:
       return self.get_simplify_tensor_name(tensor_name)
+    if tensor_name.isnumeric():
+      self.tensor_name_mapping[tensor_name] = f"t_{tensor_name}"
+      return f"t_{tensor_name}"
     return tensor_name
 
   def get_node_name(self, node_name, op_type):
-    if self.simplify_names:
+    if self.simplify_names or not node_name:
       return self.get_simplify_node_name(node_name, op_type)
     return f"n_{node_name}"
 
