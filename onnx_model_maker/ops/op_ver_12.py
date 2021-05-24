@@ -17,7 +17,7 @@ def LessOrEqual(A, B, **kwargs):
   idx = omm.op_counter["LessOrEqual"]
   omm.op_counter["LessOrEqual"] += 1
   node = onnx.helper.make_node("LessOrEqual",
-                               _inputs, [f"_t_LessOrEqual_{idx}"],
+                               _inputs, [f'_t_LessOrEqual_{idx}_C'],
                                name=f"LessOrEqual_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -34,7 +34,7 @@ def Celu(X, **kwargs):
   idx = omm.op_counter["Celu"]
   omm.op_counter["Celu"] += 1
   node = onnx.helper.make_node("Celu",
-                               _inputs, [f"_t_Celu_{idx}"],
+                               _inputs, [f'_t_Celu_{idx}_Y'],
                                name=f"Celu_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -51,7 +51,7 @@ def GatherND(data, indices, **kwargs):
   idx = omm.op_counter["GatherND"]
   omm.op_counter["GatherND"] += 1
   node = onnx.helper.make_node("GatherND",
-                               _inputs, [f"_t_GatherND_{idx}"],
+                               _inputs, [f'_t_GatherND_{idx}_output'],
                                name=f"GatherND_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -68,7 +68,7 @@ def Einsum(Inputs, **kwargs):
   idx = omm.op_counter["Einsum"]
   omm.op_counter["Einsum"] += 1
   node = onnx.helper.make_node("Einsum",
-                               _inputs, [f"_t_Einsum_{idx}"],
+                               _inputs, [f'_t_Einsum_{idx}_Output'],
                                name=f"Einsum_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -85,7 +85,7 @@ def GreaterOrEqual(A, B, **kwargs):
   idx = omm.op_counter["GreaterOrEqual"]
   omm.op_counter["GreaterOrEqual"] += 1
   node = onnx.helper.make_node("GreaterOrEqual",
-                               _inputs, [f"_t_GreaterOrEqual_{idx}"],
+                               _inputs, [f'_t_GreaterOrEqual_{idx}_C'],
                                name=f"GreaterOrEqual_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -102,7 +102,7 @@ def Max(data_0, **kwargs):
   idx = omm.op_counter["Max"]
   omm.op_counter["Max"] += 1
   node = onnx.helper.make_node("Max",
-                               _inputs, [f"_t_Max_{idx}"],
+                               _inputs, [f'_t_Max_{idx}_max'],
                                name=f"Max_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -119,7 +119,7 @@ def NegativeLogLikelihoodLoss(input, target, weight=None, **kwargs):
   idx = omm.op_counter["NegativeLogLikelihoodLoss"]
   omm.op_counter["NegativeLogLikelihoodLoss"] += 1
   node = onnx.helper.make_node("NegativeLogLikelihoodLoss",
-                               _inputs, [f"_t_NegativeLogLikelihoodLoss_{idx}"],
+                               _inputs, [f'_t_NegativeLogLikelihoodLoss_{idx}_loss'],
                                name=f"NegativeLogLikelihoodLoss_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -136,7 +136,7 @@ def ReduceMin(data, **kwargs):
   idx = omm.op_counter["ReduceMin"]
   omm.op_counter["ReduceMin"] += 1
   node = onnx.helper.make_node("ReduceMin",
-                               _inputs, [f"_t_ReduceMin_{idx}"],
+                               _inputs, [f'_t_ReduceMin_{idx}_reduced'],
                                name=f"ReduceMin_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -153,7 +153,7 @@ def ReduceMax(data, **kwargs):
   idx = omm.op_counter["ReduceMax"]
   omm.op_counter["ReduceMax"] += 1
   node = onnx.helper.make_node("ReduceMax",
-                               _inputs, [f"_t_ReduceMax_{idx}"],
+                               _inputs, [f'_t_ReduceMax_{idx}_reduced'],
                                name=f"ReduceMax_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -170,7 +170,7 @@ def ArgMax(data, **kwargs):
   idx = omm.op_counter["ArgMax"]
   omm.op_counter["ArgMax"] += 1
   node = onnx.helper.make_node("ArgMax",
-                               _inputs, [f"_t_ArgMax_{idx}"],
+                               _inputs, [f'_t_ArgMax_{idx}_reduced'],
                                name=f"ArgMax_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -187,7 +187,7 @@ def SoftmaxCrossEntropyLoss(scores, labels, weights=None, **kwargs):
   idx = omm.op_counter["SoftmaxCrossEntropyLoss"]
   omm.op_counter["SoftmaxCrossEntropyLoss"] += 1
   node = onnx.helper.make_node("SoftmaxCrossEntropyLoss",
-                               _inputs, [f"_t_SoftmaxCrossEntropyLoss_{idx}"],
+                               _inputs, [f'_t_SoftmaxCrossEntropyLoss_{idx}_output', f'_t_SoftmaxCrossEntropyLoss_{idx}_log_prob'],
                                name=f"SoftmaxCrossEntropyLoss_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -204,7 +204,7 @@ def Clip(input, min=None, max=None, **kwargs):
   idx = omm.op_counter["Clip"]
   omm.op_counter["Clip"] += 1
   node = onnx.helper.make_node("Clip",
-                               _inputs, [f"_t_Clip_{idx}"],
+                               _inputs, [f'_t_Clip_{idx}_output'],
                                name=f"Clip_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -221,7 +221,7 @@ def ArgMin(data, **kwargs):
   idx = omm.op_counter["ArgMin"]
   omm.op_counter["ArgMin"] += 1
   node = onnx.helper.make_node("ArgMin",
-                               _inputs, [f"_t_ArgMin_{idx}"],
+                               _inputs, [f'_t_ArgMin_{idx}_reduced'],
                                name=f"ArgMin_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -238,7 +238,7 @@ def Constant(**kwargs):
   idx = omm.op_counter["Constant"]
   omm.op_counter["Constant"] += 1
   node = onnx.helper.make_node("Constant",
-                               _inputs, [f"_t_Constant_{idx}"],
+                               _inputs, [f'_t_Constant_{idx}_output'],
                                name=f"Constant_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -255,7 +255,7 @@ def Pow(X, Y, **kwargs):
   idx = omm.op_counter["Pow"]
   omm.op_counter["Pow"] += 1
   node = onnx.helper.make_node("Pow",
-                               _inputs, [f"_t_Pow_{idx}"],
+                               _inputs, [f'_t_Pow_{idx}_Z'],
                                name=f"Pow_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -272,7 +272,7 @@ def MaxPool(X, **kwargs):
   idx = omm.op_counter["MaxPool"]
   omm.op_counter["MaxPool"] += 1
   node = onnx.helper.make_node("MaxPool",
-                               _inputs, [f"_t_MaxPool_{idx}"],
+                               _inputs, [f'_t_MaxPool_{idx}_Y', f'_t_MaxPool_{idx}_Indices'],
                                name=f"MaxPool_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -289,7 +289,7 @@ def Min(data_0, **kwargs):
   idx = omm.op_counter["Min"]
   omm.op_counter["Min"] += 1
   node = onnx.helper.make_node("Min",
-                               _inputs, [f"_t_Min_{idx}"],
+                               _inputs, [f'_t_Min_{idx}_min'],
                                name=f"Min_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -306,7 +306,7 @@ def Dropout(data, ratio=None, training_mode=None, **kwargs):
   idx = omm.op_counter["Dropout"]
   omm.op_counter["Dropout"] += 1
   node = onnx.helper.make_node("Dropout",
-                               _inputs, [f"_t_Dropout_{idx}"],
+                               _inputs, [f'_t_Dropout_{idx}_output', f'_t_Dropout_{idx}_mask'],
                                name=f"Dropout_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)

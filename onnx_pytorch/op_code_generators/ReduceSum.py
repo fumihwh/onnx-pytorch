@@ -11,10 +11,10 @@ class ReduceSumOpCodeGenerator(ReduceOpCodeGenerator):
                torch_ver=torch.__version__):
     super(ReduceSumOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(
-        node, initializers, rename_helper, tensor_inplace)
+        node, initializers, self.rename_helper, self.tensor_inplace)
     init_str, forward_str = [], []
     d = len(value_infos[node.input[0]].type.tensor_type.shape.dim)
     dim = self._get_dim(attr_value_dict, d, node, initializers)

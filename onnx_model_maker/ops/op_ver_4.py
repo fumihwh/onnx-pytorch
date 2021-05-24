@@ -17,7 +17,7 @@ def Concat(inputs, **kwargs):
   idx = omm.op_counter["Concat"]
   omm.op_counter["Concat"] += 1
   node = onnx.helper.make_node("Concat",
-                               _inputs, [f"_t_Concat_{idx}"],
+                               _inputs, [f'_t_Concat_{idx}_concat_result'],
                                name=f"Concat_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)

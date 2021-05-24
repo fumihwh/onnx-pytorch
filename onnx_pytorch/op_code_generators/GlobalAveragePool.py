@@ -11,9 +11,9 @@ class GlobalAveragePoolOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(GlobalAveragePoolOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     inputs_str, outputs_str = self.gen_input_output_string(
-        node, initializers, rename_helper, tensor_inplace)
+        node, initializers, self.rename_helper, self.tensor_inplace)
     d = len(value_infos[node.input[0]].type.tensor_type.shape.dim) - 2
     params_str = self.gen_params_str(
         kernel_size=f"{inputs_str[0]}.shape[-{d}:]")

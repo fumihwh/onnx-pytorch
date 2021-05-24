@@ -22,9 +22,6 @@ for m in modules:
 def Input(*args):
   inputs = []
   for i, a in enumerate(args):
-    if a.size == 0:
-      inputs.append("")
-      continue
     t = onnx.numpy_helper.from_array(a)
     vi = onnx.helper.make_tensor_value_info(f"_t_Input_{i}",
                                             t.data_type, t.dims)
@@ -33,7 +30,7 @@ def Input(*args):
   return inputs
 
 
-def Output(*args):
+def Output(*args, output_num=None):
   for i, a in enumerate(args):
     if type(a) == numpy.ndarray:
       t = onnx.numpy_helper.from_array(a)
@@ -44,7 +41,9 @@ def Output(*args):
       vi = onnx.helper.make_empty_tensor_value_info(a)
       omm.model.graph.output.append(vi)
     elif type(a) == onnx.NodeProto:
-      for o in a.output:
+      for j, o in enumerate(a.output):
+        if output_num is not None and j == output_num:
+          break
         vi = onnx.helper.make_empty_tensor_value_info(o)
         omm.model.graph.output.append(vi)
     else:

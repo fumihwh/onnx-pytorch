@@ -17,7 +17,7 @@ def HardSwish(X, **kwargs):
   idx = omm.op_counter["HardSwish"]
   omm.op_counter["HardSwish"] += 1
   node = onnx.helper.make_node("HardSwish",
-                               _inputs, [f"_t_HardSwish_{idx}"],
+                               _inputs, [f'_t_HardSwish_{idx}_Y'],
                                name=f"HardSwish_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -34,7 +34,7 @@ def CumSum(x, axis, **kwargs):
   idx = omm.op_counter["CumSum"]
   omm.op_counter["CumSum"] += 1
   node = onnx.helper.make_node("CumSum",
-                               _inputs, [f"_t_CumSum_{idx}"],
+                               _inputs, [f'_t_CumSum_{idx}_y'],
                                name=f"CumSum_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -51,7 +51,7 @@ def Trilu(input, k=None, **kwargs):
   idx = omm.op_counter["Trilu"]
   omm.op_counter["Trilu"] += 1
   node = onnx.helper.make_node("Trilu",
-                               _inputs, [f"_t_Trilu_{idx}"],
+                               _inputs, [f'_t_Trilu_{idx}_output'],
                                name=f"Trilu_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -68,7 +68,7 @@ def Sub(A, B, **kwargs):
   idx = omm.op_counter["Sub"]
   omm.op_counter["Sub"] += 1
   node = onnx.helper.make_node("Sub",
-                               _inputs, [f"_t_Sub_{idx}"],
+                               _inputs, [f'_t_Sub_{idx}_C'],
                                name=f"Sub_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -85,7 +85,7 @@ def Relu(X, **kwargs):
   idx = omm.op_counter["Relu"]
   omm.op_counter["Relu"] += 1
   node = onnx.helper.make_node("Relu",
-                               _inputs, [f"_t_Relu_{idx}"],
+                               _inputs, [f'_t_Relu_{idx}_Y'],
                                name=f"Relu_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -102,7 +102,7 @@ def Mul(A, B, **kwargs):
   idx = omm.op_counter["Mul"]
   omm.op_counter["Mul"] += 1
   node = onnx.helper.make_node("Mul",
-                               _inputs, [f"_t_Mul_{idx}"],
+                               _inputs, [f'_t_Mul_{idx}_C'],
                                name=f"Mul_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -119,7 +119,7 @@ def RNN(X, W, R, B=None, sequence_lens=None, initial_h=None, **kwargs):
   idx = omm.op_counter["RNN"]
   omm.op_counter["RNN"] += 1
   node = onnx.helper.make_node("RNN",
-                               _inputs, [f"_t_RNN_{idx}"],
+                               _inputs, [f'_t_RNN_{idx}_Y', f'_t_RNN_{idx}_Y_h'],
                                name=f"RNN_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -136,7 +136,7 @@ def Reshape(data, shape, **kwargs):
   idx = omm.op_counter["Reshape"]
   omm.op_counter["Reshape"] += 1
   node = onnx.helper.make_node("Reshape",
-                               _inputs, [f"_t_Reshape_{idx}"],
+                               _inputs, [f'_t_Reshape_{idx}_reshaped'],
                                name=f"Reshape_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -153,7 +153,7 @@ def BatchNormalization(X, scale, B, input_mean, input_var, **kwargs):
   idx = omm.op_counter["BatchNormalization"]
   omm.op_counter["BatchNormalization"] += 1
   node = onnx.helper.make_node("BatchNormalization",
-                               _inputs, [f"_t_BatchNormalization_{idx}"],
+                               _inputs, [f'_t_BatchNormalization_{idx}_Y', f'_t_BatchNormalization_{idx}_running_mean', f'_t_BatchNormalization_{idx}_running_var'],
                                name=f"BatchNormalization_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -170,7 +170,7 @@ def LSTM(X, W, R, B=None, sequence_lens=None, initial_h=None, initial_c=None, P=
   idx = omm.op_counter["LSTM"]
   omm.op_counter["LSTM"] += 1
   node = onnx.helper.make_node("LSTM",
-                               _inputs, [f"_t_LSTM_{idx}"],
+                               _inputs, [f'_t_LSTM_{idx}_Y', f'_t_LSTM_{idx}_Y_h', f'_t_LSTM_{idx}_Y_c'],
                                name=f"LSTM_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -187,7 +187,7 @@ def Identity(input, **kwargs):
   idx = omm.op_counter["Identity"]
   omm.op_counter["Identity"] += 1
   node = onnx.helper.make_node("Identity",
-                               _inputs, [f"_t_Identity_{idx}"],
+                               _inputs, [f'_t_Identity_{idx}_output'],
                                name=f"Identity_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -204,7 +204,7 @@ def GRU(X, W, R, B=None, sequence_lens=None, initial_h=None, **kwargs):
   idx = omm.op_counter["GRU"]
   omm.op_counter["GRU"] += 1
   node = onnx.helper.make_node("GRU",
-                               _inputs, [f"_t_GRU_{idx}"],
+                               _inputs, [f'_t_GRU_{idx}_Y', f'_t_GRU_{idx}_Y_h'],
                                name=f"GRU_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -221,7 +221,7 @@ def Add(A, B, **kwargs):
   idx = omm.op_counter["Add"]
   omm.op_counter["Add"] += 1
   node = onnx.helper.make_node("Add",
-                               _inputs, [f"_t_Add_{idx}"],
+                               _inputs, [f'_t_Add_{idx}_C'],
                                name=f"Add_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -238,7 +238,7 @@ def Div(A, B, **kwargs):
   idx = omm.op_counter["Div"]
   omm.op_counter["Div"] += 1
   node = onnx.helper.make_node("Div",
-                               _inputs, [f"_t_Div_{idx}"],
+                               _inputs, [f'_t_Div_{idx}_C'],
                                name=f"Div_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)

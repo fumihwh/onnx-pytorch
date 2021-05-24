@@ -15,6 +15,7 @@ import torch
 from onnx_model_maker import *
 from onnx_model_maker.ops import *
 from onnx_pytorch import code_gen
+from onnx_pytorch.op_code_generators import clear_op_code_generator
 
 torch.set_printoptions(8)
 
@@ -35,10 +36,10 @@ class TestBase:
     except:
       logging.warning("Shape infer by onnxruntime failed.")
     with TemporaryDirectory() as tmpdir:
-      code_gen.gen(model,
-                   output_dir=tmpdir,
-                   tensor_inplace=True,
-                   simplify_names=True)
+      clear_op_code_generator()
+      model_code_generator = code_gen.get_model_code_generator(
+          model, output_dir=tmpdir, tensor_inplace=True, simplify_names=True)
+      model_code_generator.run()
       spec = importlib.util.spec_from_file_location(
           "model", os.path.join(tmpdir, "model.py"))
       mod = importlib.util.module_from_spec(spec)
@@ -76,7 +77,7 @@ class TestBase:
         np.ones(32,).astype(np.float32),
         np.zeros(32,).astype(np.float32),
         np.random.randn(32).astype(np.float32),
-        np.random.randn(32).astype(np.float32),
+        np.abs(np.random.randn(32).astype(np.float32)),
     )
     max_pool_node = MaxPool(bn_node,
                             kernel_shape=(3, 3),
@@ -200,14 +201,14 @@ class TestBase:
     reset_model(13)
     nps = [np.random.randn(1, 32, 3, 3).astype(np.float32)]
     inputs = Input(*nps)
-    Output(
-        BatchNormalization(
-            inputs[0],
-            np.ones(32,).astype(np.float32),
-            np.zeros(32,).astype(np.float32),
-            np.random.randn(32).astype(np.float32),
-            np.random.randn(32).astype(np.float32),
-        ))
+    Output(BatchNormalization(
+        inputs[0],
+        np.ones(32,).astype(np.float32),
+        np.zeros(32,).astype(np.float32),
+        np.random.randn(32).astype(np.float32),
+        np.abs(np.random.randn(32).astype(np.float32)),
+    ),
+           output_num=1)
     self._run(list(zip(inputs, nps)))
 
   def test_cast(self):
@@ -433,7 +434,16 @@ class TestBase:
     reset_model(13)
     nps = [np.random.randn(1, 1, 5, 5).astype(np.float32)]
     inputs = Input(*nps)
-    Output(MaxPool(inputs, kernel_shape=(3, 3), pads=(0, 0, 1, 1)))
+    Output(MaxPool(inputs, kernel_shape=(3, 3), pads=(0, 0, 1, 1)),
+           output_num=1)
+    self._run(list(zip(inputs, nps)))
+
+  def test_max_pool_pads(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 4, 4).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(MaxPool(inputs, kernel_shape=(3, 3), pads=(1, 1, 1, 1)),
+           output_num=1)
     self._run(list(zip(inputs, nps)))
 
   def test_mul(self):
@@ -659,6 +669,20 @@ class TestBase:
     nps = [np.random.randn(1, 10, 1, 1).astype(np.float32)]
     inputs = Input(*nps)
     Output(Squeeze(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
+  def test_topk(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 2, 3, 4).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(TopK(inputs[0], np.asarray([3])))
+    self._run(list(zip(inputs, nps)))
+
+  def test_topk_attrs(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 1, 5, 1).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(TopK(inputs[0], np.asarray([3]), axis=2, largest=0, sorted=1))
     self._run(list(zip(inputs, nps)))
 
   def test_transpose(self):

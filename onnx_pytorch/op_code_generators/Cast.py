@@ -12,10 +12,10 @@ class CastOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(CastOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(
-        node, initializers, rename_helper, tensor_inplace)
+        node, initializers, self.rename_helper, self.tensor_inplace)
     init_str, forward_str = [], []
     forward_str.append(
         f"{outputs_str[0]} = {inputs_str[0]}.to(device={inputs_str[0]}.device, dtype=torch.{str(TENSOR_TYPE_TO_NP_TYPE[attr_value_dict['to']])}, copy=True)"
