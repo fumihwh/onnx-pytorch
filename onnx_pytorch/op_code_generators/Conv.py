@@ -27,7 +27,7 @@ class ConvOpCodeGenerator(OpCodeGenerator):
     strides = attr_value_dict.get("strides", 1)
     if "pads" in attr_value_dict:
       padding = [attr_value_dict["pads"][i] for i in range(d)]
-    elif attr_value_dict["auto_pad"] != b"NOT_SET":
+    elif attr_value_dict["auto_pad"] not in (b"NOTSET", b""):
       logging.warning(
           "auto_pad is a DEPRECATED attribute, will not guarantee the result.")
       assert node.input[0] in value_infos and node.input[
