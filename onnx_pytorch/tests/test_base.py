@@ -31,7 +31,10 @@ class TestBase:
                                            sess_options)
     ort_outputs = session.run(None, inputs_np_dict)
     model.graph.ClearField("value_info")
+    initializers = {i.name: i for i in model.graph.initializer}
     for i in model.graph.input:
+      if i.name in initializers:
+        continue
       for idx, d in enumerate(i.type.tensor_type.shape.dim):
         if d.dim_param != "":
           d.ClearField("dim_param")
