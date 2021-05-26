@@ -38,7 +38,7 @@ class TqdmUpTo(tqdm):
 
 class TestModel:
 
-  def _run(self, inputs_np, onnx_model, gen_kwargs={}):
+  def _run(self, inputs_np, onnx_model, gen_kwargs=None, tol=None):
     model = onnx.ModelProto()
     model.CopyFrom(onnx_model)
     sess_options = onnxruntime.SessionOptions()
@@ -48,6 +48,8 @@ class TestModel:
     model.graph.ClearField("value_info")
     model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True, 1)
     with TemporaryDirectory() as tmpdir:
+      if gen_kwargs is None:
+        gen_kwargs = {}
       code_gen.gen(model,
                    output_dir=tmpdir,
                    tensor_inplace=False,
@@ -59,8 +61,10 @@ class TestModel:
       spec.loader.exec_module(mod)
       pt_outputs = mod.test_run_model(
           [torch.from_numpy(v) for _, v in inputs_np])
+      if tol is None:
+        tol = {"atol": 1e-5, "rtol": 1e-5}
       for l, r in zip(ort_outputs, [o.detach().numpy() for o in pt_outputs]):
-        assert np.allclose(l, r, atol=1e-5, rtol=1e-5, equal_nan=True)
+        assert np.allclose(l, r, equal_nan=True, **tol)
 
   def test_vision_body_analysis_age_gender_age_googlenet(self):
     dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
@@ -235,16 +239,43 @@ class TestModel:
       os.makedirs(dir_path, exist_ok=True)
       url = "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/faster-rcnn/model/FasterRCNN-10.tar.gz"
       self._down_file([(url, tar_file_path)])
-      tar = tarfile.open(tar_file_path)
-      names = tar.getnames()
-      for name in names:
-        tar.extract(name, path=dir_path)
-      tar.close()
+    tar = tarfile.open(tar_file_path)
+    names = tar.getnames()
+    for name in names:
+      tar.extract(name, path=dir_path)
+    tar.close()
     file_path = os.path.join(dir_path, "faster_rcnn_R_50_FPN_1x.onnx")
     model = onnx.load(file_path)
     image = onnx.load_tensor(
         os.path.join(dir_path, "test_data_set_0", "input_0.pb"))
     self._run([("image", to_array(image))], model)
+
+  def test_vision_object_detection_segmentation_mask_rcnn(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "object_detection_segmentation",
+                            "MaskRCNN-10")
+    tar_file_path = os.path.join(dir_path, "MaskRCNN-10.tar.gz")
+    if os.path.exists(tar_file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/mask-rcnn/model/MaskRCNN-10.tar.gz"
+      self._down_file([(url, tar_file_path)])
+    tar = tarfile.open(tar_file_path)
+    names = tar.getnames()
+    for name in names:
+      tar.extract(name, path=dir_path)
+    tar.close()
+    file_path = os.path.join(dir_path, "mask_rcnn_R_50_FPN_1x.onnx")
+    model = onnx.load(file_path)
+    image = onnx.load_tensor(
+        os.path.join(dir_path, "test_data_set_0", "input_0.pb"))
+    self._run([("image", to_array(image))],
+              model,
+              tol={
+                  "atol": 1e-4,
+                  "rtol": 1e-5
+              })
 
   def _down_file(self, pairs):
     for url, path in pairs:
