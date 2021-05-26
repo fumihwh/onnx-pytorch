@@ -113,6 +113,18 @@ class OpCodeGenerator:
       )
     return rs
 
+  def get_shape(self, value, value_infos):
+    if value not in value_infos:
+      return None
+    shape = []
+    for d in value_infos[value].type.tensor_type.shape.dim:
+      if d.dim_param != "":
+        shape.append(-1)
+      else:
+        shape.append(d.dim_value)
+    return shape
+
+
 class ReduceOpCodeGenerator(OpCodeGenerator):
 
   def __init__(self,

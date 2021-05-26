@@ -18,9 +18,16 @@ class ResizeOpCodeGenerator(OpCodeGenerator):
     scales, sizes = None, None
     if len(node.input) == 4:
       sizes = tuple(onnx.numpy_helper.to_array(initializers[node.input[3]])[2:])
-    else:
+    elif len(node.input) == 3:
       scales = tuple(
           onnx.numpy_helper.to_array(initializers[node.input[2]])[2:])
+    # Resize opset version 10
+    elif len(node.input) == 2:
+      if node.input[1] in initializers:
+        scales = tuple(
+            onnx.numpy_helper.to_array(initializers[node.input[1]])[2:])
+      else:
+        scales = f"list({self.rename_helper.tensor_name_mapping.get(node.input[1], node.input[1])})[2:]"
 
     align_corners = None
     if attr_value_dict["coordinate_transformation_mode"].decode(

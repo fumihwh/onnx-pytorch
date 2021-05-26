@@ -19,7 +19,10 @@ class ConcatOpCodeGenerator(OpCodeGenerator):
     init_str, forward_str = [], []
     axis = attr_value_dict["axis"]
     params_str = self.gen_params_str(dim=axis)
-    forward_str.append(
-        f"{', '.join(outputs_str)} = torch.cat(({', '.join(inputs_str)}), **{{{params_str}}})"
-    )
+    if len(inputs_str) == 1:
+      forward_str.append(f"{', '.join(outputs_str)} = {inputs_str[0]}")
+    else:
+      forward_str.append(
+          f"{', '.join(outputs_str)} = torch.cat(({', '.join(inputs_str)}), **{{{params_str}}})"
+      )
     return {"init": init_str, "forward": forward_str}

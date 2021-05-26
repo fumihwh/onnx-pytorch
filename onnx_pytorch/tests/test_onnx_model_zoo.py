@@ -1,3 +1,4 @@
+import tarfile
 from tempfile import TemporaryDirectory
 
 import os
@@ -7,6 +8,7 @@ from urllib import request
 import numpy as np
 import onnx
 import onnxruntime
+from onnx.numpy_helper import to_array
 from onnxruntime.tools.symbolic_shape_infer import SymbolicShapeInference
 import pytest
 import torch
@@ -57,10 +59,8 @@ class TestModel:
       spec.loader.exec_module(mod)
       pt_outputs = mod.test_run_model(
           [torch.from_numpy(v) for _, v in inputs_np])
-      assert np.allclose(ort_outputs, [o.detach().numpy() for o in pt_outputs],
-                         atol=1e-5,
-                         rtol=1e-5,
-                         equal_nan=True)
+      for l, r in zip(ort_outputs, [o.detach().numpy() for o in pt_outputs]):
+        assert np.allclose(l, r, atol=1e-5, rtol=1e-5, equal_nan=True)
 
   def test_vision_body_analysis_age_gender_age_googlenet(self):
     dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
@@ -116,6 +116,135 @@ class TestModel:
 
     self._run([("data", np.random.randn(1, 3, 112, 112).astype(np.float32))],
               model)
+
+  def test_vision_body_analysis_emotion_ferplus_emotion_ferplus_8(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "body_analysis", "emotion_ferplus",
+                            "emotion-ferplus-8")
+    file_path = os.path.join(dir_path, "model.onnx")
+    if os.path.exists(file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/body_analysis/emotion_ferplus/model/emotion-ferplus-8.onnx"
+      self._down_file([(url, file_path)])
+    model = onnx.load(file_path)
+
+    self._run([("Input3", np.random.randn(1, 1, 64, 64).astype(np.float32))],
+              model)
+
+  def test_vision_body_analysis_ultraface_version_RFB_320(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "body_analysis", "ultraface",
+                            "version-RFB-320")
+    file_path = os.path.join(dir_path, "model.onnx")
+    if os.path.exists(file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/body_analysis/ultraface/models/version-RFB-320.onnx"
+      self._down_file([(url, file_path)])
+    model = onnx.load(file_path)
+
+    self._run([("input", np.random.randn(1, 3, 240, 320).astype(np.float32))],
+              model)
+
+  def test_vision_classification_alexnet(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "classification", "alexnet")
+    file_path = os.path.join(dir_path, "model.onnx")
+    if os.path.exists(file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx"
+      self._down_file([(url, file_path)])
+    model = onnx.load(file_path)
+
+    self._run([("data_0", np.random.randn(1, 3, 224, 224).astype(np.float32))],
+              model)
+
+  def test_vision_classification_mobilenet(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "classification", "mobilenet")
+    file_path = os.path.join(dir_path, "model.onnx")
+    if os.path.exists(file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx"
+      self._down_file([(url, file_path)])
+    model = onnx.load(file_path)
+
+    self._run([("input", np.random.randn(1, 3, 224, 224).astype(np.float32))],
+              model)
+
+  def test_vision_classification_resnet(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "classification", "resnet")
+    file_path = os.path.join(dir_path, "model.onnx")
+    if os.path.exists(file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet18-v2-7.onnx"
+      self._down_file([(url, file_path)])
+    model = onnx.load(file_path)
+
+    self._run([("data", np.random.randn(1, 3, 224, 224).astype(np.float32))],
+              model)
+
+  def test_vision_classification_shufflenet(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "classification", "shufflenet")
+    file_path = os.path.join(dir_path, "model.onnx")
+    if os.path.exists(file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/classification/shufflenet/model/shufflenet-v2-10.onnx"
+      self._down_file([(url, file_path)])
+    model = onnx.load(file_path)
+
+    self._run([("input", np.random.randn(1, 3, 224, 224).astype(np.float32))],
+              model)
+
+  def test_vision_classification_squeezenet(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "classification", "squeezenet")
+    file_path = os.path.join(dir_path, "model.onnx")
+    if os.path.exists(file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.1-7.onnx"
+      self._down_file([(url, file_path)])
+    model = onnx.load(file_path)
+
+    self._run([("data", np.random.randn(1, 3, 224, 224).astype(np.float32))],
+              model)
+
+  def test_vision_object_detection_segmentation_faster_rcnn(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "object_detection_segmentation",
+                            "FasterRCNN-10")
+    tar_file_path = os.path.join(dir_path, "FasterRCNN-10.tar.gz")
+    if os.path.exists(tar_file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/faster-rcnn/model/FasterRCNN-10.tar.gz"
+      self._down_file([(url, tar_file_path)])
+      tar = tarfile.open(tar_file_path)
+      names = tar.getnames()
+      for name in names:
+        tar.extract(name, path=dir_path)
+      tar.close()
+    file_path = os.path.join(dir_path, "faster_rcnn_R_50_FPN_1x.onnx")
+    model = onnx.load(file_path)
+    image = onnx.load_tensor(
+        os.path.join(dir_path, "test_data_set_0", "input_0.pb"))
+    self._run([("image", to_array(image))], model)
 
   def _down_file(self, pairs):
     for url, path in pairs:

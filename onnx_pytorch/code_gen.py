@@ -35,10 +35,13 @@ class RenameHelper:
   def get_tensor_name(self, tensor_name):
     if self.simplify_names:
       return self.get_simplify_tensor_name(tensor_name)
+    if tensor_name.isnumeric():
+      self.tensor_name_mapping[tensor_name] = f"t_{tensor_name}"
+      return f"t_{tensor_name}"
     return tensor_name
 
   def get_node_name(self, node_name, op_type):
-    if self.simplify_names:
+    if self.simplify_names or not node_name:
       return self.get_simplify_node_name(node_name, op_type)
     return f"n_{node_name}"
 
@@ -115,7 +118,7 @@ class ModelCodeGenerator:
                                  model_forward='''
     '''.join(self.forward_parts),
                                  model_method='''
-    '''.join(self.method_parts.values()),
+  '''.join(self.method_parts.values()),
                                  test_run_model=self.gen_test_run_model_code())
 
   def gen_test_run_model_code(self):
@@ -141,7 +144,7 @@ class ModelCodeGenerator:
     test_run_model = [
         f'''@torch.no_grad()
 def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
-        "model = Model()", "model.eval()", "print(model)"
+        "model = Model()", "model.eval()"
     ]
     test_run_model.extend(["rs = model(*inputs)", "print(rs)", "return rs"])
     return '''
