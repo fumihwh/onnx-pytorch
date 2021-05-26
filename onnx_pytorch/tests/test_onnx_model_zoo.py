@@ -231,7 +231,7 @@ class TestModel:
   def test_vision_object_detection_segmentation_faster_rcnn(self):
     dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
                             "vision", "object_detection_segmentation",
-                            "FasterRCNN-10")
+                            "faster-rcnn")
     tar_file_path = os.path.join(dir_path, "FasterRCNN-10.tar.gz")
     if os.path.exists(tar_file_path):
       pass
@@ -253,7 +253,7 @@ class TestModel:
   def test_vision_object_detection_segmentation_mask_rcnn(self):
     dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
                             "vision", "object_detection_segmentation",
-                            "MaskRCNN-10")
+                            "mask-rcnn")
     tar_file_path = os.path.join(dir_path, "MaskRCNN-10.tar.gz")
     if os.path.exists(tar_file_path):
       pass
@@ -276,6 +276,27 @@ class TestModel:
                   "atol": 1e-4,
                   "rtol": 1e-5
               })
+
+  def test_vision_object_detection_segmentation_ssd(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "object_detection_segmentation", "ssd")
+    tar_file_path = os.path.join(dir_path, "ssd-10.tar.gz")
+    if os.path.exists(tar_file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/ssd/model/ssd-10.tar.gz"
+      self._down_file([(url, tar_file_path)])
+    tar = tarfile.open(tar_file_path)
+    names = tar.getnames()
+    for name in names:
+      tar.extract(name, path=dir_path)
+    tar.close()
+    file_path = os.path.join(dir_path, "model.onnx")
+    model = onnx.load(file_path)
+    image = onnx.load_tensor(
+        os.path.join(dir_path, "test_data_set_0", "input_0.pb"))
+    self._run([("image", to_array(image))], model)
 
   def _down_file(self, pairs):
     for url, path in pairs:
