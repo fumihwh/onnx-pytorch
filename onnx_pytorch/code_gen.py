@@ -144,7 +144,7 @@ class ModelCodeGenerator:
     test_run_model = [
         f'''@torch.no_grad()
 def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
-        "model = Model()", "model.eval()", "print(model)"
+        "model = Model()", "model.eval()"
     ]
     test_run_model.extend(["rs = model(*inputs)", "print(rs)", "return rs"])
     return '''
