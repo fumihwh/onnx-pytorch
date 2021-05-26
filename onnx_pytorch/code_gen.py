@@ -118,7 +118,7 @@ class ModelCodeGenerator:
                                  model_forward='''
     '''.join(self.forward_parts),
                                  model_method='''
-    '''.join(self.method_parts.values()),
+  '''.join(self.method_parts.values()),
                                  test_run_model=self.gen_test_run_model_code())
 
   def gen_test_run_model_code(self):

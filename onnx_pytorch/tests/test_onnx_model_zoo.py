@@ -7,6 +7,7 @@ from urllib import request
 import numpy as np
 import onnx
 import onnxruntime
+from onnx.numpy_helper import to_array
 from onnxruntime.tools.symbolic_shape_infer import SymbolicShapeInference
 import pytest
 import torch
@@ -221,6 +222,28 @@ class TestModel:
 
     self._run([("data", np.random.randn(1, 3, 224, 224).astype(np.float32))],
               model)
+
+  def test_vision_object_detection_segmentation_faster_rcnn(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "object_detection_segmentation",
+                            "FasterRCNN-10")
+    tar_file_path = os.path.join(dir_path, "FasterRCNN-10.tar.gz")
+    if os.path.exists(tar_file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/faster-rcnn/model/FasterRCNN-10.tar.gz"
+      self._down_file([(url, tar_file_path)])
+      tar = tarfile.open(tar_file_path)
+      names = tar.getnames()
+      for name in names:
+        tar.extract(name, path=dir_path)
+      tar.close()
+    file_path = os.path.join(dir_path, "faster_rcnn_R_50_FPN_1x.onnx")
+    model = onnx.load(file_path)
+    image = onnx.load_tensor(
+        os.path.join(dir_path, "test_data_set_0", "input_0.pb"))
+    self._run([("image", to_array(image))], model)
 
   def _down_file(self, pairs):
     for url, path in pairs:

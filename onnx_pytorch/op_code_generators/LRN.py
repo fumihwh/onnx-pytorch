@@ -20,5 +20,7 @@ class LRNOpCodeGenerator(OpCodeGenerator):
                                      beta=attr_value_dict["beta"],
                                      k=attr_value_dict["bias"],
                                      size=attr_value_dict["size"])
-    forward_str.append(f"{outputs_str[0]} = F.local_response_norm({inputs_str[0]}, **{{{params_str}}})")
+    forward_str.append(
+        f"{outputs_str[0]} = F.local_response_norm({inputs_str[0]}, **{{{params_str}}})"
+    )
     return {"init": init_str, "forward": forward_str}

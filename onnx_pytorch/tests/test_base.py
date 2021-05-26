@@ -456,6 +456,167 @@ class TestBase:
     Output(Mul(*inputs))
     self._run(list(zip(inputs, nps)))
 
+  def test_non_max_suppression_center_point_box_format(self):
+    reset_model(13)
+    boxes = np.array([[[0.5, 0.5, 1.0, 1.0], [0.5, 0.6, 1.0, 1.0],
+                       [0.5, 0.4, 1.0, 1.0], [0.5, 10.5, 1.0, 1.0],
+                       [0.5, 10.6, 1.0, 1.0], [0.5, 100.5, 1.0,
+                                               1.0]]]).astype(np.float32)
+    scores = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]]).astype(np.float32)
+    max_output_boxes_per_class = np.array([3]).astype(np.int64)
+    iou_threshold = np.array([0.5]).astype(np.float32)
+    score_threshold = np.array([0.0]).astype(np.float32)
+    selected_indices = np.array([[0, 0, 3], [0, 0, 0], [0, 0,
+                                                        5]]).astype(np.int64)
+    inputs = Input(*[boxes, scores])
+    Output(NonMaxSuppression(*inputs, max_output_boxes_per_class,
+                             iou_threshold))
+    self._run(list(zip(inputs, [boxes, scores])))
+
+  def test_non_max_suppression_flipped_coordinates(self):
+    reset_model(13)
+    boxes = np.array([[[1.0, 1.0, 0.0, 0.0], [0.0, 0.1, 1.0, 1.1],
+                       [0.0, 0.9, 1.0, -0.1], [0.0, 10.0, 1.0, 11.0],
+                       [1.0, 10.1, 0.0, 11.1], [1.0, 101.0, 0.0,
+                                                100.0]]]).astype(np.float32)
+    scores = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]]).astype(np.float32)
+    max_output_boxes_per_class = np.array([5]).astype(np.int64)
+    iou_threshold = np.array([0.5]).astype(np.float32)
+    score_threshold = np.array([0.0]).astype(np.float32)
+    selected_indices = np.array([[0, 0, 3], [0, 0, 0], [0, 0,
+                                                        5]]).astype(np.int64)
+    inputs = Input(*[boxes, scores])
+    Output(NonMaxSuppression(*inputs, max_output_boxes_per_class,
+                             iou_threshold))
+    self._run(list(zip(inputs, [boxes, scores])))
+
+  def test_non_max_suppression_identical_boxes(self):
+    reset_model(13)
+    boxes = np.array([[[0.0, 0.0, 1.0, 1.0], [0.0, 0.0, 1.0, 1.0],
+                       [0.0, 0.0, 1.0, 1.0], [0.0, 0.0, 1.0, 1.0],
+                       [0.0, 0.0, 1.0, 1.0], [0.0, 0.0, 1.0, 1.0],
+                       [0.0, 0.0, 1.0, 1.0], [0.0, 0.0, 1.0, 1.0],
+                       [0.0, 0.0, 1.0, 1.0], [0.0, 0.0, 1.0,
+                                              1.0]]]).astype(np.float32)
+    scores = np.array([[[0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9,
+                         0.9]]]).astype(np.float32)
+    max_output_boxes_per_class = np.array([3]).astype(np.int64)
+    iou_threshold = np.array([0.5]).astype(np.float32)
+    score_threshold = np.array([0.0]).astype(np.float32)
+    selected_indices = np.array([[0, 0, 0]]).astype(np.int64)
+    inputs = Input(*[boxes, scores])
+    Output(NonMaxSuppression(*inputs, max_output_boxes_per_class,
+                             iou_threshold))
+    self._run(list(zip(inputs, [boxes, scores])))
+
+  def test_non_max_suppression_limit_output_size(self):
+    reset_model(13)
+    boxes = np.array([[[0.0, 0.0, 1.0, 1.0], [0.0, 0.1, 1.0, 1.1],
+                       [0.0, -0.1, 1.0, 0.9], [0.0, 10.0, 1.0, 11.0],
+                       [0.0, 10.1, 1.0, 11.1], [0.0, 100.0, 1.0,
+                                                101.0]]]).astype(np.float32)
+    scores = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]]).astype(np.float32)
+    max_output_boxes_per_class = np.array([2]).astype(np.int64)
+    iou_threshold = np.array([0.5]).astype(np.float32)
+    score_threshold = np.array([0.0]).astype(np.float32)
+    selected_indices = np.array([[0, 0, 3], [0, 0, 0]]).astype(np.int64)
+    inputs = Input(*[boxes, scores])
+    Output(NonMaxSuppression(*inputs, max_output_boxes_per_class,
+                             iou_threshold))
+    self._run(list(zip(inputs, [boxes, scores])))
+
+  def test_non_max_suppression_single_box(self):
+    reset_model(13)
+    boxes = np.array([[[0.0, 0.0, 1.0, 1.0]]]).astype(np.float32)
+    scores = np.array([[[0.9]]]).astype(np.float32)
+    max_output_boxes_per_class = np.array([3]).astype(np.int64)
+    iou_threshold = np.array([0.5]).astype(np.float32)
+    score_threshold = np.array([0.0]).astype(np.float32)
+    inputs = Input(*[boxes, scores])
+    Output(NonMaxSuppression(*inputs, max_output_boxes_per_class,
+                             iou_threshold))
+    self._run(list(zip(inputs, [boxes, scores])))
+
+  def test_non_max_suppression_suppress_by_IOU(self):
+    reset_model(13)
+    boxes = np.array([[[0.0, 0.0, 1.0, 1.0], [0.0, 0.1, 1.0, 1.1],
+                       [0.0, -0.1, 1.0, 0.9], [0.0, 10.0, 1.0, 11.0],
+                       [0.0, 10.1, 1.0, 11.1], [0.0, 100.0, 1.0,
+                                                101.0]]]).astype(np.float32)
+    scores = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]]).astype(np.float32)
+    max_output_boxes_per_class = np.array([3]).astype(np.int64)
+    iou_threshold = np.array([0.5]).astype(np.float32)
+    score_threshold = np.array([0.0]).astype(np.float32)
+    selected_indices = np.array([[0, 0, 3], [0, 0, 0], [0, 0,
+                                                        5]]).astype(np.int64)
+    inputs = Input(*[boxes, scores])
+    Output(NonMaxSuppression(*inputs, max_output_boxes_per_class,
+                             iou_threshold))
+    self._run(list(zip(inputs, [boxes, scores])))
+
+  def test_non_max_suppression_suppress_by_IOU_and_scores(self):
+    reset_model(13)
+    boxes = np.array([[[0.0, 0.0, 1.0, 1.0], [0.0, 0.1, 1.0, 1.1],
+                       [0.0, -0.1, 1.0, 0.9], [0.0, 10.0, 1.0, 11.0],
+                       [0.0, 10.1, 1.0, 11.1], [0.0, 100.0, 1.0,
+                                                101.0]]]).astype(np.float32)
+    scores = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]]).astype(np.float32)
+    max_output_boxes_per_class = np.array([3]).astype(np.int64)
+    iou_threshold = np.array([0.5]).astype(np.float32)
+    score_threshold = np.array([0.4]).astype(np.float32)
+    selected_indices = np.array([[0, 0, 3], [0, 0, 0]]).astype(np.int64)
+    inputs = Input(*[boxes, scores])
+    Output(
+        NonMaxSuppression(*inputs, max_output_boxes_per_class, iou_threshold,
+                          score_threshold))
+    self._run(list(zip(inputs, [boxes, scores])))
+
+  def test_non_max_suppression_two_batches(self):
+    reset_model(13)
+    boxes = np.array([[[0.0, 0.0, 1.0, 1.0], [0.0, 0.1, 1.0, 1.1],
+                       [0.0, -0.1, 1.0, 0.9], [0.0, 10.0, 1.0, 11.0],
+                       [0.0, 10.1, 1.0, 11.1], [0.0, 100.0, 1.0, 101.0]],
+                      [[0.0, 0.0, 1.0, 1.0], [0.0, 0.1, 1.0, 1.1],
+                       [0.0, -0.1, 1.0, 0.9], [0.0, 10.0, 1.0, 11.0],
+                       [0.0, 10.1, 1.0, 11.1], [0.0, 100.0, 1.0,
+                                                101.0]]]).astype(np.float32)
+    scores = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]],
+                       [[0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]]).astype(np.float32)
+    max_output_boxes_per_class = np.array([2]).astype(np.int64)
+    iou_threshold = np.array([0.5]).astype(np.float32)
+    score_threshold = np.array([0.0]).astype(np.float32)
+    selected_indices = np.array([[0, 0, 3], [0, 0, 0], [1, 0, 3],
+                                 [1, 0, 0]]).astype(np.int64)
+    inputs = Input(*[boxes, scores])
+    Output(NonMaxSuppression(*inputs, max_output_boxes_per_class,
+                             iou_threshold))
+    self._run(list(zip(inputs, [boxes, scores])))
+
+  def test_non_max_suppression_two_classes(self):
+    reset_model(13)
+    boxes = np.array([[[0.0, 0.0, 1.0, 1.0], [0.0, 0.1, 1.0, 1.1],
+                       [0.0, -0.1, 1.0, 0.9], [0.0, 10.0, 1.0, 11.0],
+                       [0.0, 10.1, 1.0, 11.1], [0.0, 100.0, 1.0,
+                                                101.0]]]).astype(np.float32)
+    scores = np.array([[[0.9, 0.75, 0.6, 0.95, 0.5, 0.3],
+                        [0.9, 0.75, 0.6, 0.95, 0.5, 0.3]]]).astype(np.float32)
+    max_output_boxes_per_class = np.array([2]).astype(np.int64)
+    iou_threshold = np.array([0.5]).astype(np.float32)
+    score_threshold = np.array([0.0]).astype(np.float32)
+    selected_indices = np.array([[0, 0, 3], [0, 0, 0], [0, 1, 3],
+                                 [0, 1, 0]]).astype(np.int64)
+    inputs = Input(*[boxes, scores])
+    Output(NonMaxSuppression(*inputs, max_output_boxes_per_class,
+                             iou_threshold))
+    self._run(list(zip(inputs, [boxes, scores])))
+
+  def test_non_zero(self):
+    reset_model(13)
+    nps = [np.array([[1, 0], [1, 1]], dtype=np.bool)]
+    inputs = Input(*nps)
+    Output(NonZero(*inputs))
+    self._run(list(zip(inputs, nps)))
+
   def test_pad(self):
     reset_model(13)
     nps = [
@@ -610,6 +771,192 @@ class TestBase:
             mode="linear",
             coordinate_transformation_mode="align_corners",
         ))
+    self._run(list(zip(inputs, nps)))
+
+  def test_roi_align(self):
+    reset_model(13)
+    nps = [
+        np.array(
+            [[[
+                [
+                    0.2764,
+                    0.7150,
+                    0.1958,
+                    0.3416,
+                    0.4638,
+                    0.0259,
+                    0.2963,
+                    0.6518,
+                    0.4856,
+                    0.7250,
+                ],
+                [
+                    0.9637,
+                    0.0895,
+                    0.2919,
+                    0.6753,
+                    0.0234,
+                    0.6132,
+                    0.8085,
+                    0.5324,
+                    0.8992,
+                    0.4467,
+                ],
+                [
+                    0.3265,
+                    0.8479,
+                    0.9698,
+                    0.2471,
+                    0.9336,
+                    0.1878,
+                    0.4766,
+                    0.4308,
+                    0.3400,
+                    0.2162,
+                ],
+                [
+                    0.0206,
+                    0.1720,
+                    0.2155,
+                    0.4394,
+                    0.0653,
+                    0.3406,
+                    0.7724,
+                    0.3921,
+                    0.2541,
+                    0.5799,
+                ],
+                [
+                    0.4062,
+                    0.2194,
+                    0.4473,
+                    0.4687,
+                    0.7109,
+                    0.9327,
+                    0.9815,
+                    0.6320,
+                    0.1728,
+                    0.6119,
+                ],
+                [
+                    0.3097,
+                    0.1283,
+                    0.4984,
+                    0.5068,
+                    0.4279,
+                    0.0173,
+                    0.4388,
+                    0.0430,
+                    0.4671,
+                    0.7119,
+                ],
+                [
+                    0.1011,
+                    0.8477,
+                    0.4726,
+                    0.1777,
+                    0.9923,
+                    0.4042,
+                    0.1869,
+                    0.7795,
+                    0.9946,
+                    0.9689,
+                ],
+                [
+                    0.1366,
+                    0.3671,
+                    0.7011,
+                    0.6234,
+                    0.9867,
+                    0.5585,
+                    0.6985,
+                    0.5609,
+                    0.8788,
+                    0.9928,
+                ],
+                [
+                    0.5697,
+                    0.8511,
+                    0.6711,
+                    0.9406,
+                    0.8751,
+                    0.7496,
+                    0.1650,
+                    0.1049,
+                    0.1559,
+                    0.2514,
+                ],
+                [
+                    0.7012,
+                    0.4056,
+                    0.7879,
+                    0.3461,
+                    0.0415,
+                    0.2998,
+                    0.5094,
+                    0.3727,
+                    0.5482,
+                    0.0502,
+                ],
+            ]]],
+            dtype=np.float32,
+        )
+    ]
+    inputs = Input(*nps)
+    Output(
+        RoiAlign(
+            inputs[0],
+            np.array([[0, 0, 9, 9], [0, 5, 4, 9], [5, 5, 9, 9]],
+                     dtype=np.float32),
+            np.array([0, 0, 0], dtype=np.int64),
+            spatial_scale=1.0,
+            output_height=5,
+            output_width=5,
+            sampling_ratio=2,
+        ))
+    self._run(list(zip(inputs, nps)))
+
+  def test_scatter_elements_with_axis(self):
+    reset_model(13)
+    nps = [np.array([[1.0, 2.0, 3.0, 4.0, 5.0]], dtype=np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ScatterElements(inputs[0],
+                        np.array([[1, 3]], dtype=np.int64),
+                        np.array([[1.1, 2.1]], dtype=np.float32),
+                        axis=1))
+    self._run(list(zip(inputs, nps)))
+
+  def test_scatter_elements_without_axis(self):
+    reset_model(13)
+    nps = [np.zeros((3, 3), dtype=np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ScatterElements(
+            inputs[0], np.array([[1, 0, 2], [0, 2, 1]], dtype=np.int64),
+            np.array([[1.0, 1.1, 1.2], [2.0, 2.1, 2.2]], dtype=np.float32)))
+    self._run(list(zip(inputs, nps)))
+
+  def test_scatter_elements_with_negative_axis(self):
+    reset_model(13)
+    nps = [np.array([[1.0, 2.0, 3.0, 4.0, 5.0]], dtype=np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ScatterElements(inputs[0],
+                        np.array([[1, 3]], dtype=np.int64),
+                        np.array([[1.1, 2.1]], dtype=np.float32),
+                        axis=-1))
+    self._run(list(zip(inputs, nps)))
+
+  def test_scatter_elements(self):
+    reset_model(13)
+    nps = [np.zeros(shape=(10, 7, 7), dtype=np.float32)]
+    inputs = Input(*nps)
+    Output(
+        ScatterElements(inputs[0],
+                        np.random.randint(low=0, high=5, size=(5, 7, 7)),
+                        np.random.randn(5, 7, 7).astype(np.float32),
+                        axis=0))
     self._run(list(zip(inputs, nps)))
 
   def test_shape(self):

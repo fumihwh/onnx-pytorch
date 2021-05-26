@@ -59,4 +59,4 @@ class SliceOpCodeGenerator(OpCodeGenerator):
       starts = attr_value_dict["starts"]
       ends = attr_value_dict["ends"]
       axes = attr_value_dict.get("axes", axes)
-    return starts, ends, axes, steps
+    return starts, ends, list(axes), list(steps)
