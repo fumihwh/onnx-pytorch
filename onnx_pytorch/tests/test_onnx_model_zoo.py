@@ -1,3 +1,4 @@
+import logging
 import tarfile
 from tempfile import TemporaryDirectory
 
@@ -39,14 +40,24 @@ class TqdmUpTo(tqdm):
 class TestModel:
 
   def _run(self, inputs_np, onnx_model, gen_kwargs=None, tol=None):
+    inputs_np_dict = {k: v for k, v in inputs_np}
     model = onnx.ModelProto()
     model.CopyFrom(onnx_model)
     sess_options = onnxruntime.SessionOptions()
     session = onnxruntime.InferenceSession(model.SerializeToString(),
                                            sess_options)
-    ort_outputs = session.run(None, {k: v for k, v in inputs_np})
+    ort_outputs = session.run(None, inputs_np_dict)
     model.graph.ClearField("value_info")
-    model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True, 1)
+    for i in model.graph.input:
+      for idx, d in enumerate(i.type.tensor_type.shape.dim):
+        if d.dim_param != "":
+          d.ClearField("dim_param")
+        d.dim_value = inputs_np_dict[i.name].shape[idx]
+    try:
+      model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True,
+                                                  1)
+    except:
+      logging.warning("Shape infer by onnxruntime failed.")
     with TemporaryDirectory() as tmpdir:
       if gen_kwargs is None:
         gen_kwargs = {}
@@ -54,6 +65,7 @@ class TestModel:
                    output_dir=tmpdir,
                    tensor_inplace=False,
                    simplify_names=False,
+                   shape_infer=False,
                    **gen_kwargs)
       spec = importlib.util.spec_from_file_location(
           "model", os.path.join(tmpdir, "model.py"))

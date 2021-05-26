@@ -23,13 +23,19 @@ torch.set_printoptions(8)
 class TestBase:
 
   def _run(self, inputs_np):
+    inputs_np_dict = {k: v for k, v in inputs_np if k != ""}
     model = onnx.ModelProto()
     model.CopyFrom(omm.model)
     sess_options = onnxruntime.SessionOptions()
     session = onnxruntime.InferenceSession(model.SerializeToString(),
                                            sess_options)
-    ort_outputs = session.run(None, {k: v for k, v in inputs_np if k != ""})
+    ort_outputs = session.run(None, inputs_np_dict)
     model.graph.ClearField("value_info")
+    for i in model.graph.input:
+      for idx, d in enumerate(i.type.tensor_type.shape.dim):
+        if d.dim_param != "":
+          d.ClearField("dim_param")
+        d.dim_value = inputs_np_dict[i.name].shape[idx]
     try:
       model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True,
                                                   1)
@@ -38,7 +44,11 @@ class TestBase:
     with TemporaryDirectory() as tmpdir:
       clear_op_code_generator()
       model_code_generator = code_gen.get_model_code_generator(
-          model, output_dir=tmpdir, tensor_inplace=True, simplify_names=True)
+          model,
+          output_dir=tmpdir,
+          tensor_inplace=True,
+          simplify_names=True,
+          shape_infer=False)
       model_code_generator.run()
       spec = importlib.util.spec_from_file_location(
           "model", os.path.join(tmpdir, "model.py"))

@@ -70,13 +70,15 @@ class ModelCodeGenerator:
                simplify_names=False,
                tensor_inplace=False,
                continue_on_error=False,
-               embedding_conf=None):
+               embedding_conf=None,
+               shape_infer=True):
     self.onnx_model = onnx_model
     self.output_dir = output_dir
     self.rename_helper = RenameHelper(simplify_names)
     self.tensor_inplace = tensor_inplace
     self.continue_on_error = continue_on_error
     self.embedding_conf = embedding_conf
+    self.shape_infer = shape_infer
     self.init_parts = []
     self.forward_parts = []
     self.method_parts = {}
@@ -151,7 +153,6 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
   '''.join(test_run_model)
 
   def preprocess_onnx_model(self):
-    self.onnx_model.graph.ClearField("value_info")
     for n in self.onnx_model.graph.node:
       inputs, outputs = [], []
       for ls, f in ((inputs, n.input), (outputs, n.output)):
@@ -159,7 +160,7 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
           new_i = re.sub("[:/.]", "_", i)
           ls.append(new_i)
           if i != ls[-1] and not self.rename_helper.simplify_names:
-            logging.warning(f"Tensor name {i} is changed to {ls[-1]}.")
+            logging.info(f"Tensor name {i} is changed to {ls[-1]}.")
           self.rename_helper.tensor_name_counter[ls[-1]] += 1
 
       n.ClearField("input")
@@ -170,7 +171,7 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
       old_name = n.name
       n.name = re.sub("[:/.]", "_", n.name)
       if old_name != n.name and not self.rename_helper.simplify_names:
-        logging.warning(f"Node name {old_name} is changed to {n.name}.")
+        logging.info(f"Node name {old_name} is changed to {n.name}.")
       self.rename_helper.node_name_counter[n.name] += 1
 
     for f in (self.onnx_model.graph.input, self.onnx_model.graph.output,
@@ -179,16 +180,34 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
         old_name = i.name
         i.name = re.sub("[:/.]", "_", i.name)
         if old_name != i.name and not self.rename_helper.simplify_names:
-          logging.warning(f"Tensor name {i.name} is changed to {i.name}.")
+          logging.info(f"Tensor name {i.name} is changed to {i.name}.")
         self.rename_helper.tensor_name_counter[i.name] += 1
 
-    # TODO how to deal with custom op?
     model = self.onnx_model
-    try:
-      model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True, True,
-                                                  0)
-    except:
-      logging.warning("Shape infer by onnxruntime failed.")
+    for f in (model.graph.input, model.graph.output):
+      for i in f:
+        for d in i.type.tensor_type.shape.dim:
+          if d.dim_param != "":
+            d.dim_param = ""
+            d.dim_value = -1
+          elif d.dim_value == 0:
+            d.dim_value = -1
+    # TODO how to deal with custom op?
+    if self.shape_infer:
+      try:
+        model.graph.ClearField("value_info")
+        model = SymbolicShapeInference.infer_shapes(model, 2**31 - 1, True,
+                                                    True, 1)
+      except:
+        logging.warning("Shape infer by onnxruntime failed.")
+    else:
+      for f in (self.onnx_model.graph.value_info,):
+        for i in f:
+          old_name = i.name
+          i.name = re.sub("[:/.]", "_", i.name)
+          if old_name != i.name and not self.rename_helper.simplify_names:
+            logging.info(f"Tensor name {i.name} is changed to {i.name}.")
+          self.rename_helper.tensor_name_counter[i.name] += 1
     onnx.save(model, os.path.join(self.output_dir, "tmp_processed.onnx"))
     self.onnx_model = model
 
@@ -264,12 +283,11 @@ def gen(
     simplify_names=False,
     continue_on_error=False,
     embedding_conf_file=None,
+    shape_infer=True,
 ):
-  model_code_generator = get_model_code_generator(onnx_model, output_dir,
-                                                  overwrite, tensor_inplace,
-                                                  simplify_names,
-                                                  continue_on_error,
-                                                  embedding_conf_file)
+  model_code_generator = get_model_code_generator(
+      onnx_model, output_dir, overwrite, tensor_inplace, simplify_names,
+      continue_on_error, embedding_conf_file, shape_infer)
   model_code_generator.run()
 
 
@@ -281,12 +299,14 @@ def get_model_code_generator(
     simplify_names=False,
     continue_on_error=False,
     embedding_conf_file=None,
+    shape_infer=False,
 ):
   kwargs = {
       "output_dir": output_dir,
       "simplify_names": simplify_names,
       "tensor_inplace": tensor_inplace,
       "continue_on_error": continue_on_error,
+      "shape_infer": shape_infer
   }
   if type(onnx_model) == onnx.ModelProto:
     kwargs["onnx_model"] = onnx_model
