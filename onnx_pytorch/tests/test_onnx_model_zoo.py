@@ -1,3 +1,4 @@
+import tarfile
 from tempfile import TemporaryDirectory
 
 import os
