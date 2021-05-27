@@ -16,7 +16,6 @@ jobs:
         python-version: [ 3.6, 3.9 ]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: AutoModality/action-clean@v1
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
@@ -39,3 +38,7 @@ jobs:
         else
           echo "yapf formatter check passed."
         fi
+    - name: Runner workspace path
+      run: |
+        echo "Cleaning up previous run"
+        rm -rf "${{ github.workspace }}"
