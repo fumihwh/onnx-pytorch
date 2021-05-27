@@ -33,10 +33,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install sympy yapf pytest tqdm
         pip install -e .
-    - name: Remove files
-      run: |
-        rm -rf onnx_pytorch/tests/onnx_model_zoo
-        git clean -xdf
     - name: Test format
       run: |
         yapf -ri onnx_pytorch --exclude onnx_model_maker/ops
