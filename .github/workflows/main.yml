@@ -40,15 +40,13 @@ jobs:
     - name: Test format
       run: |
         yapf -ri onnx_pytorch --exclude onnx_model_maker/ops
-        if [ $(git diff --cached --exit-code HEAD -- >/dev/null && (git ls-files --other --exclude-standard --directory | grep -c -v '/$')) ]; then
-          echo $(git diff --cached --exit-code HEAD -- >/dev/null && (git ls-files --other --exclude-standard --directory | grep -c -v '/$'))
+        if [ $(git diff --cached --exit-code HEAD -- >/dev/null && (git ls-files --other --exclude-standard --directory | grep -c -v '/$')) != 0 ]; then
           echo "yapf formatter check failed."
           exit 1
         else
-          echo $(git diff --cached --exit-code HEAD -- >/dev/null && (git ls-files --other --exclude-standard --directory | grep -c -v '/$'))
           echo "yapf formatter check passed."
-          exit 0
         fi
+        exit 0
     - name: Test with pytest
       run: |
         pytest onnx_pytorch/tests
