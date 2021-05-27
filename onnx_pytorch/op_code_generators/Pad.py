@@ -22,9 +22,12 @@ class PadOpCodeGenerator(OpCodeGenerator):
       if len(node.input) == 3:
         value = onnx.numpy_helper.to_array(initializers[node.input[2]])[0]
     d = len(value_infos[node.input[0]].type.tensor_type.shape.dim) - 2
-    pads = initializers.get(node.input[1], None)
-    assert pads is not None, "Currently PadOpCodeGenerator only support all of [pads] is in initializers."
-    pads = onnx.numpy_helper.to_array(pads)
+    if len(node.input) > 1:
+      pads = initializers.get(node.input[1], None)
+      assert pads is not None, "Currently PadOpCodeGenerator only support all of [pads] is in initializers."
+      pads = onnx.numpy_helper.to_array(pads)
+    else:
+      pads = attr_value_dict["pads"]
     pt_pads = [0, 0] * d
     for i in range(d):
       pt_pads[2 * (d - i - 1)] = pads[2 + i]
