@@ -17,5 +17,6 @@ class LeakyReluOpCodeGenerator(OpCodeGenerator):
         node, initializers, self.rename_helper, self.tensor_inplace)
     init_str, forward_str = [], []
     forward_str.append(
-        f"{outputs_str[0]} = F.leaky_relu({inputs_str[0]}, {attr_value_dict['alpha']})")
+        f"{outputs_str[0]} = F.leaky_relu({inputs_str[0]}, {attr_value_dict['alpha']})"
+    )
     return {"init": init_str, "forward": forward_str}

@@ -256,13 +256,14 @@ class TestModel:
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
+    dir_path_tar = os.path.join(dir_path, names[0])
     for name in names:
       tar.extract(name, path=dir_path)
     tar.close()
-    file_path = os.path.join(dir_path, "faster_rcnn_R_50_FPN_1x.onnx")
+    file_path = os.path.join(dir_path_tar, "faster_rcnn_R_50_FPN_1x.onnx")
     model = onnx.load(file_path)
     image = onnx.load_tensor(
-        os.path.join(dir_path, "test_data_set_0", "input_0.pb"))
+        os.path.join(dir_path_tar, "test_data_set_0", "input_0.pb"))
     self._run([("image", to_array(image))], model)
 
   def test_vision_object_detection_segmentation_mask_rcnn(self):
@@ -278,13 +279,14 @@ class TestModel:
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
+    dir_path_tar = os.path.join(dir_path, names[0])
     for name in names:
       tar.extract(name, path=dir_path)
     tar.close()
-    file_path = os.path.join(dir_path, "mask_rcnn_R_50_FPN_1x.onnx")
+    file_path = os.path.join(dir_path_tar, "mask_rcnn_R_50_FPN_1x.onnx")
     model = onnx.load(file_path)
     image = onnx.load_tensor(
-        os.path.join(dir_path, "test_data_set_0", "input_0.pb"))
+        os.path.join(dir_path_tar, "test_data_set_0", "input_0.pb"))
     self._run([("image", to_array(image))],
               model,
               tol={
@@ -304,14 +306,155 @@ class TestModel:
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
+    dir_path_tar = os.path.join(dir_path, names[0])
     for name in names:
       tar.extract(name, path=dir_path)
     tar.close()
-    file_path = os.path.join(dir_path, "model.onnx")
+    file_path = os.path.join(dir_path_tar, "model.onnx")
     model = onnx.load(file_path)
     image = onnx.load_tensor(
-        os.path.join(dir_path, "test_data_set_0", "input_0.pb"))
+        os.path.join(dir_path_tar, "test_data_set_0", "input_0.pb"))
     self._run([("image", to_array(image))], model)
+
+  def test_vision_style_transfer_fast_neural_style_candy(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "style_transfer", "fast_neural_style",
+                            "candy")
+    tar_file_path = os.path.join(dir_path, "candy-9.tar.gz")
+    if os.path.exists(tar_file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/candy-9.tar.gz"
+      self._down_file([(url, tar_file_path)])
+    tar = tarfile.open(tar_file_path)
+    names = tar.getnames()
+    dir_path_tar = os.path.join(dir_path, names[0])
+    for name in names:
+      tar.extract(name, path=dir_path)
+    tar.close()
+    file_path = os.path.join(dir_path_tar, "candy.onnx")
+    model = onnx.load(file_path)
+    input1 = onnx.load_tensor(
+        os.path.join(dir_path_tar, "test_data_set_0", "input_0.pb"))
+    self._run([("input1", to_array(input1))],
+              model,
+              tol={
+                  "atol": 1e-2,
+                  "rtol": 1e-5
+              })
+
+  def test_vision_style_transfer_fast_neural_style_mosaic(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "style_transfer", "fast_neural_style",
+                            "mosaic")
+    tar_file_path = os.path.join(dir_path, "mosaic-9.tar.gz")
+    if os.path.exists(tar_file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/mosaic-9.tar.gz"
+      self._down_file([(url, tar_file_path)])
+    tar = tarfile.open(tar_file_path)
+    names = tar.getnames()
+    dir_path_tar = os.path.join(dir_path, names[0])
+    for name in names:
+      tar.extract(name, path=dir_path)
+    tar.close()
+    file_path = os.path.join(dir_path_tar, "mosaic.onnx")
+    model = onnx.load(file_path)
+    input1 = onnx.load_tensor(
+        os.path.join(dir_path_tar, "test_data_set_0", "input_0.pb"))
+    self._run([("input1", to_array(input1))],
+              model,
+              tol={
+                  "atol": 1e-2,
+                  "rtol": 1e-5
+              })
+
+  def test_vision_style_transfer_fast_neural_style_pointilism(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "style_transfer", "fast_neural_style",
+                            "pointilism")
+    tar_file_path = os.path.join(dir_path, "pointilism-9.tar.gz")
+    if os.path.exists(tar_file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/pointilism-9.tar.gz"
+      self._down_file([(url, tar_file_path)])
+    tar = tarfile.open(tar_file_path)
+    names = tar.getnames()
+    dir_path_tar = os.path.join(dir_path, names[0])
+    for name in names:
+      tar.extract(name, path=dir_path)
+    tar.close()
+    file_path = os.path.join(dir_path_tar, "pointilism.onnx")
+    model = onnx.load(file_path)
+    input1 = onnx.load_tensor(
+        os.path.join(dir_path_tar, "test_data_set_0", "input_0.pb"))
+    self._run([("input1", to_array(input1))],
+              model,
+              tol={
+                  "atol": 1e-4,
+                  "rtol": 1e-5
+              })
+
+  def test_vision_style_transfer_fast_neural_style_rain_princess(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "style_transfer", "fast_neural_style",
+                            "rain_princess")
+    tar_file_path = os.path.join(dir_path, "rain-princess-9.tar.gz")
+    if os.path.exists(tar_file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/rain-princess-9.tar.gz"
+      self._down_file([(url, tar_file_path)])
+    tar = tarfile.open(tar_file_path)
+    names = tar.getnames()
+    dir_path_tar = os.path.join(dir_path, names[0])
+    for name in names:
+      tar.extract(name, path=dir_path)
+    tar.close()
+    file_path = os.path.join(dir_path_tar, "rain_princess.onnx")
+    model = onnx.load(file_path)
+    input1 = onnx.load_tensor(
+        os.path.join(dir_path_tar, "test_data_set_0", "input_0.pb"))
+    self._run([("input1", to_array(input1))],
+              model,
+              tol={
+                  "atol": 1e-3,
+                  "rtol": 1e-5
+              })
+
+  def test_vision_style_transfer_fast_neural_style_udnie(self):
+    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
+                            "vision", "style_transfer", "fast_neural_style",
+                            "udnie")
+    tar_file_path = os.path.join(dir_path, "udnie-9.tar.gz")
+    if os.path.exists(tar_file_path):
+      pass
+    else:
+      os.makedirs(dir_path, exist_ok=True)
+      url = "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/udnie-9.tar.gz"
+      self._down_file([(url, tar_file_path)])
+    tar = tarfile.open(tar_file_path)
+    names = tar.getnames()
+    dir_path_tar = os.path.join(dir_path, names[0])
+    for name in names:
+      tar.extract(name, path=dir_path)
+    tar.close()
+    file_path = os.path.join(dir_path_tar, "udnie.onnx")
+    model = onnx.load(file_path)
+    input1 = onnx.load_tensor(
+        os.path.join(dir_path_tar, "test_data_set_0", "input_0.pb"))
+    self._run([("input1", to_array(input1))],
+              model,
+              tol={
+                  "atol": 1e-3,
+                  "rtol": 1e-5
+              })
 
   def _down_file(self, pairs):
     for url, path in pairs:
