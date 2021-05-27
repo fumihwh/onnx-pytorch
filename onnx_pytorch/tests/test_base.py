@@ -296,24 +296,28 @@ class TestBase:
 
   def test_conv_with_autopad_same(self):
     reset_model(13)
-    x = np.array([[[[0., 1., 2., 3., 4.],  # (1, 1, 5, 5) input tensor
-                    [5., 6., 7., 8., 9.],
-                    [10., 11., 12., 13., 14.],
-                    [15., 16., 17., 18., 19.],
-                    [20., 21., 22., 23., 24.]]]]).astype(np.float32)
-    W = np.array([[[[1., 1., 1.],  # (1, 1, 3, 3) tensor for convolution weights
-                    [1., 1., 1.],
-                    [1., 1., 1.]]]]).astype(np.float32)
+    x = np.array([[[
+        [0., 1., 2., 3., 4.],  # (1, 1, 5, 5) input tensor
+        [5., 6., 7., 8., 9.],
+        [10., 11., 12., 13., 14.],
+        [15., 16., 17., 18., 19.],
+        [20., 21., 22., 23., 24.]
+    ]]]).astype(np.float32)
+    W = np.array([[[
+        [1., 1., 1.],  # (1, 1, 3, 3) tensor for convolution weights
+        [1., 1., 1.],
+        [1., 1., 1.]
+    ]]]).astype(np.float32)
     nps = [x]
     inputs = Input(*nps)
     Output(
-      Conv(
-        inputs[0],
-        W,
-        auto_pad='SAME_LOWER',
-        kernel_shape=[3, 3],
-        strides=[2, 2],
-      ))
+        Conv(
+            inputs[0],
+            W,
+            auto_pad='SAME_LOWER',
+            kernel_shape=[3, 3],
+            strides=[2, 2],
+        ))
     self._run(list(zip(inputs, nps)))
 
   def test_conv_transpose(self):

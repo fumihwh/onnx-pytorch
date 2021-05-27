@@ -329,7 +329,7 @@ class TestModel:
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
-    dir_path_tar = os.path.join(dir_path, names[0])
+    dir_path_tar = os.path.join(dir_path, "candy")
     for name in names:
       tar.extract(name, path=dir_path)
     tar.close()
@@ -357,7 +357,7 @@ class TestModel:
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
-    dir_path_tar = os.path.join(dir_path, names[0])
+    dir_path_tar = os.path.join(dir_path, "mosaic")
     for name in names:
       tar.extract(name, path=dir_path)
     tar.close()
@@ -385,7 +385,7 @@ class TestModel:
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
-    dir_path_tar = os.path.join(dir_path, names[0])
+    dir_path_tar = os.path.join(dir_path, "pointilism")
     for name in names:
       tar.extract(name, path=dir_path)
     tar.close()
@@ -413,7 +413,7 @@ class TestModel:
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
-    dir_path_tar = os.path.join(dir_path, names[0])
+    dir_path_tar = os.path.join(dir_path, "rain_princess")
     for name in names:
       tar.extract(name, path=dir_path)
     tar.close()
@@ -441,7 +441,7 @@ class TestModel:
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
-    dir_path_tar = os.path.join(dir_path, names[0])
+    dir_path_tar = os.path.join(dir_path, "udnie")
     for name in names:
       tar.extract(name, path=dir_path)
     tar.close()
