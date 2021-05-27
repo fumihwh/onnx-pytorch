@@ -19,6 +19,8 @@ from onnx_pytorch import code_gen
 
 torch.set_printoptions(8)
 
+ONNX_MODEL_ZOO_DIR = "~/onnx_model_zoo"
+
 
 class TqdmUpTo(tqdm):
   """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
@@ -82,9 +84,8 @@ class TestModel:
         assert np.allclose(l, r, equal_nan=True, **tol)
 
   def test_vision_body_analysis_age_gender_age_googlenet(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "body_analysis", "age_gender",
-                            "age_googlenet")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "body_analysis",
+                            "age_gender", "age_googlenet")
     file_path = os.path.join(dir_path, "model.onnx")
     if os.path.exists(file_path):
       pass
@@ -98,9 +99,8 @@ class TestModel:
               model)
 
   def test_vision_body_analysis_age_gender_gender_googlenet(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "body_analysis", "age_gender",
-                            "gender_googlenet")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "body_analysis",
+                            "age_gender", "gender_googlenet")
     file_path = os.path.join(dir_path, "model.onnx")
     if os.path.exists(file_path):
       pass
@@ -114,9 +114,8 @@ class TestModel:
               model)
 
   def test_vision_body_analysis_arcface_arcfaceresnet100_8(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "body_analysis", "arcface",
-                            "arcfaceresnet100-8")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "body_analysis",
+                            "arcface", "arcfaceresnet100-8")
     file_path = os.path.join(dir_path, "model.onnx")
     if os.path.exists(file_path):
       pass
@@ -137,9 +136,8 @@ class TestModel:
               model)
 
   def test_vision_body_analysis_emotion_ferplus_emotion_ferplus_8(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "body_analysis", "emotion_ferplus",
-                            "emotion-ferplus-8")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "body_analysis",
+                            "emotion_ferplus", "emotion-ferplus-8")
     file_path = os.path.join(dir_path, "model.onnx")
     if os.path.exists(file_path):
       pass
@@ -153,9 +151,8 @@ class TestModel:
               model)
 
   def test_vision_body_analysis_ultraface_version_RFB_320(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "body_analysis", "ultraface",
-                            "version-RFB-320")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "body_analysis",
+                            "ultraface", "version-RFB-320")
     file_path = os.path.join(dir_path, "model.onnx")
     if os.path.exists(file_path):
       pass
@@ -169,8 +166,8 @@ class TestModel:
               model)
 
   def test_vision_classification_alexnet(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "classification", "alexnet")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "classification",
+                            "alexnet")
     file_path = os.path.join(dir_path, "model.onnx")
     if os.path.exists(file_path):
       pass
@@ -184,8 +181,8 @@ class TestModel:
               model)
 
   def test_vision_classification_mobilenet(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "classification", "mobilenet")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "classification",
+                            "mobilenet")
     file_path = os.path.join(dir_path, "model.onnx")
     if os.path.exists(file_path):
       pass
@@ -199,8 +196,8 @@ class TestModel:
               model)
 
   def test_vision_classification_resnet(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "classification", "resnet")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "classification",
+                            "resnet")
     file_path = os.path.join(dir_path, "model.onnx")
     if os.path.exists(file_path):
       pass
@@ -214,8 +211,8 @@ class TestModel:
               model)
 
   def test_vision_classification_shufflenet(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "classification", "shufflenet")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "classification",
+                            "shufflenet")
     file_path = os.path.join(dir_path, "model.onnx")
     if os.path.exists(file_path):
       pass
@@ -229,8 +226,8 @@ class TestModel:
               model)
 
   def test_vision_classification_squeezenet(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "classification", "squeezenet")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "classification",
+                            "squeezenet")
     file_path = os.path.join(dir_path, "model.onnx")
     if os.path.exists(file_path):
       pass
@@ -244,9 +241,8 @@ class TestModel:
               model)
 
   def test_vision_object_detection_segmentation_faster_rcnn(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "object_detection_segmentation",
-                            "faster-rcnn")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision",
+                            "object_detection_segmentation", "faster-rcnn")
     tar_file_path = os.path.join(dir_path, "FasterRCNN-10.tar.gz")
     if os.path.exists(tar_file_path):
       pass
@@ -267,9 +263,8 @@ class TestModel:
     self._run([("image", to_array(image))], model)
 
   def test_vision_object_detection_segmentation_mask_rcnn(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "object_detection_segmentation",
-                            "mask-rcnn")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision",
+                            "object_detection_segmentation", "mask-rcnn")
     tar_file_path = os.path.join(dir_path, "MaskRCNN-10.tar.gz")
     if os.path.exists(tar_file_path):
       pass
@@ -295,8 +290,8 @@ class TestModel:
               })
 
   def test_vision_object_detection_segmentation_ssd(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "object_detection_segmentation", "ssd")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision",
+                            "object_detection_segmentation", "ssd")
     tar_file_path = os.path.join(dir_path, "ssd-10.tar.gz")
     if os.path.exists(tar_file_path):
       pass
@@ -317,9 +312,8 @@ class TestModel:
     self._run([("image", to_array(image))], model)
 
   def test_vision_style_transfer_fast_neural_style_candy(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "style_transfer", "fast_neural_style",
-                            "candy")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "style_transfer",
+                            "fast_neural_style", "candy")
     tar_file_path = os.path.join(dir_path, "candy-9.tar.gz")
     if os.path.exists(tar_file_path):
       pass
@@ -345,9 +339,8 @@ class TestModel:
               })
 
   def test_vision_style_transfer_fast_neural_style_mosaic(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "style_transfer", "fast_neural_style",
-                            "mosaic")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "style_transfer",
+                            "fast_neural_style", "mosaic")
     tar_file_path = os.path.join(dir_path, "mosaic-9.tar.gz")
     if os.path.exists(tar_file_path):
       pass
@@ -373,9 +366,8 @@ class TestModel:
               })
 
   def test_vision_style_transfer_fast_neural_style_pointilism(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "style_transfer", "fast_neural_style",
-                            "pointilism")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "style_transfer",
+                            "fast_neural_style", "pointilism")
     tar_file_path = os.path.join(dir_path, "pointilism-9.tar.gz")
     if os.path.exists(tar_file_path):
       pass
@@ -401,9 +393,8 @@ class TestModel:
               })
 
   def test_vision_style_transfer_fast_neural_style_rain_princess(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "style_transfer", "fast_neural_style",
-                            "rain_princess")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "style_transfer",
+                            "fast_neural_style", "rain_princess")
     tar_file_path = os.path.join(dir_path, "rain-princess-9.tar.gz")
     if os.path.exists(tar_file_path):
       pass
@@ -429,9 +420,8 @@ class TestModel:
               })
 
   def test_vision_style_transfer_fast_neural_style_udnie(self):
-    dir_path = os.path.join(os.path.dirname(__file__), "onnx_model_zoo",
-                            "vision", "style_transfer", "fast_neural_style",
-                            "udnie")
+    dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "style_transfer",
+                            "fast_neural_style", "udnie")
     tar_file_path = os.path.join(dir_path, "udnie-9.tar.gz")
     if os.path.exists(tar_file_path):
       pass

@@ -16,6 +16,11 @@ jobs:
         python-version: [ 3.6, 3.9 ]
     runs-on: ${{ matrix.os }}
     steps:
+    - name: Cache ONNX model zoo
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/onnx_model_zoo
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
