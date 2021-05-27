@@ -16,6 +16,9 @@ jobs:
         python-version: [ 3.6, 3.9 ]
     runs-on: ${{ matrix.os }}
     steps:
+    - name: Remove Old ONNX model zoo
+      run: |
+        rm -rf onnx_pytorch/tests/onnx_model_zoo
     - name: Cache ONNX model zoo
       uses: actions/cache@v2
       env:
