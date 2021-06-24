@@ -95,3 +95,11 @@ print(
                 atol=1e-5,
                 rtol=1e-5))
 ```
+
+## TEST
+cd onnx_pytorch/tests/
+pytest -s test_base.py
+pytest -s test_base.py::TestBase::test_elu
+pytest -s test_base.py::TestBase::test_tanh
+pytest -s test_base.py::TestBase::test_sub
+
