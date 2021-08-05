@@ -1,6 +1,5 @@
 # onnx-pytorch
 
-
 ![Build Status](https://github.com/fumihwh/onnx-pytorch/actions/workflows/main.yml/badge.svg?branch=main)
 
 
@@ -9,14 +8,17 @@ Currently support `onnx==1.9.0` and `torch==1.8.1`.
 
 ## Installation
 
-- From PyPI
-```
+### From PyPI
+
+```bash
 pip install onnx-pytorch
 ```
 
-- From source
-```
+### From source
+
+```bash
 git clone https://github.com/fumihwh/onnx-pytorch.git
+cd onnx-pytorch
 pip install -r requirements.txt
 pip install -e .
 ```
@@ -25,7 +27,8 @@ pip install -e .
 ## Usage
 
 ### By Command Line
-```
+
+```bash
 python -m onnx_pytorch.code_gen -h
 
 usage: code_gen.py [-h] [--onnx_model_path ONNX_MODEL_PATH] [--output_dir OUTPUT_DIR] [--overwrite OVERWRITE] [--tensor_inplace TENSOR_INPLACE] [--continue_on_error CONTINUE_ON_ERROR] [--simplify_names SIMPLIFY_NAMES]
@@ -47,7 +50,8 @@ optional arguments:
 ```
 
 ### By Python
-```
+
+```python
 from onnx_pytorch import code_gen
 code_gen.gen("/path/to/onnx_model", "/path/to/output_dir")
 ```
@@ -55,18 +59,23 @@ code_gen.gen("/path/to/onnx_model", "/path/to/output_dir")
 A `model.py` file and `variables` folder will be created under `output_dir`.
 
 ## Tutorial
+
 - Download resnet18 onnx model
- 
-```wget https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet18-v2-7.onnx```
+
+```bash
+wget https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet18-v2-7.onnx
+```
 
 - Use onnx-pytorch to generate pytorch code and variables.
-```
+
+```python
 from onnx_pytorch import code_gen
 code_gen.gen("resnet18-v2-7.onnx", "./")
 ```
 
 - Test result
-```
+
+```python
 import numpy as np
 import onnx
 import onnxruntime
