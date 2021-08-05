@@ -247,13 +247,25 @@ def test_run_model(inputs=[{', '.join(numpy_input_str)}]):''',
               f"OpCodeGenerator is unimplemented for {n.op_type}.")
       else:
         try:
+          print(f"op_code_gen: {op_code_gen}")
+          print(f"n.op_type: {n.op_type}")
           if hasattr(op_code_gen,
                      "gen_method") and n.op_type not in self.method_parts:
+            print("Point 1")
             self.method_parts[n.op_type] = op_code_gen.gen_method()
+            print("Point 2")
+          print("Point 2A")
+          """
+          gened = op_code_gen.gen(n, value_infos, initializers, self.rename_helper,
+                              self.tensor_inplace)
+          """
           gened = op_code_gen.gen(n, value_infos, initializers)
+          print("Point 3")
           self.add_init_part(gened["init"])
+          print("Point 4")
           self.add_forward_part(gened["forward"])
         except BaseException as e:
+          print(f"e: {e}")
           if self.continue_on_error:
             logging.warning(e)
             self.add_forward_part(n.__repr__())
@@ -316,7 +328,7 @@ def get_model_code_generator(
     assert os.path.isfile(onnx_model), f"{onnx_model} is not a file."
     assert os.path.exists(
         output_dir
-    ) and overwrite is not True, f"{output_dir} is not empty and overwrite is not True."
+    ) and overwrite, f"{output_dir} is not empty and overwrite is not True."
     assert os.path.isdir(output_dir), f"{output_dir} is not directory."
     kwargs["onnx_model"] = onnx.load(onnx_model)
   if overwrite:
