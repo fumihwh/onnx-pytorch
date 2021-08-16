@@ -115,12 +115,17 @@ def _gen_op_maker(schema):
   if len(schema.inputs) != 0:
     inputs_args.append("")
 
-  outputs_str = f'[f"{TENSOR_PREFIX}{onnx_op}_{{idx}}"]'
+  outputs_str = [
+      f"f'{TENSOR_PREFIX}{onnx_op}_{{idx}}_{i.name}'" for i in schema.outputs
+  ]
+  # outputs_str = f'[f"{TENSOR_PREFIX}{onnx_op}_{{idx}}"]'
   if schema.name == "Split":
     if schema.since_version == 13:
       outputs_str = f'[f"{TENSOR_PREFIX}{onnx_op}_{{idx}}_{{i}}" for i in range(len(split))]'
     else:
       outputs_str = f'[f"{TENSOR_PREFIX}{onnx_op}_{{idx}}_{{i}}" for i in range(len(kwargs["split"]))]'
+  if type(outputs_str) in (list,):
+    outputs_str = f"[{', '.join(outputs_str)}]"
 
   return f'''@onnx_mm_export("v{schema.since_version}.{onnx_op}")
 def {onnx_op}({', '.join(inputs_args)}**kwargs):
@@ -172,7 +177,9 @@ def gen(output_dir=None, overwrite=False):
       f.write(NEW_LINE.join(c))
   with open(os.path.join(output_dir, "__init__.py"), "w") as f:
     f.write(INIT_PY)
-    f.write(NEW_LINE.join([abs_op_contents[key] for key in sorted(abs_op_contents.keys())]))
+    f.write(
+        NEW_LINE.join(
+            [abs_op_contents[key] for key in sorted(abs_op_contents.keys())]))
     all_str = ', '.join([f'"{key}"' for key in sorted(abs_op_contents.keys())])
     f.write(f'''{NEW_LINE}__all__ = [\"Input\", \"Output\", {all_str}]''')
   with open(os.path.join(output_dir, "op_helper.py"), "w") as f:

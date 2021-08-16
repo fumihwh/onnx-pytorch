@@ -12,10 +12,10 @@ class SliceOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(SliceOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(
-        node, initializers, rename_helper)
+        node, initializers, self.rename_helper)
     init_str, forward_str = [], []
     d = len(value_infos[node.input[0]].type.tensor_type.shape.dim)
     starts, ends, axes, steps = self._get_starts_ends_axes_steps(
@@ -24,10 +24,15 @@ class SliceOpCodeGenerator(OpCodeGenerator):
     for i in range(d):
       if i in axes:
         j = axes.index(i)
-        s = [
-            str(starts[j]) if starts[j] != 0 else "",
-            str(ends[j]) if ends[j] < 2**31 else ""
-        ]
+        s = ["", ""]
+        if type(starts) == str and type(ends) == str:
+          s[0] = f'{starts}[{j}] if {starts}[{j}]'
+          s[1] = f'{ends}[{j}] if {ends}[{j}]'
+        else:
+          s = [
+              str(starts[j]) if starts[j] != 0 else "",
+              str(ends[j]) if ends[j] < 2**31 else ""
+          ]
         if steps[j] != 1:
           s.append(str(steps[j]))
         slice_str.append(":".join(s))
@@ -44,8 +49,14 @@ class SliceOpCodeGenerator(OpCodeGenerator):
     if self.onnx_ver > 1 and len(node.input) > 1:
       starts = initializers.get(node.input[1], None)
       ends = initializers.get(node.input[2], None)
-      starts = to_array(starts)
-      ends = to_array(ends)
+      if starts is None:
+        starts = node.input[1]
+      else:
+        starts = to_array(starts)
+      if ends is None:
+        ends = node.input[2]
+      else:
+        ends = to_array(ends)
       if len(node.input) > 3:
         axes = initializers.get(node.input[3], None)
       if len(node.input) > 4:
@@ -59,4 +70,4 @@ class SliceOpCodeGenerator(OpCodeGenerator):
       starts = attr_value_dict["starts"]
       ends = attr_value_dict["ends"]
       axes = attr_value_dict.get("axes", axes)
-    return starts, ends, axes, steps
+    return starts, ends, list(axes), list(steps)

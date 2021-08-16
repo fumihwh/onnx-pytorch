@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop, ci ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ ubuntu-18.04, macos-10.15 ]
+        python-version: [ 3.6, 3.9 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Cache ONNX model zoo
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-onnx-model-zoo
+      with:
+        path: ~/onnx_model_zoo
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/version.txt') }}
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install sympy yapf pytest tqdm
+        pip install -e .
+    - name: Test format
+      run: |
+        yapf -ri onnx_pytorch --exclude onnx_model_maker/ops
+        if [ $(git diff --cached --exit-code HEAD -- >/dev/null && (git ls-files --other --exclude-standard --directory | grep -c -v '/$')) != 0 ]; then
+          echo "yapf formatter check failed."
+          exit 1
+        else
+          echo "yapf formatter check passed."
+        fi
+        exit 0
+    - name: Test with pytest
+      run: |
+        pytest onnx_pytorch/tests

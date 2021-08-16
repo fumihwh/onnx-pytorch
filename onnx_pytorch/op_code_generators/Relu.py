@@ -11,12 +11,9 @@ class ReluOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(ReluOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     inputs_str, outputs_str = self.gen_input_output_string(
-        node, initializers, rename_helper, tensor_inplace)
-    nn_name = "ReLU"
-    node_name = rename_helper.get_node_name(node.name, node.op_type)
+        node, initializers, self.rename_helper, self.tensor_inplace)
     init_str, forward_str = [], []
-    init_str.append(f"self.{node_name} = nn.{nn_name}()")
-    forward_str.append(f"{outputs_str[0]} = self.{node_name}({inputs_str[0]})")
+    forward_str.append(f"{outputs_str[0]} = F.relu({inputs_str[0]})")
     return {"init": init_str, "forward": forward_str}

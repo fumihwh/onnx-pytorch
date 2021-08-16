@@ -17,7 +17,7 @@ def RoiAlign(X, rois, batch_indices, **kwargs):
   idx = omm.op_counter["RoiAlign"]
   omm.op_counter["RoiAlign"] += 1
   node = onnx.helper.make_node("RoiAlign",
-                               _inputs, [f"_t_RoiAlign_{idx}"],
+                               _inputs, [f'_t_RoiAlign_{idx}_Y'],
                                name=f"RoiAlign_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -34,7 +34,7 @@ def ReverseSequence(input, sequence_lens, **kwargs):
   idx = omm.op_counter["ReverseSequence"]
   omm.op_counter["ReverseSequence"] += 1
   node = onnx.helper.make_node("ReverseSequence",
-                               _inputs, [f"_t_ReverseSequence_{idx}"],
+                               _inputs, [f'_t_ReverseSequence_{idx}_Y'],
                                name=f"ReverseSequence_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -51,7 +51,7 @@ def NonMaxSuppression(boxes, scores, max_output_boxes_per_class=None, iou_thresh
   idx = omm.op_counter["NonMaxSuppression"]
   omm.op_counter["NonMaxSuppression"] += 1
   node = onnx.helper.make_node("NonMaxSuppression",
-                               _inputs, [f"_t_NonMaxSuppression_{idx}"],
+                               _inputs, [f'_t_NonMaxSuppression_{idx}_selected_indices'],
                                name=f"NonMaxSuppression_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -68,7 +68,7 @@ def IsInf(X, **kwargs):
   idx = omm.op_counter["IsInf"]
   omm.op_counter["IsInf"] += 1
   node = onnx.helper.make_node("IsInf",
-                               _inputs, [f"_t_IsInf_{idx}"],
+                               _inputs, [f'_t_IsInf_{idx}_Y'],
                                name=f"IsInf_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -85,7 +85,7 @@ def QuantizeLinear(x, y_scale, y_zero_point=None, **kwargs):
   idx = omm.op_counter["QuantizeLinear"]
   omm.op_counter["QuantizeLinear"] += 1
   node = onnx.helper.make_node("QuantizeLinear",
-                               _inputs, [f"_t_QuantizeLinear_{idx}"],
+                               _inputs, [f'_t_QuantizeLinear_{idx}_y'],
                                name=f"QuantizeLinear_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -102,7 +102,7 @@ def QLinearConv(x, x_scale, x_zero_point, w, w_scale, w_zero_point, y_scale, y_z
   idx = omm.op_counter["QLinearConv"]
   omm.op_counter["QLinearConv"] += 1
   node = onnx.helper.make_node("QLinearConv",
-                               _inputs, [f"_t_QLinearConv_{idx}"],
+                               _inputs, [f'_t_QLinearConv_{idx}_y'],
                                name=f"QLinearConv_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -119,7 +119,7 @@ def ConvInteger(x, w, x_zero_point=None, w_zero_point=None, **kwargs):
   idx = omm.op_counter["ConvInteger"]
   omm.op_counter["ConvInteger"] += 1
   node = onnx.helper.make_node("ConvInteger",
-                               _inputs, [f"_t_ConvInteger_{idx}"],
+                               _inputs, [f'_t_ConvInteger_{idx}_y'],
                                name=f"ConvInteger_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -136,7 +136,7 @@ def QLinearMatMul(a, a_scale, a_zero_point, b, b_scale, b_zero_point, y_scale, y
   idx = omm.op_counter["QLinearMatMul"]
   omm.op_counter["QLinearMatMul"] += 1
   node = onnx.helper.make_node("QLinearMatMul",
-                               _inputs, [f"_t_QLinearMatMul_{idx}"],
+                               _inputs, [f'_t_QLinearMatMul_{idx}_y'],
                                name=f"QLinearMatMul_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -153,7 +153,7 @@ def MatMulInteger(A, B, a_zero_point=None, b_zero_point=None, **kwargs):
   idx = omm.op_counter["MatMulInteger"]
   omm.op_counter["MatMulInteger"] += 1
   node = onnx.helper.make_node("MatMulInteger",
-                               _inputs, [f"_t_MatMulInteger_{idx}"],
+                               _inputs, [f'_t_MatMulInteger_{idx}_Y'],
                                name=f"MatMulInteger_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -170,7 +170,7 @@ def StringNormalizer(X, **kwargs):
   idx = omm.op_counter["StringNormalizer"]
   omm.op_counter["StringNormalizer"] += 1
   node = onnx.helper.make_node("StringNormalizer",
-                               _inputs, [f"_t_StringNormalizer_{idx}"],
+                               _inputs, [f'_t_StringNormalizer_{idx}_Y'],
                                name=f"StringNormalizer_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -187,7 +187,7 @@ def Mod(A, B, **kwargs):
   idx = omm.op_counter["Mod"]
   omm.op_counter["Mod"] += 1
   node = onnx.helper.make_node("Mod",
-                               _inputs, [f"_t_Mod_{idx}"],
+                               _inputs, [f'_t_Mod_{idx}_C'],
                                name=f"Mod_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -204,7 +204,7 @@ def DequantizeLinear(x, x_scale, x_zero_point=None, **kwargs):
   idx = omm.op_counter["DequantizeLinear"]
   omm.op_counter["DequantizeLinear"] += 1
   node = onnx.helper.make_node("DequantizeLinear",
-                               _inputs, [f"_t_DequantizeLinear_{idx}"],
+                               _inputs, [f'_t_DequantizeLinear_{idx}_y'],
                                name=f"DequantizeLinear_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -221,7 +221,7 @@ def ThresholdedRelu(X, **kwargs):
   idx = omm.op_counter["ThresholdedRelu"]
   omm.op_counter["ThresholdedRelu"] += 1
   node = onnx.helper.make_node("ThresholdedRelu",
-                               _inputs, [f"_t_ThresholdedRelu_{idx}"],
+                               _inputs, [f'_t_ThresholdedRelu_{idx}_Y'],
                                name=f"ThresholdedRelu_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -238,7 +238,7 @@ def Upsample(X, scales, **kwargs):
   idx = omm.op_counter["Upsample"]
   omm.op_counter["Upsample"] += 1
   node = onnx.helper.make_node("Upsample",
-                               _inputs, [f"_t_Upsample_{idx}"],
+                               _inputs, [f'_t_Upsample_{idx}_Y'],
                                name=f"Upsample_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -255,7 +255,7 @@ def Slice(data, starts, ends, axes=None, steps=None, **kwargs):
   idx = omm.op_counter["Slice"]
   omm.op_counter["Slice"] += 1
   node = onnx.helper.make_node("Slice",
-                               _inputs, [f"_t_Slice_{idx}"],
+                               _inputs, [f'_t_Slice_{idx}_output'],
                                name=f"Slice_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -272,7 +272,7 @@ def TopK(X, K, **kwargs):
   idx = omm.op_counter["TopK"]
   omm.op_counter["TopK"] += 1
   node = onnx.helper.make_node("TopK",
-                               _inputs, [f"_t_TopK_{idx}"],
+                               _inputs, [f'_t_TopK_{idx}_Values', f'_t_TopK_{idx}_Indices'],
                                name=f"TopK_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -289,7 +289,7 @@ def Resize(X, scales, **kwargs):
   idx = omm.op_counter["Resize"]
   omm.op_counter["Resize"] += 1
   node = onnx.helper.make_node("Resize",
-                               _inputs, [f"_t_Resize_{idx}"],
+                               _inputs, [f'_t_Resize_{idx}_Y'],
                                name=f"Resize_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -306,7 +306,7 @@ def MaxPool(X, **kwargs):
   idx = omm.op_counter["MaxPool"]
   omm.op_counter["MaxPool"] += 1
   node = onnx.helper.make_node("MaxPool",
-                               _inputs, [f"_t_MaxPool_{idx}"],
+                               _inputs, [f'_t_MaxPool_{idx}_Y', f'_t_MaxPool_{idx}_Indices'],
                                name=f"MaxPool_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -323,7 +323,7 @@ def Dropout(data, **kwargs):
   idx = omm.op_counter["Dropout"]
   omm.op_counter["Dropout"] += 1
   node = onnx.helper.make_node("Dropout",
-                               _inputs, [f"_t_Dropout_{idx}"],
+                               _inputs, [f'_t_Dropout_{idx}_output', f'_t_Dropout_{idx}_mask'],
                                name=f"Dropout_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -340,7 +340,7 @@ def AveragePool(X, **kwargs):
   idx = omm.op_counter["AveragePool"]
   omm.op_counter["AveragePool"] += 1
   node = onnx.helper.make_node("AveragePool",
-                               _inputs, [f"_t_AveragePool_{idx}"],
+                               _inputs, [f'_t_AveragePool_{idx}_Y'],
                                name=f"AveragePool_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)

@@ -11,14 +11,13 @@ class SoftmaxOpCodeGenerator(OpCodeGenerator):
                torch_ver=torch.__version__):
     super(SoftmaxOpCodeGenerator, self).__init__(onnx_ver, torch_ver)
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(
-        node, initializers, rename_helper, tensor_inplace)
+        node, initializers, self.rename_helper, self.tensor_inplace)
     init_str, forward_str = [], []
 
-    node_name = rename_helper.get_node_name(node.name, node.op_type)
     params_str = self.gen_params_str(dim=attr_value_dict["axis"])
-    init_str.append(f"self.{node_name} = nn.{self.onnx_op}(**{{{params_str}}})")
-    forward_str.append(f"{outputs_str[0]} = self.{node_name}({inputs_str[0]})")
+    forward_str.append(
+        f"{outputs_str[0]} = F.softmax({inputs_str[0]}, **{{{params_str}}})")
     return {"init": init_str, "forward": forward_str}

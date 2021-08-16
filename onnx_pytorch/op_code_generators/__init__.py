@@ -26,6 +26,11 @@ class OpCodeGenerator:
     self.onnx_op = self.__class__.__name__.replace("OpCodeGenerator", "")
     self.schema = onnx.defs.get_schema(self.onnx_op,
                                        max_inclusive_version=onnx_ver)
+
+    # Should inherit from ModelCodeGenerator
+    self.rename_helper = None
+    self.tensor_inplace = None
+
     if self.schema is not None:
       self.attr_default = {}
       for a, i in self.schema.attributes.items():
@@ -36,7 +41,7 @@ class OpCodeGenerator:
           logging.warning(
               f"Cannot get default value for {a} of {self.onnx_op}.")
 
-  def gen(self, node, value_infos, initializers, rename_helper, tensor_inplace):
+  def gen(self, node, value_infos, initializers):
     raise Exception
 
   def get_attr_value_dict(self, node):
@@ -70,6 +75,7 @@ class OpCodeGenerator:
         if idx == 1 \
             and i == 0 \
             and tensor_inplace \
+            and len(node.input) > 0 \
             and node.input[0] not in initializers \
             and rename_helper.tensor_name_counter[f[i]] == 2 \
             and rename_helper.tensor_name_counter[node.input[0]] == 2:
@@ -80,7 +86,7 @@ class OpCodeGenerator:
           tensor_name = f[i]
         formatter = "{}"
         if tensor_name in initializers:
-          formatter = "self.__vars[\"{}\"]"
+          formatter = "self._vars[\"{}\"]"
         s = formatter.format(rename_helper.get_tensor_name(tensor_name))
         ls.append(s)
 
@@ -92,6 +98,31 @@ class OpCodeGenerator:
       v_str = v if type(v) == str else v.__repr__()
       params.append(f"'{k}': {v_str}")
     return ', '.join(params).__repr__()[1:-1]
+
+  def check_in_init(self, targets, initializers):
+    lacks = []
+    rs = [None] * len(targets)
+    for i, (t, n) in enumerate(targets):
+      init = initializers.get(n, None)
+      if init is None:
+        lacks.append(n)
+      rs[i] = init
+    if lacks:
+      raise Exception(
+          f"Currently {self.__class__} only support all of {lacks.__repr__()} is in initializers."
+      )
+    return rs
+
+  def get_shape(self, value, value_infos):
+    if value not in value_infos:
+      return None
+    shape = []
+    for d in value_infos[value].type.tensor_type.shape.dim:
+      if d.dim_param != "":
+        shape.append(-1)
+      else:
+        shape.append(d.dim_value)
+    return shape
 
 
 class ReduceOpCodeGenerator(OpCodeGenerator):
@@ -125,3 +156,7 @@ def get_op_code_generator(op, **kwargs):
     return None
   __op_gen_dict[op_code_gen_name] = getattr(mod, op_code_gen_name)(**kwargs)
   return __op_gen_dict[op_code_gen_name]
+
+
+def clear_op_code_generator():
+  __op_gen_dict = {}

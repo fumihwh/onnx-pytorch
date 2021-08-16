@@ -17,7 +17,7 @@ def LabelEncoder(X, **kwargs):
   idx = omm.op_counter["LabelEncoder"]
   omm.op_counter["LabelEncoder"] += 1
   node = onnx.helper.make_node("LabelEncoder",
-                               _inputs, [f"_t_LabelEncoder_{idx}"],
+                               _inputs, [f'_t_LabelEncoder_{idx}_Y'],
                                name=f"LabelEncoder_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -51,7 +51,7 @@ def Pad(data, **kwargs):
   idx = omm.op_counter["Pad"]
   omm.op_counter["Pad"] += 1
   node = onnx.helper.make_node("Pad",
-                               _inputs, [f"_t_Pad_{idx}"],
+                               _inputs, [f'_t_Pad_{idx}_output'],
                                name=f"Pad_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -68,7 +68,7 @@ def LpPool(X, **kwargs):
   idx = omm.op_counter["LpPool"]
   omm.op_counter["LpPool"] += 1
   node = onnx.helper.make_node("LpPool",
-                               _inputs, [f"_t_LpPool_{idx}"],
+                               _inputs, [f'_t_LpPool_{idx}_Y'],
                                name=f"LpPool_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -85,7 +85,7 @@ def GlobalLpPool(X, **kwargs):
   idx = omm.op_counter["GlobalLpPool"]
   omm.op_counter["GlobalLpPool"] += 1
   node = onnx.helper.make_node("GlobalLpPool",
-                               _inputs, [f"_t_GlobalLpPool_{idx}"],
+                               _inputs, [f'_t_GlobalLpPool_{idx}_Y'],
                                name=f"GlobalLpPool_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)

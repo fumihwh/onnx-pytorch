@@ -17,7 +17,7 @@ def Scan(sequence_lens, initial_state_and_scan_inputs, **kwargs):
   idx = omm.op_counter["Scan"]
   omm.op_counter["Scan"] += 1
   node = onnx.helper.make_node("Scan",
-                               _inputs, [f"_t_Scan_{idx}"],
+                               _inputs, [f'_t_Scan_{idx}_final_state_and_scan_outputs'],
                                name=f"Scan_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -34,7 +34,7 @@ def Expand(input, shape, **kwargs):
   idx = omm.op_counter["Expand"]
   omm.op_counter["Expand"] += 1
   node = onnx.helper.make_node("Expand",
-                               _inputs, [f"_t_Expand_{idx}"],
+                               _inputs, [f'_t_Expand_{idx}_output'],
                                name=f"Expand_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -51,7 +51,7 @@ def Max(data_0, **kwargs):
   idx = omm.op_counter["Max"]
   omm.op_counter["Max"] += 1
   node = onnx.helper.make_node("Max",
-                               _inputs, [f"_t_Max_{idx}"],
+                               _inputs, [f'_t_Max_{idx}_max'],
                                name=f"Max_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -68,7 +68,7 @@ def Sum(data_0, **kwargs):
   idx = omm.op_counter["Sum"]
   omm.op_counter["Sum"] += 1
   node = onnx.helper.make_node("Sum",
-                               _inputs, [f"_t_Sum_{idx}"],
+                               _inputs, [f'_t_Sum_{idx}_sum'],
                                name=f"Sum_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -85,7 +85,7 @@ def Mean(data_0, **kwargs):
   idx = omm.op_counter["Mean"]
   omm.op_counter["Mean"] += 1
   node = onnx.helper.make_node("Mean",
-                               _inputs, [f"_t_Mean_{idx}"],
+                               _inputs, [f'_t_Mean_{idx}_mean'],
                                name=f"Mean_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -102,7 +102,7 @@ def MaxPool(X, **kwargs):
   idx = omm.op_counter["MaxPool"]
   omm.op_counter["MaxPool"] += 1
   node = onnx.helper.make_node("MaxPool",
-                               _inputs, [f"_t_MaxPool_{idx}"],
+                               _inputs, [f'_t_MaxPool_{idx}_Y', f'_t_MaxPool_{idx}_Indices'],
                                name=f"MaxPool_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
@@ -119,7 +119,7 @@ def Min(data_0, **kwargs):
   idx = omm.op_counter["Min"]
   omm.op_counter["Min"] += 1
   node = onnx.helper.make_node("Min",
-                               _inputs, [f"_t_Min_{idx}"],
+                               _inputs, [f'_t_Min_{idx}_min'],
                                name=f"Min_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
