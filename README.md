@@ -4,8 +4,8 @@
 ![Build Status](https://github.com/fumihwh/onnx-pytorch/actions/workflows/main.yml/badge.svg?branch=main)
 
 
-Generating pytorch code from ONNX.
-Currently support `onnx==1.9.0` and `torch==1.8.1`.
+Generates PyTorch code from ONNX.
+Currently supports `onnx==1.9.0` and `torch==1.8.1`.
 
 ## Installation
 
@@ -23,7 +23,6 @@ pip install -e .
 
 
 ## Usage
-
 ### By Command Line
 ```
 python -m onnx_pytorch.code_gen -h
@@ -47,26 +46,26 @@ optional arguments:
 ```
 
 ### By Python
-```
+```python
 from onnx_pytorch import code_gen
 code_gen.gen("/path/to/onnx_model", "/path/to/output_dir")
 ```
 
-A `model.py` file and `variables` folder will be created under `output_dir`.
+A `model.py` file and `variables/` folder will be created under `output_dir/`.
 
 ## Tutorial
-- Download resnet18 onnx model
- 
+1. Download resnet18 ONNX model.
+
 ```wget https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet18-v2-7.onnx```
 
-- Use onnx-pytorch to generate pytorch code and variables.
-```
+2. Use `onnx-pytorch` to generate PyTorch code and variables.
+```python
 from onnx_pytorch import code_gen
 code_gen.gen("resnet18-v2-7.onnx", "./")
 ```
 
-- Test result
-```
+3. Test result.
+```python
 import numpy as np
 import onnx
 import onnxruntime
@@ -96,10 +95,7 @@ print(
                 rtol=1e-5))
 ```
 
-## TEST
-cd onnx_pytorch/tests/
-pytest -s test_base.py
-pytest -s test_base.py::TestBase::test_elu
-pytest -s test_base.py::TestBase::test_tanh
-pytest -s test_base.py::TestBase::test_sub
-
+## Test
+```bash
+pytest onnx_pytorch/tests
+```
