@@ -17,6 +17,7 @@ pip install onnx-pytorch
 - From source
 ```
 git clone https://github.com/fumihwh/onnx-pytorch.git
+cd onnx-pytorch
 pip install -r requirements.txt
 pip install -e .
 ```
