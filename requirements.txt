@@ -6,3 +6,5 @@ PyYAML==6.0
 setuptools==58.5.3
 torch==1.8.1
 tqdm==4.62.3
+sympy==1.9
+torchvision==0.9.1
