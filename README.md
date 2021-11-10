@@ -85,7 +85,7 @@ onnx_model = onnx.load("resnet18-v2-7.onnx")
 sess_options = onnxruntime.SessionOptions()
 session = onnxruntime.InferenceSession(onnx_model.SerializeToString(),
                                        sess_options)
-inputs = {"data": inp}
+inputs = {session.get_inputs()[0].name: inp}
 ort_outputs = session.run(None, inputs)
 
 print(
