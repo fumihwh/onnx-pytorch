@@ -9,5 +9,6 @@ six==1.15.0
 sympy==1.8
 torch==1.8.1
 typing-extensions==3.7.4.3
-torchvision
-PyYaml
+torchvision==0.9.1
+PyYAML==6.0
+tqdm==4.62.3
