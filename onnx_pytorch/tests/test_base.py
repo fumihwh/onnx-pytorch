@@ -742,6 +742,7 @@ class TestBase:
         ))
     self._run(list(zip(inputs, nps)))
 
+  @pytest.mark.skip(reason="https://github.com/pytorch/pytorch/issues/62237")
   def test_resize_downsample_sizes_linear_pytorch_half_pixel(self):
     reset_model(13)
     nps = [
@@ -1094,4 +1095,7 @@ class TestBase:
 
 
 if __name__ == '__main__':
-  pytest.main(['-s', 'test_base.py'])
+  pytest.main([
+      '-s',
+      'test_base.py::TestBase::test_resize_downsample_sizes_linear_pytorch_half_pixel'
+  ])
