@@ -123,11 +123,25 @@ class TestBase:
     Output(Acosh(inputs[0]))
     self._run(list(zip(inputs, nps)))
 
+  def test_tanh(self):
+    reset_model(13)
+    nps = [np.random.randn(5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Tanh(inputs[0]))
+    self._run(list(zip(inputs, nps)))
+
   def test_add(self):
     reset_model(13)
     nps = [np.random.randn(1, 10).astype(np.float32)]
     inputs = Input(*nps)
     Output(Add(inputs[0], np.random.randn(1, 10).astype(np.float32)))
+    self._run(list(zip(inputs, nps)))
+
+  def test_sub(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 10).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Sub(inputs[0], np.random.randn(1, 10).astype(np.float32)))
     self._run(list(zip(inputs, nps)))
 
   def test_and(self):
@@ -715,6 +729,13 @@ class TestBase:
     nps = [np.random.randn(1, 5).astype(np.float32)]
     inputs = Input(*nps)
     Output(Relu(inputs))
+    self._run(list(zip(inputs, nps)))
+
+  def test_elu(self):
+    reset_model(13)
+    nps = [np.random.randn(1, 5).astype(np.float32)]
+    inputs = Input(*nps)
+    Output(Elu(inputs))
     self._run(list(zip(inputs, nps)))
 
   def test_reshape(self):

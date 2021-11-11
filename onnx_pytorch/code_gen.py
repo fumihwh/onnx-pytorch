@@ -337,7 +337,7 @@ def main():
                       default=None,
                       type=str,
                       required=not debug,
-                      help="The onnx model path.")
+                      help="The ONNX model path.")
   parser.add_argument("--output_dir",
                       default=None,
                       type=str,
