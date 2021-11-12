@@ -1,5 +1,5 @@
 numpy==1.21.4
-onnx==1.9.0
+onnx==1.10.2
 onnxruntime==1.7.0
 pytest==6.2.5
 PyYAML==6.0
