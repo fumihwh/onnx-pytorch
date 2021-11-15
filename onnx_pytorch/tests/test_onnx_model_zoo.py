@@ -262,7 +262,6 @@ class TestModel:
         os.path.join(dir_path_tar, "test_data_set_0", "input_0.pb"))
     self._run([("image", to_array(image))], model)
 
-  @pytest.mark.skip(reason="https://github.com/pytorch/pytorch/issues/62237")
   def test_vision_object_detection_segmentation_mask_rcnn(self):
     dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision",
                             "object_detection_segmentation", "mask-rcnn")
