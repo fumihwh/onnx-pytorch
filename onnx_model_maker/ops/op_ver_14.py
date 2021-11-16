@@ -153,7 +153,7 @@ def BatchNormalization(X, scale, B, input_mean, input_var, **kwargs):
   idx = omm.op_counter["BatchNormalization"]
   omm.op_counter["BatchNormalization"] += 1
   node = onnx.helper.make_node("BatchNormalization",
-                               _inputs, [f'_t_BatchNormalization_{idx}_Y', f'_t_BatchNormalization_{idx}_running_mean', f'_t_BatchNormalization_{idx}_running_var'],
+                               _inputs, [f'_t_BatchNormalization_{idx}_Y'],
                                name=f"BatchNormalization_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
