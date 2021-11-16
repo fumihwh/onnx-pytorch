@@ -78,7 +78,7 @@ def Input(*args):
   return inputs
 
 
-def Output(*args):
+def Output(*args, output_num=None):
   for i, a in enumerate(args):
     if type(a) == numpy.ndarray:
       t = onnx.numpy_helper.from_array(a)
@@ -89,7 +89,9 @@ def Output(*args):
       vi = onnx.helper.make_empty_tensor_value_info(a)
       omm.model.graph.output.append(vi)
     elif type(a) == onnx.NodeProto:
-      for o in a.output:
+      for j, o in enumerate(a.output):
+        if output_num is not None and j == output_num:
+          break
         vi = onnx.helper.make_empty_tensor_value_info(o)
         omm.model.graph.output.append(vi)
     else:
@@ -124,6 +126,8 @@ def _gen_op_maker(schema):
       outputs_str = f'[f"{TENSOR_PREFIX}{onnx_op}_{{idx}}_{{i}}" for i in range(len(split))]'
     else:
       outputs_str = f'[f"{TENSOR_PREFIX}{onnx_op}_{{idx}}_{{i}}" for i in range(len(kwargs["split"]))]'
+  if schema.name == "BatchNormalization":
+    outputs_str = [outputs_str[0]]
   if type(outputs_str) in (list,):
     outputs_str = f"[{', '.join(outputs_str)}]"
 
