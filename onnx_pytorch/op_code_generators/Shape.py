@@ -16,5 +16,5 @@ class ShapeOpCodeGenerator(OpCodeGenerator):
         node, initializers, self.rename_helper, self.tensor_inplace)
     init_str, forward_str = [], []
     forward_str.append(
-        f"{outputs_str[0]} = torch.tensor({inputs_str[0]}.shape)")
+        f"{outputs_str[0]} = torch.tensor({inputs_str[0]}.shape, device={inputs_str[0]}.device)")
     return {"init": init_str, "forward": forward_str}

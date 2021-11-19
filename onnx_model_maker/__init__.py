@@ -2,9 +2,8 @@ import collections
 import sys
 
 import onnx
-from onnx import IR_VERSION
 import onnx.onnx_cpp2py_export.checker as C
-from onnx.helper import make_model, make_opsetid
+from onnx.helper import make_opsetid, make_model_gen_version
 
 __all__ = ["omm", "mod_name", "reset_model", "set_model", "onnx_mm_export"]
 
@@ -16,11 +15,11 @@ class OnnxModelMaker:
 
   def __init__(self, opset_ver=OPSET_VER):
     self.opset_import = make_opsetid("", opset_ver)
-    self.model = make_model(onnx.GraphProto(),
-                            opset_imports=[self.opset_import])
+    self.model = make_model_gen_version(onnx.GraphProto(),
+                                        opset_imports=[self.opset_import])
     self.op_counter = collections.Counter()
     self.ctx = C.CheckerContext()
-    self.ctx.ir_version = IR_VERSION
+    self.ctx.ir_version = self.model.ir_version
     self.ctx.opset_imports = {'': opset_ver}
 
   def reset_model(self, opset_ver=None):
@@ -28,7 +27,8 @@ class OnnxModelMaker:
       opset_imports = [make_opsetid("", opset_ver)]
     else:
       opset_imports = [self.opset_import]
-    self.model = make_model(onnx.GraphProto(), opset_imports=opset_imports)
+    self.model = make_model_gen_version(onnx.GraphProto(),
+                                        opset_imports=opset_imports)
     self.op_counter = collections.Counter()
 
   def set_model(self, model):

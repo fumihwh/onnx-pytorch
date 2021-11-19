@@ -778,10 +778,13 @@ class TestBase:
     ]
     inputs = Input(*nps)
     Output(
-        Resize(*inputs,
-               np.array([1, 1, 3, 1], dtype=np.int64),
-               mode='linear',
-               coordinate_transformation_mode='pytorch_half_pixel'))
+        Resize(
+            *inputs,
+            np.array([1, 1, 3, 1], dtype=np.int64),
+            mode='linear',
+            # Changed from pytorch_half_pixel(1.8.1) to half_pixel(1.9.0) due to
+            # https://github.com/pytorch/pytorch/issues/62237
+            coordinate_transformation_mode='half_pixel'))
     self._run(list(zip(inputs, nps)))
 
   def test_resize_pt_nearest(self):
