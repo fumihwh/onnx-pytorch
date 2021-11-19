@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 
-version_str = open("version.txt", "r").read().strip()
+exec(open('onnx_pytorch/_version.py').read())
+version_str = __version__
 
 with open('requirements.txt') as f:
     REQUIRED = f.read().splitlines()
