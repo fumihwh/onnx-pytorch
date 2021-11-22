@@ -5,7 +5,6 @@
 
 
 Generates PyTorch code from ONNX.
-Currently supports `onnx==1.10.2` and `torch==1.10.0`.
 
 ## Installation
 
