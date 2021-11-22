@@ -147,8 +147,8 @@ class TestBase:
   def test_and(self):
     reset_model(13)
     nps = [
-        np.random.randint(low=0, high=1, size=(5,)).astype(np.bool),
-        np.random.randint(low=0, high=1, size=(5,)).astype(np.bool)
+        np.random.randint(low=0, high=1, size=(5,)).astype(bool),
+        np.random.randint(low=0, high=1, size=(5,)).astype(bool)
     ]
     inputs = Input(*nps)
     Output(And(*inputs))
@@ -665,7 +665,7 @@ class TestBase:
 
   def test_non_zero(self):
     reset_model(13)
-    nps = [np.array([[1, 0], [1, 1]], dtype=np.bool)]
+    nps = [np.array([[1, 0], [1, 1]], dtype=bool)]
     inputs = Input(*nps)
     Output(NonZero(*inputs))
     self._run(list(zip(inputs, nps)))
