@@ -3,6 +3,9 @@ from setuptools import setup, find_packages
 exec(open('onnx_pytorch/_version.py').read())
 version_str = __version__
 
+with open('requirements.txt') as f:
+    REQUIRED = f.read().splitlines()
+
 setup(name="onnx-pytorch",
       version=version_str,
       description="Convert ONNX to PyTorch code.",
@@ -13,8 +16,6 @@ setup(name="onnx-pytorch",
       url="https://github.com/fumihwh/onnx-pytorch",
       packages=find_packages(),
       license="Apache 2.0",
-      install_requires=[
-          "numpy", "torch", "torchvision", "onnx", "onnxruntime", "PyYaml"
-      ],
+      install_requires=REQUIRED,
       scripts=["onnx_pytorch/code_gen.py"],
       classifiers=["Programming Language :: Python :: 3"])
