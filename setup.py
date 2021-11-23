@@ -1,10 +1,13 @@
+import os
 from setuptools import setup, find_packages
 
-exec(open('onnx_pytorch/_version.py').read())
+cwd = os.getcwd()
+
+exec(open(os.path.join(cwd, 'onnx_pytorch/_version.py')).read())
 version_str = __version__
 
-with open('requirements.txt') as f:
-    REQUIRED = f.read().splitlines()
+with open(os.path.join(cwd, 'requirements.txt')) as f:
+  REQUIRED = f.read().splitlines()
 
 setup(name="onnx-pytorch",
       version=version_str,
