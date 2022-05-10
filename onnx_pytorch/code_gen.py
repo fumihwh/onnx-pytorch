@@ -314,9 +314,9 @@ def get_model_code_generator(
     assert os.path.exists(
         onnx_model), f"ONNX model {onnx_model} does not exist."
     assert os.path.isfile(onnx_model), f"{onnx_model} is not a file."
-    assert os.path.exists(
+    assert not os.path.exists(
         output_dir
-    ) and overwrite is not True, f"{output_dir} is not empty and overwrite is not True."
+    ) or overwrite, f"{output_dir} is not empty and overwrite is not True."
     assert os.path.isdir(output_dir), f"{output_dir} is not directory."
     kwargs["onnx_model"] = onnx.load(onnx_model)
   if overwrite:
