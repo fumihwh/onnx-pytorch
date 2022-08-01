@@ -8,6 +8,23 @@ from onnx_model_maker import onnx_mm_export
 from onnx_model_maker.ops.op_helper import _add_input
 
 
+@onnx_mm_export("v9.Gemm")
+def Gemm(A, B, C, **kwargs):
+  _inputs = []
+  for i in (A, B, C):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Gemm"]
+  omm.op_counter["Gemm"] += 1
+  node = onnx.helper.make_node("Gemm",
+                               _inputs, [f'_t_Gemm_{idx}_Y'],
+                               name=f"Gemm_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v9.MeanVarianceNormalization")
 def MeanVarianceNormalization(X, **kwargs):
   _inputs = []
@@ -314,6 +331,23 @@ def Erf(input, **kwargs):
   return node
 
 
+@onnx_mm_export("v9.Atanh")
+def Atanh(input, **kwargs):
+  _inputs = []
+  for i in (input, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Atanh"]
+  omm.op_counter["Atanh"] += 1
+  node = onnx.helper.make_node("Atanh",
+                               _inputs, [f'_t_Atanh_{idx}_output'],
+                               name=f"Atanh_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v9.Asinh")
 def Asinh(input, **kwargs):
   _inputs = []
@@ -416,6 +450,23 @@ def Cast(input, **kwargs):
   return node
 
 
+@onnx_mm_export("v9.Less")
+def Less(A, B, **kwargs):
+  _inputs = []
+  for i in (A, B):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Less"]
+  omm.op_counter["Less"] += 1
+  node = onnx.helper.make_node("Less",
+                               _inputs, [f'_t_Less_{idx}_C'],
+                               name=f"Less_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v9.PRelu")
 def PRelu(X, slope, **kwargs):
   _inputs = []
@@ -427,23 +478,6 @@ def PRelu(X, slope, **kwargs):
   node = onnx.helper.make_node("PRelu",
                                _inputs, [f'_t_PRelu_{idx}_Y'],
                                name=f"PRelu_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v9.Atanh")
-def Atanh(input, **kwargs):
-  _inputs = []
-  for i in (input, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Atanh"]
-  omm.op_counter["Atanh"] += 1
-  node = onnx.helper.make_node("Atanh",
-                               _inputs, [f'_t_Atanh_{idx}_output'],
-                               name=f"Atanh_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -478,40 +512,6 @@ def Constant(**kwargs):
   node = onnx.helper.make_node("Constant",
                                _inputs, [f'_t_Constant_{idx}_output'],
                                name=f"Constant_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v9.Less")
-def Less(A, B, **kwargs):
-  _inputs = []
-  for i in (A, B):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Less"]
-  omm.op_counter["Less"] += 1
-  node = onnx.helper.make_node("Less",
-                               _inputs, [f'_t_Less_{idx}_C'],
-                               name=f"Less_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v9.Gemm")
-def Gemm(A, B, C, **kwargs):
-  _inputs = []
-  for i in (A, B, C):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Gemm"]
-  omm.op_counter["Gemm"] += 1
-  node = onnx.helper.make_node("Gemm",
-                               _inputs, [f'_t_Gemm_{idx}_Y'],
-                               name=f"Gemm_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)

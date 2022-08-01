@@ -178,23 +178,6 @@ def LSTM(X, W, R, B=None, sequence_lens=None, initial_h=None, initial_c=None, P=
   return node
 
 
-@onnx_mm_export("v14.Identity")
-def Identity(input, **kwargs):
-  _inputs = []
-  for i in (input, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Identity"]
-  omm.op_counter["Identity"] += 1
-  node = onnx.helper.make_node("Identity",
-                               _inputs, [f'_t_Identity_{idx}_output'],
-                               name=f"Identity_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v14.GRU")
 def GRU(X, W, R, B=None, sequence_lens=None, initial_h=None, **kwargs):
   _inputs = []
@@ -206,6 +189,23 @@ def GRU(X, W, R, B=None, sequence_lens=None, initial_h=None, **kwargs):
   node = onnx.helper.make_node("GRU",
                                _inputs, [f'_t_GRU_{idx}_Y', f'_t_GRU_{idx}_Y_h'],
                                name=f"GRU_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v14.Identity")
+def Identity(input, **kwargs):
+  _inputs = []
+  for i in (input, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Identity"]
+  omm.op_counter["Identity"] += 1
+  node = onnx.helper.make_node("Identity",
+                               _inputs, [f'_t_Identity_{idx}_output'],
+                               name=f"Identity_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)

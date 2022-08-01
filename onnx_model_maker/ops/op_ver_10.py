@@ -246,17 +246,17 @@ def Upsample(X, scales, **kwargs):
   return node
 
 
-@onnx_mm_export("v10.Slice")
-def Slice(data, starts, ends, axes=None, steps=None, **kwargs):
+@onnx_mm_export("v10.AveragePool")
+def AveragePool(X, **kwargs):
   _inputs = []
-  for i in (data, starts, ends, axes, steps):
+  for i in (X, ):
     _add_input(i, _inputs)
 
-  idx = omm.op_counter["Slice"]
-  omm.op_counter["Slice"] += 1
-  node = onnx.helper.make_node("Slice",
-                               _inputs, [f'_t_Slice_{idx}_output'],
-                               name=f"Slice_{idx}",
+  idx = omm.op_counter["AveragePool"]
+  omm.op_counter["AveragePool"] += 1
+  node = onnx.helper.make_node("AveragePool",
+                               _inputs, [f'_t_AveragePool_{idx}_Y'],
+                               name=f"AveragePool_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -274,6 +274,23 @@ def TopK(X, K, **kwargs):
   node = onnx.helper.make_node("TopK",
                                _inputs, [f'_t_TopK_{idx}_Values', f'_t_TopK_{idx}_Indices'],
                                name=f"TopK_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v10.Slice")
+def Slice(data, starts, ends, axes=None, steps=None, **kwargs):
+  _inputs = []
+  for i in (data, starts, ends, axes, steps):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Slice"]
+  omm.op_counter["Slice"] += 1
+  node = onnx.helper.make_node("Slice",
+                               _inputs, [f'_t_Slice_{idx}_output'],
+                               name=f"Slice_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -325,23 +342,6 @@ def Dropout(data, **kwargs):
   node = onnx.helper.make_node("Dropout",
                                _inputs, [f'_t_Dropout_{idx}_output', f'_t_Dropout_{idx}_mask'],
                                name=f"Dropout_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v10.AveragePool")
-def AveragePool(X, **kwargs):
-  _inputs = []
-  for i in (X, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["AveragePool"]
-  omm.op_counter["AveragePool"] += 1
-  node = onnx.helper.make_node("AveragePool",
-                               _inputs, [f'_t_AveragePool_{idx}_Y'],
-                               name=f"AveragePool_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)

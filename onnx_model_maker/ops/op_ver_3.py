@@ -8,6 +8,40 @@ from onnx_model_maker import onnx_mm_export
 from onnx_model_maker.ops.op_helper import _add_input
 
 
+@onnx_mm_export("v3.TreeEnsembleClassifier")
+def TreeEnsembleClassifier(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["TreeEnsembleClassifier"]
+  omm.op_counter["TreeEnsembleClassifier"] += 1
+  node = onnx.helper.make_node("TreeEnsembleClassifier",
+                               _inputs, [f'_t_TreeEnsembleClassifier_{idx}_Y', f'_t_TreeEnsembleClassifier_{idx}_Z'],
+                               name=f"TreeEnsembleClassifier_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v3.TreeEnsembleRegressor")
+def TreeEnsembleRegressor(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["TreeEnsembleRegressor"]
+  omm.op_counter["TreeEnsembleRegressor"] += 1
+  node = onnx.helper.make_node("TreeEnsembleRegressor",
+                               _inputs, [f'_t_TreeEnsembleRegressor_{idx}_Y'],
+                               name=f"TreeEnsembleRegressor_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v3.GRU")
 def GRU(X, W, R, B=None, sequence_lens=None, initial_h=None, **kwargs):
   _inputs = []

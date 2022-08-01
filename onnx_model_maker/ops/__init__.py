@@ -178,6 +178,14 @@ def BatchNormalization(*args, **kwargs):
                  f"v{schema.since_version}.BatchNormalization")(*args, **kwargs)
 
 
+def Bernoulli(*args, **kwargs):
+  schema = onnx.defs.get_schema("Bernoulli",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.Bernoulli")(*args, **kwargs)
+
+
 def Binarizer(*args, **kwargs):
   schema = onnx.defs.get_schema("Binarizer",
                                 max_inclusive_version=OPSET_VER,
@@ -194,12 +202,28 @@ def BitShift(*args, **kwargs):
                  f"v{schema.since_version}.BitShift")(*args, **kwargs)
 
 
+def BlackmanWindow(*args, **kwargs):
+  schema = onnx.defs.get_schema("BlackmanWindow",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.BlackmanWindow")(*args, **kwargs)
+
+
 def Cast(*args, **kwargs):
   schema = onnx.defs.get_schema("Cast",
                                 max_inclusive_version=OPSET_VER,
                                 domain="")
   return getattr(sys.modules[f"{mod_name}.ops"], 
                  f"v{schema.since_version}.Cast")(*args, **kwargs)
+
+
+def CastLike(*args, **kwargs):
+  schema = onnx.defs.get_schema("CastLike",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.CastLike")(*args, **kwargs)
 
 
 def CastMap(*args, **kwargs):
@@ -328,6 +352,14 @@ def CumSum(*args, **kwargs):
                                 domain="")
   return getattr(sys.modules[f"{mod_name}.ops"], 
                  f"v{schema.since_version}.CumSum")(*args, **kwargs)
+
+
+def DFT(*args, **kwargs):
+  schema = onnx.defs.get_schema("DFT",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.DFT")(*args, **kwargs)
 
 
 def DepthToSpace(*args, **kwargs):
@@ -554,6 +586,30 @@ def GreaterOrEqual(*args, **kwargs):
                  f"v{schema.since_version}.GreaterOrEqual")(*args, **kwargs)
 
 
+def GridSample(*args, **kwargs):
+  schema = onnx.defs.get_schema("GridSample",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.GridSample")(*args, **kwargs)
+
+
+def HammingWindow(*args, **kwargs):
+  schema = onnx.defs.get_schema("HammingWindow",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.HammingWindow")(*args, **kwargs)
+
+
+def HannWindow(*args, **kwargs):
+  schema = onnx.defs.get_schema("HannWindow",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.HannWindow")(*args, **kwargs)
+
+
 def HardSigmoid(*args, **kwargs):
   schema = onnx.defs.get_schema("HardSigmoid",
                                 max_inclusive_version=OPSET_VER,
@@ -648,6 +704,14 @@ def LabelEncoder(*args, **kwargs):
                                 domain="")
   return getattr(sys.modules[f"{mod_name}.ops"], 
                  f"v{schema.since_version}.LabelEncoder")(*args, **kwargs)
+
+
+def LayerNormalization(*args, **kwargs):
+  schema = onnx.defs.get_schema("LayerNormalization",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.LayerNormalization")(*args, **kwargs)
 
 
 def LeakyRelu(*args, **kwargs):
@@ -794,6 +858,14 @@ def MeanVarianceNormalization(*args, **kwargs):
                  f"v{schema.since_version}.MeanVarianceNormalization")(*args, **kwargs)
 
 
+def MelWeightMatrix(*args, **kwargs):
+  schema = onnx.defs.get_schema("MelWeightMatrix",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.MelWeightMatrix")(*args, **kwargs)
+
+
 def Min(*args, **kwargs):
   schema = onnx.defs.get_schema("Min",
                                 max_inclusive_version=OPSET_VER,
@@ -896,6 +968,30 @@ def OneHotEncoder(*args, **kwargs):
                                 domain="")
   return getattr(sys.modules[f"{mod_name}.ops"], 
                  f"v{schema.since_version}.OneHotEncoder")(*args, **kwargs)
+
+
+def Optional(*args, **kwargs):
+  schema = onnx.defs.get_schema("Optional",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.Optional")(*args, **kwargs)
+
+
+def OptionalGetElement(*args, **kwargs):
+  schema = onnx.defs.get_schema("OptionalGetElement",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.OptionalGetElement")(*args, **kwargs)
+
+
+def OptionalHasElement(*args, **kwargs):
+  schema = onnx.defs.get_schema("OptionalHasElement",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.OptionalHasElement")(*args, **kwargs)
 
 
 def Or(*args, **kwargs):
@@ -1138,6 +1234,14 @@ def Round(*args, **kwargs):
                  f"v{schema.since_version}.Round")(*args, **kwargs)
 
 
+def STFT(*args, **kwargs):
+  schema = onnx.defs.get_schema("STFT",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.STFT")(*args, **kwargs)
+
+
 def SVMClassifier(*args, **kwargs):
   schema = onnx.defs.get_schema("SVMClassifier",
                                 max_inclusive_version=OPSET_VER,
@@ -1248,6 +1352,14 @@ def SequenceLength(*args, **kwargs):
                                 domain="")
   return getattr(sys.modules[f"{mod_name}.ops"], 
                  f"v{schema.since_version}.SequenceLength")(*args, **kwargs)
+
+
+def SequenceMap(*args, **kwargs):
+  schema = onnx.defs.get_schema("SequenceMap",
+                                max_inclusive_version=OPSET_VER,
+                                domain="")
+  return getattr(sys.modules[f"{mod_name}.ops"], 
+                 f"v{schema.since_version}.SequenceMap")(*args, **kwargs)
 
 
 def Shape(*args, **kwargs):
@@ -1538,4 +1650,4 @@ def ZipMap(*args, **kwargs):
                  f"v{schema.since_version}.ZipMap")(*args, **kwargs)
 
 
-__all__ = ["Input", "Output", "Abs", "Acos", "Acosh", "Adagrad", "Adam", "Add", "And", "ArgMax", "ArgMin", "ArrayFeatureExtractor", "Asin", "Asinh", "Atan", "Atanh", "AveragePool", "BatchNormalization", "Binarizer", "BitShift", "Cast", "CastMap", "CategoryMapper", "Ceil", "Celu", "Clip", "Compress", "Concat", "ConcatFromSequence", "Constant", "ConstantOfShape", "Conv", "ConvInteger", "ConvTranspose", "Cos", "Cosh", "CumSum", "DepthToSpace", "DequantizeLinear", "Det", "DictVectorizer", "Div", "Dropout", "DynamicQuantizeLinear", "Einsum", "Elu", "Equal", "Erf", "Exp", "Expand", "EyeLike", "FeatureVectorizer", "Flatten", "Floor", "GRU", "Gather", "GatherElements", "GatherND", "Gemm", "GlobalAveragePool", "GlobalLpPool", "GlobalMaxPool", "Gradient", "Greater", "GreaterOrEqual", "HardSigmoid", "HardSwish", "Hardmax", "Identity", "If", "Imputer", "InstanceNormalization", "IsInf", "IsNaN", "LRN", "LSTM", "LabelEncoder", "LeakyRelu", "Less", "LessOrEqual", "LinearClassifier", "LinearRegressor", "Log", "LogSoftmax", "Loop", "LpNormalization", "LpPool", "MatMul", "MatMulInteger", "Max", "MaxPool", "MaxRoiPool", "MaxUnpool", "Mean", "MeanVarianceNormalization", "Min", "Mod", "Momentum", "Mul", "Multinomial", "Neg", "NegativeLogLikelihoodLoss", "NonMaxSuppression", "NonZero", "Normalizer", "Not", "OneHot", "OneHotEncoder", "Or", "PRelu", "Pad", "Pow", "QLinearConv", "QLinearMatMul", "QuantizeLinear", "RNN", "RandomNormal", "RandomNormalLike", "RandomUniform", "RandomUniformLike", "Range", "Reciprocal", "ReduceL1", "ReduceL2", "ReduceLogSum", "ReduceLogSumExp", "ReduceMax", "ReduceMean", "ReduceMin", "ReduceProd", "ReduceSum", "ReduceSumSquare", "Relu", "Reshape", "Resize", "ReverseSequence", "RoiAlign", "Round", "SVMClassifier", "SVMRegressor", "Scaler", "Scan", "Scatter", "ScatterElements", "ScatterND", "Selu", "SequenceAt", "SequenceConstruct", "SequenceEmpty", "SequenceErase", "SequenceInsert", "SequenceLength", "Shape", "Shrink", "Sigmoid", "Sign", "Sin", "Sinh", "Size", "Slice", "Softmax", "SoftmaxCrossEntropyLoss", "Softplus", "Softsign", "SpaceToDepth", "Split", "SplitToSequence", "Sqrt", "Squeeze", "StringNormalizer", "Sub", "Sum", "Tan", "Tanh", "TfIdfVectorizer", "ThresholdedRelu", "Tile", "TopK", "Transpose", "TreeEnsembleClassifier", "TreeEnsembleRegressor", "Trilu", "Unique", "Unsqueeze", "Upsample", "Where", "Xor", "ZipMap"]
+__all__ = ["Input", "Output", "Abs", "Acos", "Acosh", "Adagrad", "Adam", "Add", "And", "ArgMax", "ArgMin", "ArrayFeatureExtractor", "Asin", "Asinh", "Atan", "Atanh", "AveragePool", "BatchNormalization", "Bernoulli", "Binarizer", "BitShift", "BlackmanWindow", "Cast", "CastLike", "CastMap", "CategoryMapper", "Ceil", "Celu", "Clip", "Compress", "Concat", "ConcatFromSequence", "Constant", "ConstantOfShape", "Conv", "ConvInteger", "ConvTranspose", "Cos", "Cosh", "CumSum", "DFT", "DepthToSpace", "DequantizeLinear", "Det", "DictVectorizer", "Div", "Dropout", "DynamicQuantizeLinear", "Einsum", "Elu", "Equal", "Erf", "Exp", "Expand", "EyeLike", "FeatureVectorizer", "Flatten", "Floor", "GRU", "Gather", "GatherElements", "GatherND", "Gemm", "GlobalAveragePool", "GlobalLpPool", "GlobalMaxPool", "Gradient", "Greater", "GreaterOrEqual", "GridSample", "HammingWindow", "HannWindow", "HardSigmoid", "HardSwish", "Hardmax", "Identity", "If", "Imputer", "InstanceNormalization", "IsInf", "IsNaN", "LRN", "LSTM", "LabelEncoder", "LayerNormalization", "LeakyRelu", "Less", "LessOrEqual", "LinearClassifier", "LinearRegressor", "Log", "LogSoftmax", "Loop", "LpNormalization", "LpPool", "MatMul", "MatMulInteger", "Max", "MaxPool", "MaxRoiPool", "MaxUnpool", "Mean", "MeanVarianceNormalization", "MelWeightMatrix", "Min", "Mod", "Momentum", "Mul", "Multinomial", "Neg", "NegativeLogLikelihoodLoss", "NonMaxSuppression", "NonZero", "Normalizer", "Not", "OneHot", "OneHotEncoder", "Optional", "OptionalGetElement", "OptionalHasElement", "Or", "PRelu", "Pad", "Pow", "QLinearConv", "QLinearMatMul", "QuantizeLinear", "RNN", "RandomNormal", "RandomNormalLike", "RandomUniform", "RandomUniformLike", "Range", "Reciprocal", "ReduceL1", "ReduceL2", "ReduceLogSum", "ReduceLogSumExp", "ReduceMax", "ReduceMean", "ReduceMin", "ReduceProd", "ReduceSum", "ReduceSumSquare", "Relu", "Reshape", "Resize", "ReverseSequence", "RoiAlign", "Round", "STFT", "SVMClassifier", "SVMRegressor", "Scaler", "Scan", "Scatter", "ScatterElements", "ScatterND", "Selu", "SequenceAt", "SequenceConstruct", "SequenceEmpty", "SequenceErase", "SequenceInsert", "SequenceLength", "SequenceMap", "Shape", "Shrink", "Sigmoid", "Sign", "Sin", "Sinh", "Size", "Slice", "Softmax", "SoftmaxCrossEntropyLoss", "Softplus", "Softsign", "SpaceToDepth", "Split", "SplitToSequence", "Sqrt", "Squeeze", "StringNormalizer", "Sub", "Sum", "Tan", "Tanh", "TfIdfVectorizer", "ThresholdedRelu", "Tile", "TopK", "Transpose", "TreeEnsembleClassifier", "TreeEnsembleRegressor", "Trilu", "Unique", "Unsqueeze", "Upsample", "Where", "Xor", "ZipMap"]

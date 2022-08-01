@@ -8,6 +8,23 @@ from onnx_model_maker import onnx_mm_export
 from onnx_model_maker.ops.op_helper import _add_input
 
 
+@onnx_mm_export("v11.Gemm")
+def Gemm(A, B, C=None, **kwargs):
+  _inputs = []
+  for i in (A, B, C):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Gemm"]
+  omm.op_counter["Gemm"] += 1
+  node = onnx.helper.make_node("Gemm",
+                               _inputs, [f'_t_Gemm_{idx}_Y'],
+                               name=f"Gemm_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v11.ConcatFromSequence")
 def ConcatFromSequence(input_sequence, **kwargs):
   _inputs = []
@@ -127,6 +144,23 @@ def ScatterElements(data, indices, updates, **kwargs):
   return node
 
 
+@onnx_mm_export("v11.BitShift")
+def BitShift(X, Y, **kwargs):
+  _inputs = []
+  for i in (X, Y):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["BitShift"]
+  omm.op_counter["BitShift"] += 1
+  node = onnx.helper.make_node("BitShift",
+                               _inputs, [f'_t_BitShift_{idx}_Z'],
+                               name=f"BitShift_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v11.GatherElements")
 def GatherElements(data, indices, **kwargs):
   _inputs = []
@@ -212,23 +246,6 @@ def CumSum(x, axis, **kwargs):
   return node
 
 
-@onnx_mm_export("v11.BitShift")
-def BitShift(X, Y, **kwargs):
-  _inputs = []
-  for i in (X, Y):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["BitShift"]
-  omm.op_counter["BitShift"] += 1
-  node = onnx.helper.make_node("BitShift",
-                               _inputs, [f'_t_BitShift_{idx}_Z'],
-                               name=f"BitShift_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v11.NonMaxSuppression")
 def NonMaxSuppression(boxes, scores, max_output_boxes_per_class=None, iou_threshold=None, score_threshold=None, **kwargs):
   _inputs = []
@@ -246,6 +263,57 @@ def NonMaxSuppression(boxes, scores, max_output_boxes_per_class=None, iou_thresh
   return node
 
 
+@onnx_mm_export("v11.Equal")
+def Equal(A, B, **kwargs):
+  _inputs = []
+  for i in (A, B):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Equal"]
+  omm.op_counter["Equal"] += 1
+  node = onnx.helper.make_node("Equal",
+                               _inputs, [f'_t_Equal_{idx}_C'],
+                               name=f"Equal_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v11.LpPool")
+def LpPool(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["LpPool"]
+  omm.op_counter["LpPool"] += 1
+  node = onnx.helper.make_node("LpPool",
+                               _inputs, [f'_t_LpPool_{idx}_Y'],
+                               name=f"LpPool_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v11.LogSoftmax")
+def LogSoftmax(input, **kwargs):
+  _inputs = []
+  for i in (input, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["LogSoftmax"]
+  omm.op_counter["LogSoftmax"] += 1
+  node = onnx.helper.make_node("LogSoftmax",
+                               _inputs, [f'_t_LogSoftmax_{idx}_output'],
+                               name=f"LogSoftmax_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v11.Range")
 def Range(start, limit, delta, **kwargs):
   _inputs = []
@@ -257,6 +325,23 @@ def Range(start, limit, delta, **kwargs):
   node = onnx.helper.make_node("Range",
                                _inputs, [f'_t_Range_{idx}_output'],
                                name=f"Range_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v11.Gather")
+def Gather(data, indices, **kwargs):
+  _inputs = []
+  for i in (data, indices):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Gather"]
+  omm.op_counter["Gather"] += 1
+  node = onnx.helper.make_node("Gather",
+                               _inputs, [f'_t_Gather_{idx}_output'],
+                               name=f"Gather_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -314,6 +399,23 @@ def OneHot(indices, depth, values, **kwargs):
   return node
 
 
+@onnx_mm_export("v11.ReduceProd")
+def ReduceProd(data, **kwargs):
+  _inputs = []
+  for i in (data, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["ReduceProd"]
+  omm.op_counter["ReduceProd"] += 1
+  node = onnx.helper.make_node("ReduceProd",
+                               _inputs, [f'_t_ReduceProd_{idx}_reduced'],
+                               name=f"ReduceProd_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v11.MaxUnpool")
 def MaxUnpool(X, I, output_shape=None, **kwargs):
   _inputs = []
@@ -359,6 +461,40 @@ def Scan(initial_state_and_scan_inputs, **kwargs):
   node = onnx.helper.make_node("Scan",
                                _inputs, [f'_t_Scan_{idx}_final_state_and_scan_outputs'],
                                name=f"Scan_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v11.ReduceL1")
+def ReduceL1(data, **kwargs):
+  _inputs = []
+  for i in (data, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["ReduceL1"]
+  omm.op_counter["ReduceL1"] += 1
+  node = onnx.helper.make_node("ReduceL1",
+                               _inputs, [f'_t_ReduceL1_{idx}_reduced'],
+                               name=f"ReduceL1_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v11.ReduceSum")
+def ReduceSum(data, **kwargs):
+  _inputs = []
+  for i in (data, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["ReduceSum"]
+  omm.op_counter["ReduceSum"] += 1
+  node = onnx.helper.make_node("ReduceSum",
+                               _inputs, [f'_t_ReduceSum_{idx}_reduced'],
+                               name=f"ReduceSum_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -450,6 +586,40 @@ def Softmax(input, **kwargs):
   return node
 
 
+@onnx_mm_export("v11.AveragePool")
+def AveragePool(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["AveragePool"]
+  omm.op_counter["AveragePool"] += 1
+  node = onnx.helper.make_node("AveragePool",
+                               _inputs, [f'_t_AveragePool_{idx}_Y'],
+                               name=f"AveragePool_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v11.TopK")
+def TopK(X, K, **kwargs):
+  _inputs = []
+  for i in (X, K):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["TopK"]
+  omm.op_counter["TopK"] += 1
+  node = onnx.helper.make_node("TopK",
+                               _inputs, [f'_t_TopK_{idx}_Values', f'_t_TopK_{idx}_Indices'],
+                               name=f"TopK_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v11.SequenceLength")
 def SequenceLength(input_sequence, **kwargs):
   _inputs = []
@@ -484,17 +654,17 @@ def ReduceMin(data, **kwargs):
   return node
 
 
-@onnx_mm_export("v11.ReduceL1")
-def ReduceL1(data, **kwargs):
+@onnx_mm_export("v11.ConvTranspose")
+def ConvTranspose(X, W, B=None, **kwargs):
   _inputs = []
-  for i in (data, ):
+  for i in (X, W, B):
     _add_input(i, _inputs)
 
-  idx = omm.op_counter["ReduceL1"]
-  omm.op_counter["ReduceL1"] += 1
-  node = onnx.helper.make_node("ReduceL1",
-                               _inputs, [f'_t_ReduceL1_{idx}_reduced'],
-                               name=f"ReduceL1_{idx}",
+  idx = omm.op_counter["ConvTranspose"]
+  omm.op_counter["ConvTranspose"] += 1
+  node = onnx.helper.make_node("ConvTranspose",
+                               _inputs, [f'_t_ConvTranspose_{idx}_Y'],
+                               name=f"ConvTranspose_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -512,6 +682,23 @@ def Pad(data, pads, constant_value=None, **kwargs):
   node = onnx.helper.make_node("Pad",
                                _inputs, [f'_t_Pad_{idx}_output'],
                                name=f"Pad_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v11.Conv")
+def Conv(X, W, B=None, **kwargs):
+  _inputs = []
+  for i in (X, W, B):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Conv"]
+  omm.op_counter["Conv"] += 1
+  node = onnx.helper.make_node("Conv",
+                               _inputs, [f'_t_Conv_{idx}_Y'],
+                               name=f"Conv_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -586,40 +773,6 @@ def Flatten(input, **kwargs):
   return node
 
 
-@onnx_mm_export("v11.Conv")
-def Conv(X, W, B=None, **kwargs):
-  _inputs = []
-  for i in (X, W, B):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Conv"]
-  omm.op_counter["Conv"] += 1
-  node = onnx.helper.make_node("Conv",
-                               _inputs, [f'_t_Conv_{idx}_Y'],
-                               name=f"Conv_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v11.LpPool")
-def LpPool(X, **kwargs):
-  _inputs = []
-  for i in (X, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["LpPool"]
-  omm.op_counter["LpPool"] += 1
-  node = onnx.helper.make_node("LpPool",
-                               _inputs, [f'_t_LpPool_{idx}_Y'],
-                               name=f"LpPool_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v11.ReduceMax")
 def ReduceMax(data, **kwargs):
   _inputs = []
@@ -665,23 +818,6 @@ def Unsqueeze(data, **kwargs):
   node = onnx.helper.make_node("Unsqueeze",
                                _inputs, [f'_t_Unsqueeze_{idx}_expanded'],
                                name=f"Unsqueeze_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v11.TopK")
-def TopK(X, K, **kwargs):
-  _inputs = []
-  for i in (X, K):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["TopK"]
-  omm.op_counter["TopK"] += 1
-  node = onnx.helper.make_node("TopK",
-                               _inputs, [f'_t_TopK_{idx}_Values', f'_t_TopK_{idx}_Indices'],
-                               name=f"TopK_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -773,40 +909,6 @@ def Clip(input, min=None, max=None, **kwargs):
   return node
 
 
-@onnx_mm_export("v11.ReduceProd")
-def ReduceProd(data, **kwargs):
-  _inputs = []
-  for i in (data, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["ReduceProd"]
-  omm.op_counter["ReduceProd"] += 1
-  node = onnx.helper.make_node("ReduceProd",
-                               _inputs, [f'_t_ReduceProd_{idx}_reduced'],
-                               name=f"ReduceProd_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v11.Gather")
-def Gather(data, indices, **kwargs):
-  _inputs = []
-  for i in (data, indices):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Gather"]
-  omm.op_counter["Gather"] += 1
-  node = onnx.helper.make_node("Gather",
-                               _inputs, [f'_t_Gather_{idx}_output'],
-                               name=f"Gather_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v11.Resize")
 def Resize(X, roi, scales, sizes=None, **kwargs):
   _inputs = []
@@ -892,40 +994,6 @@ def Constant(**kwargs):
   return node
 
 
-@onnx_mm_export("v11.Equal")
-def Equal(A, B, **kwargs):
-  _inputs = []
-  for i in (A, B):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Equal"]
-  omm.op_counter["Equal"] += 1
-  node = onnx.helper.make_node("Equal",
-                               _inputs, [f'_t_Equal_{idx}_C'],
-                               name=f"Equal_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v11.ReduceSum")
-def ReduceSum(data, **kwargs):
-  _inputs = []
-  for i in (data, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["ReduceSum"]
-  omm.op_counter["ReduceSum"] += 1
-  node = onnx.helper.make_node("ReduceSum",
-                               _inputs, [f'_t_ReduceSum_{idx}_reduced'],
-                               name=f"ReduceSum_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v11.MaxPool")
 def MaxPool(X, **kwargs):
   _inputs = []
@@ -977,40 +1045,6 @@ def DepthToSpace(input, **kwargs):
   return node
 
 
-@onnx_mm_export("v11.LogSoftmax")
-def LogSoftmax(input, **kwargs):
-  _inputs = []
-  for i in (input, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["LogSoftmax"]
-  omm.op_counter["LogSoftmax"] += 1
-  node = onnx.helper.make_node("LogSoftmax",
-                               _inputs, [f'_t_LogSoftmax_{idx}_output'],
-                               name=f"LogSoftmax_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v11.AveragePool")
-def AveragePool(X, **kwargs):
-  _inputs = []
-  for i in (X, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["AveragePool"]
-  omm.op_counter["AveragePool"] += 1
-  node = onnx.helper.make_node("AveragePool",
-                               _inputs, [f'_t_AveragePool_{idx}_Y'],
-                               name=f"AveragePool_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v11.Hardmax")
 def Hardmax(input, **kwargs):
   _inputs = []
@@ -1022,40 +1056,6 @@ def Hardmax(input, **kwargs):
   node = onnx.helper.make_node("Hardmax",
                                _inputs, [f'_t_Hardmax_{idx}_output'],
                                name=f"Hardmax_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v11.ConvTranspose")
-def ConvTranspose(X, W, B=None, **kwargs):
-  _inputs = []
-  for i in (X, W, B):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["ConvTranspose"]
-  omm.op_counter["ConvTranspose"] += 1
-  node = onnx.helper.make_node("ConvTranspose",
-                               _inputs, [f'_t_ConvTranspose_{idx}_Y'],
-                               name=f"ConvTranspose_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v11.Gemm")
-def Gemm(A, B, C=None, **kwargs):
-  _inputs = []
-  for i in (A, B, C):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Gemm"]
-  omm.op_counter["Gemm"] += 1
-  node = onnx.helper.make_node("Gemm",
-                               _inputs, [f'_t_Gemm_{idx}_Y'],
-                               name=f"Gemm_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)

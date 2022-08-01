@@ -59,6 +59,23 @@ def GatherND(data, indices, **kwargs):
   return node
 
 
+@onnx_mm_export("v12.Max")
+def Max(data_0, **kwargs):
+  _inputs = []
+  for i in (data_0, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Max"]
+  omm.op_counter["Max"] += 1
+  node = onnx.helper.make_node("Max",
+                               _inputs, [f'_t_Max_{idx}_max'],
+                               name=f"Max_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v12.Einsum")
 def Einsum(Inputs, **kwargs):
   _inputs = []
@@ -93,23 +110,6 @@ def GreaterOrEqual(A, B, **kwargs):
   return node
 
 
-@onnx_mm_export("v12.Max")
-def Max(data_0, **kwargs):
-  _inputs = []
-  for i in (data_0, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Max"]
-  omm.op_counter["Max"] += 1
-  node = onnx.helper.make_node("Max",
-                               _inputs, [f'_t_Max_{idx}_max'],
-                               name=f"Max_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v12.NegativeLogLikelihoodLoss")
 def NegativeLogLikelihoodLoss(input, target, weight=None, **kwargs):
   _inputs = []
@@ -138,6 +138,23 @@ def ReduceMin(data, **kwargs):
   node = onnx.helper.make_node("ReduceMin",
                                _inputs, [f'_t_ReduceMin_{idx}_reduced'],
                                name=f"ReduceMin_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v12.Min")
+def Min(data_0, **kwargs):
+  _inputs = []
+  for i in (data_0, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Min"]
+  omm.op_counter["Min"] += 1
+  node = onnx.helper.make_node("Min",
+                               _inputs, [f'_t_Min_{idx}_min'],
+                               name=f"Min_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -274,23 +291,6 @@ def MaxPool(X, **kwargs):
   node = onnx.helper.make_node("MaxPool",
                                _inputs, [f'_t_MaxPool_{idx}_Y', f'_t_MaxPool_{idx}_Indices'],
                                name=f"MaxPool_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v12.Min")
-def Min(data_0, **kwargs):
-  _inputs = []
-  for i in (data_0, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Min"]
-  omm.op_counter["Min"] += 1
-  node = onnx.helper.make_node("Min",
-                               _inputs, [f'_t_Min_{idx}_min'],
-                               name=f"Min_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
