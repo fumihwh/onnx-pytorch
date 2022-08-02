@@ -24,6 +24,7 @@ jobs:
         path: ~/onnx_model_zoo
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/version.txt') }}
     - uses: actions/checkout@v2
+    - run: git init
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
