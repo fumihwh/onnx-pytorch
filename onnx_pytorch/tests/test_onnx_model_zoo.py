@@ -174,7 +174,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = f"{ONNX_MODELS_REPO}/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx"
+      url = f"{ONNX_MODELS_REPO}/vision/classification/alexnet/model/bvlcalexnet-9.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
