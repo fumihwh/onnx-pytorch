@@ -20,6 +20,7 @@ from onnx_pytorch import code_gen
 torch.set_printoptions(8)
 
 ONNX_MODEL_ZOO_DIR = "~/onnx_model_zoo"
+ONNX_MODELS_REPO = "https://github.com/onnx/models/blob/main/"
 
 
 class TqdmUpTo(tqdm):
@@ -91,7 +92,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/body_analysis/age_gender/models/age_googlenet.onnx"
+      url = f"{ONNX_MODELS_REPO}/vision/body_analysis/age_gender/models/age_googlenet.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
@@ -106,7 +107,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/body_analysis/age_gender/models/gender_googlenet.onnx"
+      url = f"{ONNX_MODELS_REPO}/vision/body_analysis/age_gender/models/gender_googlenet.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
@@ -121,7 +122,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/body_analysis/arcface/model/arcfaceresnet100-8.onnx"
+      url = f"{ONNX_MODELS_REPO}/vision/body_analysis/arcface/model/arcfaceresnet100-8.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
@@ -143,7 +144,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/body_analysis/emotion_ferplus/model/emotion-ferplus-8.onnx"
+      url = f"{ONNX_MODELS_REPO}/vision/body_analysis/emotion_ferplus/model/emotion-ferplus-8.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
@@ -173,7 +174,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx"
+      url = f"{ONNX_MODELS_REPO}/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
@@ -188,7 +189,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx"
+      url = f"{ONNX_MODELS_REPO}/vision/classification/mobilenet/model/mobilenetv2-7.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
@@ -233,7 +234,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.1-7.onnx"
+      url = f"{ONNX_MODELS_REPO}/vision/classification/squeezenet/model/squeezenet1.1-7.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
@@ -248,7 +249,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/faster-rcnn/model/FasterRCNN-10.tar.gz"
+      url = f"{ONNX_MODELS_REPO}/vision/object_detection_segmentation/faster-rcnn/model/FasterRCNN-10.tar.gz"
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
@@ -271,7 +272,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/mask-rcnn/model/MaskRCNN-10.tar.gz"
+      url = f"{ONNX_MODELS_REPO}/vision/object_detection_segmentation/mask-rcnn/model/MaskRCNN-10.tar.gz"
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
@@ -298,7 +299,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/ssd/model/ssd-10.tar.gz"
+      url = f"{ONNX_MODELS_REPO}/vision/object_detection_segmentation/ssd/model/ssd-10.tar.gz"
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
@@ -320,7 +321,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/candy-9.tar.gz"
+      url = f"{ONNX_MODELS_REPO}/vision/style_transfer/fast_neural_style/model/candy-9.tar.gz"
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
@@ -347,7 +348,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/mosaic-9.tar.gz"
+      url = f"{ONNX_MODELS_REPO}/vision/style_transfer/fast_neural_style/model/mosaic-9.tar.gz"
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
@@ -401,7 +402,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/rain-princess-9.tar.gz"
+      url = f"{ONNX_MODELS_REPO}/vision/style_transfer/fast_neural_style/model/rain-princess-9.tar.gz"
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
@@ -428,7 +429,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/udnie-9.tar.gz"
+      url = f"{ONNX_MODELS_REPO}/vision/style_transfer/fast_neural_style/model/udnie-9.tar.gz"
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
