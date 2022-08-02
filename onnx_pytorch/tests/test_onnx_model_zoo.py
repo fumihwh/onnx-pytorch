@@ -20,7 +20,7 @@ from onnx_pytorch import code_gen
 torch.set_printoptions(8)
 
 ONNX_MODEL_ZOO_DIR = "~/onnx_model_zoo"
-ONNX_MODELS_REPO = "https://github.com/onnx/models/blob/main/"
+ONNX_MODELS_REPO = "https://github.com/onnx/models/raw/main"
 
 
 class TqdmUpTo(tqdm):
@@ -375,7 +375,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/pointilism-9.tar.gz"
+      url = f"{ONNX_MODELS_REPO}/vision/style_transfer/fast_neural_style/model/pointilism-9.tar.gz"
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
