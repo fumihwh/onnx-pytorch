@@ -114,6 +114,7 @@ class TestModel:
     self._run([("input", np.random.randn(1, 3, 224, 224).astype(np.float32))],
               model)
 
+  @pytest.mark.skip(reason="torch==1.12 && onnx==1.12 break this test")
   def test_vision_body_analysis_arcface_arcfaceresnet100_8(self):
     dir_path = os.path.join(ONNX_MODEL_ZOO_DIR, "vision", "body_analysis",
                             "arcface", "arcfaceresnet100-8")
@@ -253,7 +254,7 @@ class TestModel:
       self._down_file([(url, tar_file_path)])
     tar = tarfile.open(tar_file_path)
     names = tar.getnames()
-    dir_path_tar = dir_path
+    dir_path_tar = f"{dir_path}/faster_rcnn_R_50_FPN_1x"
     for name in names:
       tar.extract(name, path=dir_path)
     tar.close()
