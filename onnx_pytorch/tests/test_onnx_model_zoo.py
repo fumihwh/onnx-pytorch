@@ -159,7 +159,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/body_analysis/ultraface/models/version-RFB-320.onnx"
+      url = f"{ONNX_MODELS_REPO}/vision/body_analysis/ultraface/models/version-RFB-320.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
@@ -204,7 +204,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet18-v2-7.onnx"
+      url = f"{ONNX_MODELS_REPO}/vision/classification/resnet/model/resnet18-v2-7.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
@@ -219,7 +219,7 @@ class TestModel:
       pass
     else:
       os.makedirs(dir_path, exist_ok=True)
-      url = "https://github.com/onnx/models/raw/master/vision/classification/shufflenet/model/shufflenet-v2-10.onnx"
+      url = f"{ONNX_MODELS_REPO}/vision/classification/shufflenet/model/shufflenet-v2-10.onnx"
       self._down_file([(url, file_path)])
     model = onnx.load(file_path)
 
