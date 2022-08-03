@@ -463,6 +463,21 @@ class TestBase:
     Output(GlobalAveragePool(*inputs))
     self._run(list(zip(inputs, nps)))
 
+  @pytest.mark.skip(
+      reason="ORT's LayerNormalization is opset 1. Passed in local env.")
+  def test_layer_normalization(self):
+    reset_model(17)
+    nps = [
+        np.random.randn(1, 32, 3, 3).astype(np.float32),
+    ]
+    inputs = Input(*nps)
+    Output(LayerNormalization(*inputs,
+                              np.ones((3, 3)).astype(np.float32),
+                              np.zeros((3, 3)).astype(np.float32),
+                              axis=-2),
+           output_num=1)
+    self._run(list(zip(inputs, nps)))
+
   def test_mat_mul(self):
     reset_model(13)
     nps = [
