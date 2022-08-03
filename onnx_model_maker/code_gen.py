@@ -56,9 +56,9 @@ import sys
 import onnx
 import numpy
 
+import onnx_model_maker
 from onnx_model_maker import mod_name
 from onnx_model_maker import omm
-from onnx_model_maker import OPSET_VER
 
 
 modules = glob.glob(os.path.join(os.path.dirname(__file__), "op_ver_*.py"))
@@ -153,7 +153,7 @@ def _gen_abs_op_maker(schema):
   onnx_op = schema.name
   return f'''def {onnx_op}(*args, **kwargs):
   schema = onnx.defs.get_schema("{onnx_op}",
-                                max_inclusive_version=OPSET_VER,
+                                max_inclusive_version=onnx_model_maker.OPSET_VER,
                                 domain="")
   return getattr(sys.modules[f"{{mod_name}}.ops"], 
                  f"v{{schema.since_version}}.{onnx_op}")(*args, **kwargs)

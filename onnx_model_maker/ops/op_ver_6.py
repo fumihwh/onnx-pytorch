@@ -8,6 +8,142 @@ from onnx_model_maker import onnx_mm_export
 from onnx_model_maker.ops.op_helper import _add_input
 
 
+@onnx_mm_export("v6.Sigmoid")
+def Sigmoid(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Sigmoid"]
+  omm.op_counter["Sigmoid"] += 1
+  node = onnx.helper.make_node("Sigmoid",
+                               _inputs, [f'_t_Sigmoid_{idx}_Y'],
+                               name=f"Sigmoid_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v6.Gemm")
+def Gemm(A, B, C, **kwargs):
+  _inputs = []
+  for i in (A, B, C):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Gemm"]
+  omm.op_counter["Gemm"] += 1
+  node = onnx.helper.make_node("Gemm",
+                               _inputs, [f'_t_Gemm_{idx}_Y'],
+                               name=f"Gemm_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v6.Selu")
+def Selu(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Selu"]
+  omm.op_counter["Selu"] += 1
+  node = onnx.helper.make_node("Selu",
+                               _inputs, [f'_t_Selu_{idx}_Y'],
+                               name=f"Selu_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v6.Reciprocal")
+def Reciprocal(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Reciprocal"]
+  omm.op_counter["Reciprocal"] += 1
+  node = onnx.helper.make_node("Reciprocal",
+                               _inputs, [f'_t_Reciprocal_{idx}_Y'],
+                               name=f"Reciprocal_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v6.Elu")
+def Elu(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Elu"]
+  omm.op_counter["Elu"] += 1
+  node = onnx.helper.make_node("Elu",
+                               _inputs, [f'_t_Elu_{idx}_Y'],
+                               name=f"Elu_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v6.Mean")
+def Mean(data_0, **kwargs):
+  _inputs = []
+  for i in (data_0, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Mean"]
+  omm.op_counter["Mean"] += 1
+  node = onnx.helper.make_node("Mean",
+                               _inputs, [f'_t_Mean_{idx}_mean'],
+                               name=f"Mean_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v6.Sub")
+def Sub(A, B, **kwargs):
+  _inputs = []
+  for i in (A, B):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Sub"]
+  omm.op_counter["Sub"] += 1
+  node = onnx.helper.make_node("Sub",
+                               _inputs, [f'_t_Sub_{idx}_C'],
+                               name=f"Sub_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v6.Max")
+def Max(data_0, **kwargs):
+  _inputs = []
+  for i in (data_0, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Max"]
+  omm.op_counter["Max"] += 1
+  node = onnx.helper.make_node("Max",
+                               _inputs, [f'_t_Max_{idx}_max'],
+                               name=f"Max_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v6.Floor")
 def Floor(X, **kwargs):
   _inputs = []
@@ -42,23 +178,6 @@ def Tile(input, repeats, **kwargs):
   return node
 
 
-@onnx_mm_export("v6.Sub")
-def Sub(A, B, **kwargs):
-  _inputs = []
-  for i in (A, B):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Sub"]
-  omm.op_counter["Sub"] += 1
-  node = onnx.helper.make_node("Sub",
-                               _inputs, [f'_t_Sub_{idx}_C'],
-                               name=f"Sub_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v6.Sqrt")
 def Sqrt(X, **kwargs):
   _inputs = []
@@ -76,17 +195,17 @@ def Sqrt(X, **kwargs):
   return node
 
 
-@onnx_mm_export("v6.Max")
-def Max(data_0, **kwargs):
+@onnx_mm_export("v6.HardSigmoid")
+def HardSigmoid(X, **kwargs):
   _inputs = []
-  for i in (data_0, ):
+  for i in (X, ):
     _add_input(i, _inputs)
 
-  idx = omm.op_counter["Max"]
-  omm.op_counter["Max"] += 1
-  node = onnx.helper.make_node("Max",
-                               _inputs, [f'_t_Max_{idx}_max'],
-                               name=f"Max_{idx}",
+  idx = omm.op_counter["HardSigmoid"]
+  omm.op_counter["HardSigmoid"] += 1
+  node = onnx.helper.make_node("HardSigmoid",
+                               _inputs, [f'_t_HardSigmoid_{idx}_Y'],
+                               name=f"HardSigmoid_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -104,23 +223,6 @@ def Tanh(input, **kwargs):
   node = onnx.helper.make_node("Tanh",
                                _inputs, [f'_t_Tanh_{idx}_output'],
                                name=f"Tanh_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v6.Selu")
-def Selu(X, **kwargs):
-  _inputs = []
-  for i in (X, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Selu"]
-  omm.op_counter["Selu"] += 1
-  node = onnx.helper.make_node("Selu",
-                               _inputs, [f'_t_Selu_{idx}_Y'],
-                               name=f"Selu_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -161,23 +263,6 @@ def Relu(X, **kwargs):
   return node
 
 
-@onnx_mm_export("v6.Reciprocal")
-def Reciprocal(X, **kwargs):
-  _inputs = []
-  for i in (X, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Reciprocal"]
-  omm.op_counter["Reciprocal"] += 1
-  node = onnx.helper.make_node("Reciprocal",
-                               _inputs, [f'_t_Reciprocal_{idx}_Y'],
-                               name=f"Reciprocal_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v6.Mul")
 def Mul(A, B, **kwargs):
   _inputs = []
@@ -195,17 +280,17 @@ def Mul(A, B, **kwargs):
   return node
 
 
-@onnx_mm_export("v6.Sigmoid")
-def Sigmoid(X, **kwargs):
+@onnx_mm_export("v6.InstanceNormalization")
+def InstanceNormalization(input, scale, B, **kwargs):
   _inputs = []
-  for i in (X, ):
+  for i in (input, scale, B):
     _add_input(i, _inputs)
 
-  idx = omm.op_counter["Sigmoid"]
-  omm.op_counter["Sigmoid"] += 1
-  node = onnx.helper.make_node("Sigmoid",
-                               _inputs, [f'_t_Sigmoid_{idx}_Y'],
-                               name=f"Sigmoid_{idx}",
+  idx = omm.op_counter["InstanceNormalization"]
+  omm.op_counter["InstanceNormalization"] += 1
+  node = onnx.helper.make_node("InstanceNormalization",
+                               _inputs, [f'_t_InstanceNormalization_{idx}_output'],
+                               name=f"InstanceNormalization_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -229,17 +314,17 @@ def Neg(X, **kwargs):
   return node
 
 
-@onnx_mm_export("v6.Mean")
-def Mean(data_0, **kwargs):
+@onnx_mm_export("v6.Min")
+def Min(data_0, **kwargs):
   _inputs = []
   for i in (data_0, ):
     _add_input(i, _inputs)
 
-  idx = omm.op_counter["Mean"]
-  omm.op_counter["Mean"] += 1
-  node = onnx.helper.make_node("Mean",
-                               _inputs, [f'_t_Mean_{idx}_mean'],
-                               name=f"Mean_{idx}",
+  idx = omm.op_counter["Min"]
+  omm.op_counter["Min"] += 1
+  node = onnx.helper.make_node("Min",
+                               _inputs, [f'_t_Min_{idx}_min'],
+                               name=f"Min_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -314,17 +399,17 @@ def Cast(input, **kwargs):
   return node
 
 
-@onnx_mm_export("v6.InstanceNormalization")
-def InstanceNormalization(input, scale, B, **kwargs):
+@onnx_mm_export("v6.Exp")
+def Exp(input, **kwargs):
   _inputs = []
-  for i in (input, scale, B):
+  for i in (input, ):
     _add_input(i, _inputs)
 
-  idx = omm.op_counter["InstanceNormalization"]
-  omm.op_counter["InstanceNormalization"] += 1
-  node = onnx.helper.make_node("InstanceNormalization",
-                               _inputs, [f'_t_InstanceNormalization_{idx}_output'],
-                               name=f"InstanceNormalization_{idx}",
+  idx = omm.op_counter["Exp"]
+  omm.op_counter["Exp"] += 1
+  node = onnx.helper.make_node("Exp",
+                               _inputs, [f'_t_Exp_{idx}_output'],
+                               name=f"Exp_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -348,6 +433,23 @@ def Clip(input, **kwargs):
   return node
 
 
+@onnx_mm_export("v6.Abs")
+def Abs(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Abs"]
+  omm.op_counter["Abs"] += 1
+  node = onnx.helper.make_node("Abs",
+                               _inputs, [f'_t_Abs_{idx}_Y'],
+                               name=f"Abs_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v6.PRelu")
 def PRelu(X, slope, **kwargs):
   _inputs = []
@@ -365,57 +467,6 @@ def PRelu(X, slope, **kwargs):
   return node
 
 
-@onnx_mm_export("v6.HardSigmoid")
-def HardSigmoid(X, **kwargs):
-  _inputs = []
-  for i in (X, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["HardSigmoid"]
-  omm.op_counter["HardSigmoid"] += 1
-  node = onnx.helper.make_node("HardSigmoid",
-                               _inputs, [f'_t_HardSigmoid_{idx}_Y'],
-                               name=f"HardSigmoid_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v6.Elu")
-def Elu(X, **kwargs):
-  _inputs = []
-  for i in (X, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Elu"]
-  omm.op_counter["Elu"] += 1
-  node = onnx.helper.make_node("Elu",
-                               _inputs, [f'_t_Elu_{idx}_Y'],
-                               name=f"Elu_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v6.Exp")
-def Exp(input, **kwargs):
-  _inputs = []
-  for i in (input, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Exp"]
-  omm.op_counter["Exp"] += 1
-  node = onnx.helper.make_node("Exp",
-                               _inputs, [f'_t_Exp_{idx}_output'],
-                               name=f"Exp_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v6.Add")
 def Add(A, B, **kwargs):
   _inputs = []
@@ -427,23 +478,6 @@ def Add(A, B, **kwargs):
   node = onnx.helper.make_node("Add",
                                _inputs, [f'_t_Add_{idx}_C'],
                                name=f"Add_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v6.Min")
-def Min(data_0, **kwargs):
-  _inputs = []
-  for i in (data_0, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Min"]
-  omm.op_counter["Min"] += 1
-  node = onnx.helper.make_node("Min",
-                               _inputs, [f'_t_Min_{idx}_min'],
-                               name=f"Min_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -495,40 +529,6 @@ def Ceil(X, **kwargs):
   node = onnx.helper.make_node("Ceil",
                                _inputs, [f'_t_Ceil_{idx}_Y'],
                                name=f"Ceil_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v6.Abs")
-def Abs(X, **kwargs):
-  _inputs = []
-  for i in (X, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Abs"]
-  omm.op_counter["Abs"] += 1
-  node = onnx.helper.make_node("Abs",
-                               _inputs, [f'_t_Abs_{idx}_Y'],
-                               name=f"Abs_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v6.Gemm")
-def Gemm(A, B, C, **kwargs):
-  _inputs = []
-  for i in (A, B, C):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Gemm"]
-  omm.op_counter["Gemm"] += 1
-  node = onnx.helper.make_node("Gemm",
-                               _inputs, [f'_t_Gemm_{idx}_Y'],
-                               name=f"Gemm_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)

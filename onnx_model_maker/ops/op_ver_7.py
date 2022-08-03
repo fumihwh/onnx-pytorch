@@ -8,6 +8,91 @@ from onnx_model_maker import onnx_mm_export
 from onnx_model_maker.ops.op_helper import _add_input
 
 
+@onnx_mm_export("v7.Gemm")
+def Gemm(A, B, C, **kwargs):
+  _inputs = []
+  for i in (A, B, C):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Gemm"]
+  omm.op_counter["Gemm"] += 1
+  node = onnx.helper.make_node("Gemm",
+                               _inputs, [f'_t_Gemm_{idx}_Y'],
+                               name=f"Gemm_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v7.Or")
+def Or(A, B, **kwargs):
+  _inputs = []
+  for i in (A, B):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Or"]
+  omm.op_counter["Or"] += 1
+  node = onnx.helper.make_node("Or",
+                               _inputs, [f'_t_Or_{idx}_C'],
+                               name=f"Or_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v7.Tan")
+def Tan(input, **kwargs):
+  _inputs = []
+  for i in (input, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Tan"]
+  omm.op_counter["Tan"] += 1
+  node = onnx.helper.make_node("Tan",
+                               _inputs, [f'_t_Tan_{idx}_output'],
+                               name=f"Tan_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v7.Equal")
+def Equal(A, B, **kwargs):
+  _inputs = []
+  for i in (A, B):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Equal"]
+  omm.op_counter["Equal"] += 1
+  node = onnx.helper.make_node("Equal",
+                               _inputs, [f'_t_Equal_{idx}_C'],
+                               name=f"Equal_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v7.Sub")
+def Sub(A, B, **kwargs):
+  _inputs = []
+  for i in (A, B):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Sub"]
+  omm.op_counter["Sub"] += 1
+  node = onnx.helper.make_node("Sub",
+                               _inputs, [f'_t_Sub_{idx}_C'],
+                               name=f"Sub_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v7.Multinomial")
 def Multinomial(input, **kwargs):
   _inputs = []
@@ -93,23 +178,6 @@ def And(A, B, **kwargs):
   return node
 
 
-@onnx_mm_export("v7.Sub")
-def Sub(A, B, **kwargs):
-  _inputs = []
-  for i in (A, B):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Sub"]
-  omm.op_counter["Sub"] += 1
-  node = onnx.helper.make_node("Sub",
-                               _inputs, [f'_t_Sub_{idx}_C'],
-                               name=f"Sub_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v7.Cos")
 def Cos(input, **kwargs):
   _inputs = []
@@ -121,6 +189,40 @@ def Cos(input, **kwargs):
   node = onnx.helper.make_node("Cos",
                                _inputs, [f'_t_Cos_{idx}_output'],
                                name=f"Cos_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v7.Acos")
+def Acos(input, **kwargs):
+  _inputs = []
+  for i in (input, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["Acos"]
+  omm.op_counter["Acos"] += 1
+  node = onnx.helper.make_node("Acos",
+                               _inputs, [f'_t_Acos_{idx}_output'],
+                               name=f"Acos_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v7.AveragePool")
+def AveragePool(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["AveragePool"]
+  omm.op_counter["AveragePool"] += 1
+  node = onnx.helper.make_node("AveragePool",
+                               _inputs, [f'_t_AveragePool_{idx}_Y'],
+                               name=f"AveragePool_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -195,23 +297,6 @@ def Greater(A, B, **kwargs):
   return node
 
 
-@onnx_mm_export("v7.Or")
-def Or(A, B, **kwargs):
-  _inputs = []
-  for i in (A, B):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Or"]
-  omm.op_counter["Or"] += 1
-  node = onnx.helper.make_node("Or",
-                               _inputs, [f'_t_Or_{idx}_C'],
-                               name=f"Or_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v7.BatchNormalization")
 def BatchNormalization(X, scale, B, mean, var, **kwargs):
   _inputs = []
@@ -246,34 +331,17 @@ def LSTM(X, W, R, B=None, sequence_lens=None, initial_h=None, initial_c=None, P=
   return node
 
 
-@onnx_mm_export("v7.Acos")
-def Acos(input, **kwargs):
+@onnx_mm_export("v7.Less")
+def Less(A, B, **kwargs):
   _inputs = []
-  for i in (input, ):
+  for i in (A, B):
     _add_input(i, _inputs)
 
-  idx = omm.op_counter["Acos"]
-  omm.op_counter["Acos"] += 1
-  node = onnx.helper.make_node("Acos",
-                               _inputs, [f'_t_Acos_{idx}_output'],
-                               name=f"Acos_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v7.PRelu")
-def PRelu(X, slope, **kwargs):
-  _inputs = []
-  for i in (X, slope):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["PRelu"]
-  omm.op_counter["PRelu"] += 1
-  node = onnx.helper.make_node("PRelu",
-                               _inputs, [f'_t_PRelu_{idx}_Y'],
-                               name=f"PRelu_{idx}",
+  idx = omm.op_counter["Less"]
+  omm.op_counter["Less"] += 1
+  node = onnx.helper.make_node("Less",
+                               _inputs, [f'_t_Less_{idx}_C'],
+                               name=f"Less_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -297,17 +365,34 @@ def GRU(X, W, R, B=None, sequence_lens=None, initial_h=None, **kwargs):
   return node
 
 
-@onnx_mm_export("v7.Tan")
-def Tan(input, **kwargs):
+@onnx_mm_export("v7.PRelu")
+def PRelu(X, slope, **kwargs):
+  _inputs = []
+  for i in (X, slope):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["PRelu"]
+  omm.op_counter["PRelu"] += 1
+  node = onnx.helper.make_node("PRelu",
+                               _inputs, [f'_t_PRelu_{idx}_Y'],
+                               name=f"PRelu_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
+@onnx_mm_export("v7.Atan")
+def Atan(input, **kwargs):
   _inputs = []
   for i in (input, ):
     _add_input(i, _inputs)
 
-  idx = omm.op_counter["Tan"]
-  omm.op_counter["Tan"] += 1
-  node = onnx.helper.make_node("Tan",
-                               _inputs, [f'_t_Tan_{idx}_output'],
-                               name=f"Tan_{idx}",
+  idx = omm.op_counter["Atan"]
+  omm.op_counter["Atan"] += 1
+  node = onnx.helper.make_node("Atan",
+                               _inputs, [f'_t_Atan_{idx}_output'],
+                               name=f"Atan_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -325,23 +410,6 @@ def Add(A, B, **kwargs):
   node = onnx.helper.make_node("Add",
                                _inputs, [f'_t_Add_{idx}_C'],
                                name=f"Add_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v7.Equal")
-def Equal(A, B, **kwargs):
-  _inputs = []
-  for i in (A, B):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Equal"]
-  omm.op_counter["Equal"] += 1
-  node = onnx.helper.make_node("Equal",
-                               _inputs, [f'_t_Equal_{idx}_C'],
-                               name=f"Equal_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
@@ -382,23 +450,6 @@ def Div(A, B, **kwargs):
   return node
 
 
-@onnx_mm_export("v7.Less")
-def Less(A, B, **kwargs):
-  _inputs = []
-  for i in (A, B):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Less"]
-  omm.op_counter["Less"] += 1
-  node = onnx.helper.make_node("Less",
-                               _inputs, [f'_t_Less_{idx}_C'],
-                               name=f"Less_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
 @onnx_mm_export("v7.Dropout")
 def Dropout(data, **kwargs):
   _inputs = []
@@ -410,57 +461,6 @@ def Dropout(data, **kwargs):
   node = onnx.helper.make_node("Dropout",
                                _inputs, [f'_t_Dropout_{idx}_output', f'_t_Dropout_{idx}_mask'],
                                name=f"Dropout_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v7.Atan")
-def Atan(input, **kwargs):
-  _inputs = []
-  for i in (input, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Atan"]
-  omm.op_counter["Atan"] += 1
-  node = onnx.helper.make_node("Atan",
-                               _inputs, [f'_t_Atan_{idx}_output'],
-                               name=f"Atan_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v7.AveragePool")
-def AveragePool(X, **kwargs):
-  _inputs = []
-  for i in (X, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["AveragePool"]
-  omm.op_counter["AveragePool"] += 1
-  node = onnx.helper.make_node("AveragePool",
-                               _inputs, [f'_t_AveragePool_{idx}_Y'],
-                               name=f"AveragePool_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v7.Gemm")
-def Gemm(A, B, C, **kwargs):
-  _inputs = []
-  for i in (A, B, C):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["Gemm"]
-  omm.op_counter["Gemm"] += 1
-  node = onnx.helper.make_node("Gemm",
-                               _inputs, [f'_t_Gemm_{idx}_Y'],
-                               name=f"Gemm_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)

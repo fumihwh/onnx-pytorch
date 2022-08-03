@@ -25,6 +25,23 @@ def LabelEncoder(X, **kwargs):
   return node
 
 
+@onnx_mm_export("v2.LpPool")
+def LpPool(X, **kwargs):
+  _inputs = []
+  for i in (X, ):
+    _add_input(i, _inputs)
+
+  idx = omm.op_counter["LpPool"]
+  omm.op_counter["LpPool"] += 1
+  node = onnx.helper.make_node("LpPool",
+                               _inputs, [f'_t_LpPool_{idx}_Y'],
+                               name=f"LpPool_{idx}",
+                               **kwargs)
+  onnx.checker.check_node(node, omm.ctx)
+  omm.model.graph.node.append(node)
+  return node
+
+
 @onnx_mm_export("v2.Split")
 def Split(input, **kwargs):
   _inputs = []
@@ -53,23 +70,6 @@ def Pad(data, **kwargs):
   node = onnx.helper.make_node("Pad",
                                _inputs, [f'_t_Pad_{idx}_output'],
                                name=f"Pad_{idx}",
-                               **kwargs)
-  onnx.checker.check_node(node, omm.ctx)
-  omm.model.graph.node.append(node)
-  return node
-
-
-@onnx_mm_export("v2.LpPool")
-def LpPool(X, **kwargs):
-  _inputs = []
-  for i in (X, ):
-    _add_input(i, _inputs)
-
-  idx = omm.op_counter["LpPool"]
-  omm.op_counter["LpPool"] += 1
-  node = onnx.helper.make_node("LpPool",
-                               _inputs, [f'_t_LpPool_{idx}_Y'],
-                               name=f"LpPool_{idx}",
                                **kwargs)
   onnx.checker.check_node(node, omm.ctx)
   omm.model.graph.node.append(node)
