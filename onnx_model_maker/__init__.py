@@ -25,6 +25,9 @@ class OnnxModelMaker:
   def reset_model(self, opset_ver=None):
     if opset_ver is not None:
       opset_imports = [make_opsetid("", opset_ver)]
+      global OPSET_VER
+      OPSET_VER = opset_ver
+      self.ctx.opset_imports = {'': opset_ver}
     else:
       opset_imports = [self.opset_import]
     self.model = make_model_gen_version(onnx.GraphProto(),
