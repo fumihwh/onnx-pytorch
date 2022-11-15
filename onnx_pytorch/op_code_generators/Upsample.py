@@ -15,11 +15,14 @@ class UpsampleOpCodeGenerator(OpCodeGenerator):
     attr_value_dict = self.get_attr_value_dict(node)
     inputs_str, outputs_str = self.gen_input_output_string(
         node, initializers, self.rename_helper, self.tensor_inplace)
-    if node.input[1] in initializers:
-      scales = tuple(
-          onnx.numpy_helper.to_array(initializers[node.input[1]])[2:])
+    if len(node.input) > 1:
+      if node.input[1] in initializers:
+        scales = tuple(
+            onnx.numpy_helper.to_array(initializers[node.input[1]])[2:])
+      else:
+        scales = f"list({self.rename_helper.tensor_name_mapping.get(node.input[1], node.input[1])})[2:]"
     else:
-      scales = f"list({self.rename_helper.tensor_name_mapping.get(node.input[1], node.input[1])})[2:]"
+      scales = attr_value_dict["scales"][2:]
 
     align_corners = None
     mode = attr_value_dict['mode'].decode()
